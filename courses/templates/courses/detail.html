@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if course %}
+        <h1>{{ course.course_id }} - {{ course.title }}</h1>
+        <p>{{ course.instructor }}</p>
+        <p>{{ course.meeting }}</p>
+        <p>{{ course.credits }}</p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+    <style type="text/css">
+        .index-nav {
+            font-size: 2em;
+        }
+
+        .index-nav span {
+            font-size: 5em;
+        }
+    </style>
+{% endblock %}
+
+{% block no-nav-content %}
+    <div class="container">
+        <ul class="nav nav-pills nav-justified index-nav">
+            <li><a href="{% url 'courses' %}">
+                <span class="glyphicon glyphicon-list"></span><br/>
+                Courses
+            </a></li>
+            <li><a href="#">
+                <span class="glyphicon glyphicon-road"></span><br/>
+            Planner</a></li>
+        </ul>
+    </div>
+{% endblock %}
