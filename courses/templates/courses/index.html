@@ -19,54 +19,57 @@
 {% endblock %}
 
 {% block content %}
-    <div class="course-filters">
-        <input class="form-control" ng-model="rawCourseFilter" placeholder="Search" />
-    </div>
-    <div class="table-responsive" ng-app="coursesApp">
-        <table class="table table-hover" ng-controller="CoursesController">
-            <thead>
-                <tr class="course-header">
-                    <th ng-click="order('crn')">CRN
-                        <span ng-show="orderProp == '-crn'" class="glyphicon glyphicon-chevron-up"></span>
-                        <span ng-show="orderProp == 'crn'" class="glyphicon glyphicon-chevron-down"></span>
-                    </th>
-                    <th ng-click="order('course_id')">Course ID
-                        <span ng-show="orderProp == '-course_id'" class="glyphicon glyphicon-chevron-up"></span>
-                        <span ng-show="orderProp == 'course_id'" class="glyphicon glyphicon-chevron-down"></span>
-                    </th>
-                    <th ng-click="order('title')">Title
-                        <span ng-show="orderProp == '-title'" class="glyphicon glyphicon-chevron-up"></span>
-                        <span ng-show="orderProp == 'title'" class="glyphicon glyphicon-chevron-down"></span>
-                    </th>
-                    <th ng-click="order('instructor')">Instructor
-                        <span ng-show="orderProp == '-instructor'" class="glyphicon glyphicon-chevron-up"></span>
-                        <span ng-show="orderProp == 'instructor'" class="glyphicon glyphicon-chevron-down"></span>
-                    </th>
-                    <th ng-click="order('meeting')">Meetings
-                        <span ng-show="orderProp == '-meeting'" class="glyphicon glyphicon-chevron-up"></span>
-                        <span ng-show="orderProp == 'meeting'" class="glyphicon glyphicon-chevron-down"></span>
-                    </th>
-                    <th ng-click="order('credits')">Credits
-                        <span ng-show="orderProp == '-credits'" class="glyphicon glyphicon-chevron-up"></span>
-                        <span ng-show="orderProp == 'credits'" class="glyphicon glyphicon-chevron-down"></span>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-hide="courses.length > 0"><td>Loading courses...</td></tr>
-                <tr dir-paginate="course in courseFilter(courses) | itemsPerPage: {{ items_per_page }} | orderBy: orderProp" class="course-entry" ng-click="detail(course.crn)">
-                    <td>{$ course.crn $}</td>
-                    <td>{$ course.course_id $}</td>
-                    <td>{$ course.title $}</td>
-                    <td>{$ course.instructor $}</td>
-                    <td>{$ course.meeting $}</td>
-                    <td>{$ course.credits $}</td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="courseList" ng-app="coursesApp" ng-controller="CoursesController">
+        <div class="course-filters">
+            <input class="form-control" ng-model="rawCourseFilter" ng-change="updateCoursesForFilter()" placeholder="Search" />
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr class="course-header">
+                        <th ng-click="order('crn')">CRN
+                            <span ng-show="orderProp == '-crn'" class="glyphicon glyphicon-chevron-up"></span>
+                            <span ng-show="orderProp == 'crn'" class="glyphicon glyphicon-chevron-down"></span>
+                        </th>
+                        <th ng-click="order('course_id')">Course ID
+                            <span ng-show="orderProp == '-course_id'" class="glyphicon glyphicon-chevron-up"></span>
+                            <span ng-show="orderProp == 'course_id'" class="glyphicon glyphicon-chevron-down"></span>
+                        </th>
+                        <th ng-click="order('title')">Title
+                            <span ng-show="orderProp == '-title'" class="glyphicon glyphicon-chevron-up"></span>
+                            <span ng-show="orderProp == 'title'" class="glyphicon glyphicon-chevron-down"></span>
+                        </th>
+                        <th ng-click="order('instructor')">Instructor
+                            <span ng-show="orderProp == '-instructor'" class="glyphicon glyphicon-chevron-up"></span>
+                            <span ng-show="orderProp == 'instructor'" class="glyphicon glyphicon-chevron-down"></span>
+                        </th>
+                        <th ng-click="order('meeting')">Meetings
+                            <span ng-show="orderProp == '-meeting'" class="glyphicon glyphicon-chevron-up"></span>
+                            <span ng-show="orderProp == 'meeting'" class="glyphicon glyphicon-chevron-down"></span>
+                        </th>
+                        <th ng-click="order('credits')">Credits
+                            <span ng-show="orderProp == '-credits'" class="glyphicon glyphicon-chevron-up"></span>
+                            <span ng-show="orderProp == 'credits'" class="glyphicon glyphicon-chevron-down"></span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-show="loadingCourses"><td>Loading courses...</td></tr>
+                    <tr ng-show="filteredCourses.length == 0 && !loadingCourses"><td>No courses found</td></tr>
+                    <tr dir-paginate="course in filteredCourses | itemsPerPage: {{ items_per_page }} | orderBy: orderProp" class="course-entry" ng-click="detail(course.crn)">
+                        <td>{$ course.crn $}</td>
+                        <td>{$ course.course_id $}</td>
+                        <td>{$ course.title $}</td>
+                        <td>{$ course.instructor $}</td>
+                        <td>{$ course.meeting $}</td>
+                        <td>{$ course.credits $}</td>
+                    </tr>
+                </tbody>
+            </table>
 
-        <div class="text-center">
-            <dir-pagination-controls boundary-links="true" template-url="{% static 'partials/dirPagination.tpl.html' %}"></dir-pagination-controls>
+            <div class="text-center">
+                <dir-pagination-controls boundary-links="true" template-url="{% static 'partials/dirPagination.tpl.html' %}"></dir-pagination-controls>
+            </div>
         </div>
     </div>
 {% endblock %}
