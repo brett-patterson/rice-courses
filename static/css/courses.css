@@ -1,0 +1,76 @@
+.course-filters {
+    margin-bottom: 20px;
+}
+
+.course-filter input {
+    margin-top: 20px;
+}
+
+.course-entry td:hover {
+    cursor: pointer;
+}
+
+.course-header th:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.btn-crn {
+    color: #fff;
+    background-color: #8E7CE8;
+}
+
+.btn-crn:hover {
+    color: #fff;
+    background-color: #7D6DCF;
+}
+
+.btn-courseid {
+    color: #fff;
+    background-color: #3EB54D;
+}
+
+.btn-courseid:hover {
+    color: #fff;
+    background-color: #369E44;
+}
+
+.btn-title {
+    color: #fff;
+    background-color: #5AC7C5;
+}
+
+.btn-title:hover {
+    color: #fff;
+    background-color: #4DB0AE;
+}
+
+.btn-instructor {
+    color: #fff;
+    background-color: #F0A937;
+}
+
+.btn-instructor:hover {
+    color: #fff;
+    background-color: #DB9B32;
+}
+
+.btn-meetings {
+    color: #fff;
+    background-color: #6699F2;
+}
+
+.btn-meetings:hover {
+    color: #fff;
+    background-color: #5A89DB;
+}
+
+.btn-credits {
+    color: #fff;
+    background-color: #F7503E;
+}
+
+.btn-credits:hover {
+    color: #fff;
+    background-color: #E04838;
+}

@@ -53,7 +53,7 @@ coursesApp.controller('CoursesController', function($scope, $http) {
         'credits': 'credits'
     };
 
-    var filterPattern = /([\w]+[\s]*[\w]*):(.+)/i;
+    var filterPattern = /([\w]+[\s]*[\w]*):[\s]*(.+)/i;
 
     var filterFactory = function(field, value) {
         return function(course) {
@@ -107,6 +107,16 @@ coursesApp.controller('CoursesController', function($scope, $http) {
 
     $scope.updateCoursesForFilter = function() {
         $scope.filteredCourses = $scope.courseFilter($scope.courses);
+    };
+
+    $scope.addFilterField = function(filterField) {
+        if ($scope.rawCourseFilter == '') {
+            $scope.rawCourseFilter = filterField + ': ';
+        }
+        else {
+            $scope.rawCourseFilter += ', ' + filterField + ': ';
+        }
+        $("#courseFilterInput").focus();
     };
 
     $scope.detail = function(crn) {
