@@ -55,6 +55,14 @@ coursesApp.controller('CoursesController', function($scope, $http) {
 
     var filterPattern = /([\w]+[\s]*[\w]*):(.+)/i;
 
+    var filterFactory = function(field, value) {
+        return function(course) {
+            var haystack = String(course[field]).toLowerCase();
+            var needle = value.toLowerCase();
+            return haystack.indexOf(needle) > -1;
+        };
+    };
+
     $scope.courseFilter = function(courses) {
         if ($scope.rawCourseFilter == '')
             return courses;
@@ -64,11 +72,14 @@ coursesApp.controller('CoursesController', function($scope, $http) {
 
         var expressions = $scope.rawCourseFilter.split(',');
 
+        if (expressions.length == 0)
+            return courses;
+
         for (var i=0; i<expressions.length; i++) {
             var expression = expressions[i];
             var matches = filterPattern.exec(expression);
 
-            if (matches == null)
+            if (!matches)
                 continue
 
             var kwd = matches[1].toLowerCase();
@@ -76,24 +87,18 @@ coursesApp.controller('CoursesController', function($scope, $http) {
 
             if (field) {
                 var value = matches[2];
-                filters.push(function(course) {
-                    return String(course[field]).toLowerCase().indexOf(value.toLowerCase()) > -1;
-                });
+                filters.push(filterFactory(field, value));
             }
         };
-
-        if (expressions.length == 0)
-            return courses;
 
         courses.forEach(function(course) {
             var ok = true;
 
-            for (var j=0; j<filters.length; j++) {
-                filter = filters[j];
-                ok = ok & filter(course);
-            }
+            filters.forEach(function(filter) {
+                ok = ok && filter(course);
+            });
 
-            if (ok)
+            if (ok) 
                 result.push(course);
         });
 
