@@ -5,17 +5,22 @@
     <style type="text/css">
         .index-nav {
             font-size: 2em;
+            margin-top: 3em;
         }
 
         .index-nav span {
             font-size: 5em;
+        }
+
+        .index-nav li a:hover {
+            background: none;
         }
     </style>
 {% endblock %}
 
 {% block no-nav-content %}
     <div class="container">
-        <ul class="nav nav-pills nav-justified index-nav">
+        <ul class="nav nav-pills nav-justified text-center index-nav">
             <li><a href="{% url 'courses' %}">
                 <span class="glyphicon glyphicon-list"></span><br/>
                 Courses
