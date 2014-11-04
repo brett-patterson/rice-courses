@@ -13,6 +13,21 @@
         {% endblock %}
     </head>
     <body>
+        <div class="login-container">
+            <p>
+            {% if user.is_authenticated %}
+            
+                Signed in as: <strong>{{ user.username }}</strong><br/>
+                (<a href="/logout/">Sign out</a>)
+            
+            {% else %}
+                Not signed in<br/>
+                (<a href="/login/">Sign in</a>)
+            
+            {% endif %}
+            </p>
+        </div>
+
         <div class="container header">
             <a href="{% url 'index' %}">
                 <img src="{% static 'img/logo.png' %}" height="200px" />
@@ -30,7 +45,7 @@
                                 </a>
                             </li>
                             <li {% if nav_active == 'planner' %}class="active"{% endif %}>
-                                <a href="#">
+                                <a href="{% url 'planner' %}">
                                     <span class="glyphicon glyphicon-road"></span> Planner
                                 </a>
                             </li>

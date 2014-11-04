@@ -2,9 +2,11 @@
 
 {% block content %}
     {% if course %}
-        <h1>{{ course.course_id }} - {{ course.title }}</h1>
+        <h1>{{ course.subject }} {{ course.course_number }} {{ course.section }} - {{ course.title }}</h1>
         <p>{{ course.instructor }}</p>
         <p>{{ course.meeting }}</p>
         <p>{{ course.credits }}</p>
+        <p>{{ coures.location }}</p>
+        <p>{{ course.description }}</p>
     {% endif %}
 {% endblock %}

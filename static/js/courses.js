@@ -12,11 +12,43 @@ coursesApp.controller('CoursesController', function($scope, $http) {
     $scope.filteredCourses = [];
     $scope.loadingCourses = false;
 
+    function numToDistribution(num) {
+        var result = '';
+
+        for (var i = 0; i < num; i++) {
+            result += 'I';
+        }
+
+        return result;
+    };
+
+    function convertCourses(courses) {
+        var result = [];
+
+        courses.forEach(function(course) {
+            result.push({
+                'crn': course.crn,
+                'course_id': course.subject + ' ' + course.course_number + ' ' + course.section,
+                'title': course.title,
+                'instructor': course.instructor,
+                'meeting': course.meeting_days + ' ' + course.start_time + '-' + course.end_time,
+                'credits': course.credits,
+                'distribution': numToDistribution(course.distribution),
+                'description': course.description,
+                'enrollment': course.enrollment,
+                'max_enrollment': course.max_enrollment,
+                'location': course.location
+            });
+        });
+
+        return result;
+    };
+
     function getCourses() {
         $scope.loadingCourses = true;
         $http.get('/courses/api/all/', {responseType: 'json'}).
             success(function(data, status, headers, config) {
-                $scope.courses = data;
+                $scope.courses = convertCourses(data);
                 $scope.updateCoursesForFilter();
                 $scope.loadingCourses = false;
         });
@@ -50,7 +82,8 @@ coursesApp.controller('CoursesController', function($scope, $http) {
         'instructor': 'instructor',
         'meeting': 'meeting',
         'meetings': 'meeting',
-        'credits': 'credits'
+        'credits': 'credits',
+        'distribution': 'distribution'
     };
 
     var filterPattern = /([\w]+[\s]*[\w]*):[\s]*(.+)/i;

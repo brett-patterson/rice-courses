@@ -4,9 +4,12 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render
 
+from django_cas.decorators import login_required
+
 from courses.models import Course
 
 
+@login_required(login_url='/login/')
 def index(request):
     context = {
         'items_per_page': settings.API_ITEMS_PER_PAGE,
@@ -15,6 +18,7 @@ def index(request):
     return render(request, 'courses/index.html', context)
 
 
+@login_required(login_url='/login/')
 def detail(request, crn):
     context = {
         'course': Course.objects.get(crn=crn),

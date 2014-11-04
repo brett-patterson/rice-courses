@@ -1,90 +1,66 @@
-import urllib2
-from HTMLParser import HTMLParser
+from requests import Session
+from xml.etree import ElementTree
 
 import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'rice_courses.settings'
+import django
+django.setup()
 
 from courses.models import Course
 
 
-COURSE_URL = 'https://courses.rice.edu/admweb/!SWKSCAT.cat?p_action=QUERY&p_term=201520&p_name=STATIC'  # noqa
+COURSE_URL = 'https://courses.rice.edu/admweb/!SWKSECX.main'
 
-
-COURSE_DATA_MAP = {
-    'searchCourse': 'course_id',
-    'searchTitle': 'title',
-    'searchInstructor': 'instructor',
-    'searchMeeting': 'meeting',
-    'credits': 'credits',
-    'searchSection': None,
-    'searchSession': None
+ATTRIBUTE_MAP = {
+    'course-number': 'course_number',
+    'credit-hours': 'credits',
+    'distribution-group': 'distribution',
+    'start-time': 'start_time',
+    'end-time': 'end_time',
+    'meeting-days': 'meeting_days',
+    'max-enrollment': 'max_enrollment',
+    'actual-enrollment': 'actual_enrollment'
 }
 
 
-class CoursesParser(HTMLParser):
-    """ A class to fetch and parse courses from the Rice website.
-
-    """
-    def __init__(self):
-        HTMLParser.__init__(self)
-        self.in_table = False
-        self.in_results = False
-        self.in_course = False
-        self.course_data_type = None
-
-    def get_class(self, attrs):
-        """ Get the class attribute from the list of tag attributes.
-
-        """
-        for attr in attrs:
-            if attr[0] == 'class':
-                return attr[1]
-        return None
-
-    def handle_starttag(self, tag, attrs):
-        tag_class = self.get_class(attrs)
-
-        if tag == 'table' and tag_class == 'searchResults':
-            self.in_table = True
-
-        elif self.in_table and tag == 'tbody':
-            self.in_results = True
-
-        if self.in_results:
-            if tag == 'tr':
-                self.in_course = True
-                self.current_course = Course()
-
-            elif self.in_course and tag == 'td':
-                self.course_data_type = COURSE_DATA_MAP[tag_class]
-
-            elif self.in_course and tag == 'a':
-                self.course_data_type = 'crn'
-
-    def handle_endtag(self, tag):
-        if tag == 'table':
-            self.in_table = False
-
-        elif self.in_table and tag == 'tbody':
-            self.in_results = False
-
-        elif self.in_results and tag == 'tr':
-            self.in_course = False
-            self.current_course.save()
-
-    def handle_data(self, data):
-        if self.in_course and self.course_data_type is not None:
-            setattr(self.current_course, self.course_data_type, data)
-
-
-def fetch_courses():
+def fetch_courses(term, verbose=False):
     """ Get all Rice courses for the current term.
 
     """
-    parser = CoursesParser()
-    courses_data = urllib2.urlopen(COURSE_URL)
-    parser.feed(courses_data.read())
-    courses_data.close()
+    print('Fetching data...')
+
+    session = Session()
+    response = session.post(
+        url=COURSE_URL,
+        data={
+            'term': term,
+        }
+    )
+
+    root = ElementTree.fromstring(response.text.encode('utf-8'))
+    course_count = len(root)
+
+    bar_count = 40
+
+    for i, course in enumerate(root):
+        if verbose:
+            count = int(float(i + 1) / course_count * bar_count)
+            log = '\r[' + '=' * count + ' ' * (bar_count - count) + ']'
+            print log,
+
+        course_json = {}
+
+        for attr in course:
+            name = ATTRIBUTE_MAP.get(attr.tag, attr.tag)
+            course_json[name] = attr.text
+
+        Course.from_json(course_json).save()
+
 
 if __name__ == '__main__':
-    fetch_courses()
+    import sys
+    if len(sys.argv) < 2:
+        print 'Invalid arguments. Expected fetch_courses.py [term]'
+        sys.exit(2)
+
+    fetch_courses(sys.argv[1], verbose=True)

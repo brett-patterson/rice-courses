@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
@@ -42,7 +41,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'accounts',
     'courses',
+    'planner',
 )
 
 TEMPLATE_DIRS = (
@@ -57,7 +58,14 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_cas.middleware.CASMiddleware',
 )
+
+AUTHENTICATION_BACKENDS = (
+    'django_cas.backends.CASBackend',
+)
+
+CAS_SERVER_URL = 'https://netid.rice.edu/cas/'
 
 ROOT_URLCONF = 'rice_courses.urls'
 
