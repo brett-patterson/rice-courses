@@ -5,12 +5,14 @@ coursesApp.config(function($interpolateProvider) {
     $interpolateProvider.endSymbol('$}');
 });
 
-coursesApp.controller('CoursesController', function($scope, $http) {
+coursesApp.controller('CoursesController', function($scope, $http, $timeout) {
     $scope.orderProp = 'course_id';
     $scope.rawCourseFilter = '';
     $scope.courses = [];
     $scope.filteredCourses = [];
     $scope.loadingCourses = false;
+    $scope.user = $('#user').attr('value');
+    $scope.userCourses = [];
 
     function numToDistribution(num) {
         var result = '';
@@ -54,7 +56,46 @@ coursesApp.controller('CoursesController', function($scope, $http) {
         });
     };
 
+    function getUserCourses() {
+        $http.get('/accounts/api/courses/'+$scope.user, {responseType: 'json'}).
+            success(function(data, status, headers, config) {
+                var result = [];
+                data.forEach(function(course) {
+                    result.push(course.crn);
+                });
+                $timeout(function() {
+                    $scope.userCourses = result;
+                });
+        });
+    }
+
     getCourses();
+    getUserCourses();
+
+    $scope.isUserCourse = function(course) {
+        return $scope.userCourses.indexOf(course.crn) != -1;
+    };
+
+    $scope.toggleUserCourse = function(course) {
+        var action;
+        var td = $('#uc-'+course.crn);
+        var span = td.find('span');
+        if ($scope.isUserCourse(course)) {
+            action = 'remove';
+            td.removeClass('user-course');
+            td.addClass('not-user-course');
+            span.removeClass('glyphicon-heart');
+            span.addClass('glyphicon-heart-empty');
+        } else {
+            action = 'add';
+            td.removeClass('not-user-course');
+            td.addClass('user-course');
+            span.removeClass('glyphicon-heart-empty');
+            span.addClass('glyphicon-heart');
+        }
+        $http.get('/accounts/api/courses/'+$scope.user+'/'+action+'/'+course.crn);
+        getUserCourses();
+    };
 
     $scope.pagination = {
         current: 1
@@ -152,7 +193,7 @@ coursesApp.controller('CoursesController', function($scope, $http) {
         $("#courseFilterInput").focus();
     };
 
-    $scope.detail = function(crn) {
-        window.location = '/courses/' + crn;
+    $scope.courseDetail = function(course) {
+        window.location = '/courses/' + course.crn;
     };
 });

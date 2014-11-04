@@ -15,6 +15,14 @@
     text-decoration: underline;
 }
 
+.not-user-course a {
+    color: black;
+}
+
+.user-course a, .not-user-course a:hover {
+    color: red;
+}
+
 .btn-crn {
     color: #fff;
     background-color: #8E7CE8;
@@ -73,4 +81,14 @@
 .btn-credits:hover {
     color: #fff;
     background-color: #E04838;
+}
+
+.btn-distribution {
+    color: #fff;
+    background-color: #FA6EE5;
+}
+
+.btn-distribution:hover {
+    color: #fff;
+    background-color: #E665D2;
 }

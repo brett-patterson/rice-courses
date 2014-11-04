@@ -11,6 +11,7 @@
 
 {% block content %}
     <div class="courseList" ng-app="coursesApp" ng-controller="CoursesController">
+        <input type="hidden" id="user" value="{{ user }}" />
         <div class="course-filters">
             <h4>Filters:
             <button class="btn btn-crn" ng-click="addFilterField('CRN')">CRN</button>
@@ -27,6 +28,7 @@
             <table class="table table-hover">
                 <thead>
                     <tr class="course-header">
+                        <th></th>
                         <th ng-click="order('crn')">CRN
                             <span ng-show="orderProp == '-crn'" class="glyphicon glyphicon-chevron-up"></span>
                             <span ng-show="orderProp == 'crn'" class="glyphicon glyphicon-chevron-down"></span>
@@ -60,14 +62,19 @@
                 <tbody>
                     <tr ng-show="loadingCourses"><td>Loading courses...</td></tr>
                     <tr ng-show="filteredCourses.length == 0 && !loadingCourses"><td>No courses found</td></tr>
-                    <tr dir-paginate="course in filteredCourses | itemsPerPage: {{ items_per_page }} | orderBy: orderProp" class="course-entry" ng-click="detail(course.crn)">
-                        <td>{$ course.crn $}</td>
-                        <td>{$ course.course_id $}</td>
-                        <td>{$ course.title $}</td>
-                        <td>{$ course.instructor $}</td>
-                        <td>{$ course.meeting $}</td>
-                        <td>{$ course.credits $}</td>
-                        <td>{$ course.distribution $}</td>
+                    <tr dir-paginate="course in filteredCourses | itemsPerPage: {{ items_per_page }} | orderBy: orderProp" class="course-entry">
+                        <td ng-class="{'user-course': isUserCourse(course), 'not-user-course': !isUserCourse(course)}" id="uc-{$ course.crn $}">
+                            <a ng-click="toggleUserCourse(course)">
+                                <span class="glyphicon" ng-class="{'glyphicon-heart': isUserCourse(course), 'glyphicon-heart-empty': !isUserCourse(course)}"></span>
+                            </a>
+                        </td>
+                        <td ng-click="courseDetail(course)">{$ course.crn $}</td>
+                        <td ng-click="courseDetail(course)">{$ course.course_id $}</td>
+                        <td ng-click="courseDetail(course)">{$ course.title $}</td>
+                        <td ng-click="courseDetail(course)">{$ course.instructor $}</td>
+                        <td ng-click="courseDetail(course)">{$ course.meeting $}</td>
+                        <td ng-click="courseDetail(course)">{$ course.credits $}</td>
+                        <td ng-click="courseDetail(course)">{$ course.distribution $}</td>
                     </tr>
                 </tbody>
             </table>
