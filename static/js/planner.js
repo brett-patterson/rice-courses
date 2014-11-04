@@ -8,7 +8,7 @@ $(function() {
     scheduler.config.readonly_form = true; // don't allow lightbox edits to events
     scheduler.attachEvent("onBeforeDrag", function() {return false;});
     scheduler.attachEvent("onClick", function() {return false;});
-    scheduler.config.details_on_dblclick = true;
+    scheduler.attachEvent("onDblCLick", function() {return false;});
     scheduler.config.dblclick_create = false;
 
     // hide Saturdays and Sundays
@@ -20,10 +20,64 @@ $(function() {
     // Use Jan 1 2007, so that 1/1 falls on a Monday
     scheduler.init('scheduler', new Date(2007, 0, 1), 'week');
 
-    var events = [
-        {id:1, text:"Meeting",   start_date:"01/01/2007 14:00",end_date:"01/01/2007 17:00"},
-        {id:2, text:"Conference",start_date:"01/02/2007 12:00",end_date:"01/02/2007 19:00"},
-        {id:3, text:"Interview", start_date:"01/03/2007 09:00",end_date:"01/03/2007 10:00"}
-    ];
-    scheduler.parse(events, 'json');
+    function convertTime(time) {
+        return {
+            hours: time.substring(0, 2),
+            minutes: time.substring(2)
+        };
+    };
+
+    dayMap = {
+        'M': '01',
+        'T': '02',
+        'W': '03',
+        'R': '04',
+        'F': '05'
+    };
+
+    function buildDates(days, start, end) {
+        var dates = [];
+        var startTime = convertTime(start);
+        var endTime = convertTime(end);
+
+        for (var i = 0; i < days.length; i++) {
+            var date = {};
+            var day = days[i];
+
+            date.start_date = '01/' + dayMap[day] + '/2007 ' + startTime.hours + ':' + startTime.minutes;
+            date.end_date = '01/' + dayMap[day] + '/2007 ' + endTime.hours + ':' + endTime.minutes;
+
+            dates.push(date);
+        };
+
+        return dates;
+    };
+
+    function dataToEvents(data) {
+        var events = [];
+
+        data.forEach(function(course) {
+            var dates = buildDates(course.meeting_days, course.start_time, course.end_time);
+
+            for (var i = 0; i < dates.length; i++) {
+                var courseEvent = {};
+                courseEvent.id = course.crn + '_' + i;
+
+                var courseName = course.subject + " " + course.course_number + " " + course.section;
+                courseEvent.text = courseName;
+
+                var date = dates[i];
+                courseEvent.start_date = date.start_date;
+                courseEvent.end_date = date.end_date;
+
+                events.push(courseEvent);
+            }
+        });
+
+        return events;
+    }
+
+    $.ajax('/accounts/api/courses/current/', {dataType: 'json'}).done(function(data) {
+        scheduler.parse(dataToEvents(data), 'json');
+    });
 });
