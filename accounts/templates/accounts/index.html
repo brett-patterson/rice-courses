@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>My Courses:</h2>
+    <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>CRN</th>
+                        <th>Course ID</th>
+                        <th>Title</th>
+                        <th>Instructor</th>
+                        <th>Meetings</th>
+                        <th>Distribution</th>
+                        <th>Credits</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for course in courses %}
+                        <tr>
+                            <td>{{ course.crn }}</td>
+                            <td>{{ course.subject }} {{ course.course_number }} {{ course.section }}</td>
+                            <td>{{ course.title }}</td>
+                            <td>{{ course.instructor }}</td>
+                            <td>{{ course.meeting_days }} {{ course.start_time }}-{{ course.end_time }}</td>
+                            <td>
+                                {{ course.distribution }}
+                            </td>
+                            <td>{{ course.credits }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td>No courses found</td></tr>
+                    {% endfor %}
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="text-right"><strong>Total Credits{% if total_can_vary %} (approximate){% endif %}:</strong></td>
+                        <td><strong>{{ total_credits }}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+{% endblock %}

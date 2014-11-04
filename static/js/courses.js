@@ -11,7 +11,6 @@ coursesApp.controller('CoursesController', function($scope, $http, $timeout) {
     $scope.courses = [];
     $scope.filteredCourses = [];
     $scope.loadingCourses = false;
-    $scope.user = $('#user').attr('value');
     $scope.userCourses = [];
 
     function numToDistribution(num) {
@@ -57,7 +56,7 @@ coursesApp.controller('CoursesController', function($scope, $http, $timeout) {
     };
 
     function getUserCourses() {
-        $http.get('/accounts/api/courses/'+$scope.user, {responseType: 'json'}).
+        $http.get('/accounts/api/courses/current/', {responseType: 'json'}).
             success(function(data, status, headers, config) {
                 var result = [];
                 data.forEach(function(course) {
@@ -93,7 +92,7 @@ coursesApp.controller('CoursesController', function($scope, $http, $timeout) {
             span.removeClass('glyphicon-heart-empty');
             span.addClass('glyphicon-heart');
         }
-        $http.get('/accounts/api/courses/'+$scope.user+'/'+action+'/'+course.crn);
+        $http.get('/accounts/api/courses/current/'+action+'/'+course.crn);
         getUserCourses();
     };
 
