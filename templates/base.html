@@ -13,7 +13,11 @@
         {% endblock %}
     </head>
     <body>
-        <div class="login-container">
+        <div class="container-fluid header">
+            <a href="{% url 'index' %}">
+                <img src="{% static 'img/logo.png' %}" height="200px" />
+            </a>
+            <br/>
             <p>
             {% if user.is_authenticated %}
             
@@ -26,12 +30,6 @@
             
             {% endif %}
             </p>
-        </div>
-
-        <div class="container header">
-            <a href="{% url 'index' %}">
-                <img src="{% static 'img/logo.png' %}" height="200px" />
-            </a>
         </div>
 
         {% if nav_active %}
