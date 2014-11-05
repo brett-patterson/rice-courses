@@ -1,0 +1,5 @@
+#!/usr/bin/python
+
+import rice_course_manager.wsgi
+
+application = rice_course_manager.wsgi.application
