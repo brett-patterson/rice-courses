@@ -37,18 +37,28 @@ $(function() {
 
     function buildDates(days, start, end) {
         var dates = [];
-        var startTime = convertTime(start);
-        var endTime = convertTime(end);
 
-        for (var i = 0; i < days.length; i++) {
-            var date = {};
-            var day = days[i];
+        var daySplit = days.split(', ');
+        var startSplit = start.split(', ');
+        var endSplit = end.split(', ');
 
-            date.start_date = '01/' + dayMap[day] + '/2007 ' + startTime.hours + ':' + startTime.minutes;
-            date.end_date = '01/' + dayMap[day] + '/2007 ' + endTime.hours + ':' + endTime.minutes;
+        for (var i = 0; i < daySplit.length; i++) {
+            var dayString = daySplit[i];
+            var startTime = convertTime(startSplit[i]);
+            console.log(startTime);
+            var endTime = convertTime(endSplit[i]);
+            console.log(endTime);
 
-            dates.push(date);
-        };
+            for (var j = 0; j < dayString.length; j++) {
+                var date = {};
+                var day = dayString[j];
+
+                date.start_date = '01/' + dayMap[day] + '/2007 ' + startTime.hours + ':' + startTime.minutes;
+                date.end_date = '01/' + dayMap[day] + '/2007 ' + endTime.hours + ':' + endTime.minutes;
+
+                dates.push(date);
+            };
+        }
 
         return dates;
     };
