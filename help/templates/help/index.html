@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+
+<link type="text/css" rel="stylesheet" href="{% static 'css/help.css' %}" />
+
+<script type="text/javascript">
+$(function() {
+    $('#affix-sidebar').affix({
+      offset: {
+        top: $('#content').offset().top,
+        bottom: 0
+      }
+    });
+});
+</script>
+
+{% endblock %}
+
+{% block bodyattrs %}
+data-spy="scroll" data-target="#affix-nav"
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <section id="content" class="col-md-9">
+            {% for article in articles %}
+
+            <article id="{{ article.title | slugify }}">
+                <h1>{{ article.title }}</h1>
+                <hr/>
+                {% autoescape off %}
+                    {{ article.render_html }}
+                {% endautoescape %}
+                <hr/>
+            </article>
+
+            {% endfor %}
+        </section>
+        <nav id="affix-nav" class="col-md-3">
+            <ul class="nav" id="affix-sidebar">
+                {% for article in articles %}
+                    <li>
+                        <a href="#{{ article.title | slugify }}">{{ article.title }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </nav>
+    </div>
+</div>
+
+{% endblock %}

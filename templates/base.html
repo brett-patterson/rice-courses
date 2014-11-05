@@ -12,7 +12,7 @@
         {% block head %}
         {% endblock %}
     </head>
-    <body>
+    <body {% block bodyattrs %}{% endblock %}>
         <div class="container-fluid header">
             <a href="{% url 'index' %}">
                 <img src="{% static 'img/logo.png' %}" height="200px" />
@@ -53,7 +53,7 @@
                                 </a>
                             </li>
                             <li {% if nav_active == 'help' %}class="active"{% endif %}>
-                                <a href="#">
+                                <a href="{% url 'help' %}">
                                     <span class="glyphicon glyphicon-question-sign"></span> Help
                                 </a>
                             </li>

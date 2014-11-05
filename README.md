@@ -6,3 +6,4 @@ Requirements
 * django
 * requests
 * django_cas
+* markdown

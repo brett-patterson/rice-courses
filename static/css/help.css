@@ -1,0 +1,16 @@
+ul.affix {
+    position: fixed;
+    top: 10px;
+}
+
+ul.affix-top {
+    position: static;
+}
+
+ul.affix-bottom {
+    position: absolute;
+}
+
+#affix-sidebar  li.active {
+    font-weight: bold;
+}
