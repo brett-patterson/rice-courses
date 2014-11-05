@@ -45,9 +45,7 @@ $(function() {
         for (var i = 0; i < daySplit.length; i++) {
             var dayString = daySplit[i];
             var startTime = convertTime(startSplit[i]);
-            console.log(startTime);
             var endTime = convertTime(endSplit[i]);
-            console.log(endTime);
 
             for (var j = 0; j < dayString.length; j++) {
                 var date = {};
