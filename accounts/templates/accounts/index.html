@@ -1,11 +1,34 @@
 {% extends "base.html" %}
 
+{% block head %}
+
+<style type="text/css">
+.remove-btn {
+    color: #F5402C;
+}
+
+.remove-btn:hover {
+    color: #DB3927;
+}
+</style>
+
+<script type="text/javascript">
+function removeCourse(crn) {
+    $.ajax("/accounts/api/courses/current/remove/" + crn).done(function() {
+        location.reload();
+    });
+}
+</script>
+
+{% endblock %}
+
 {% block content %}
     <h2>My Courses:</h2>
     <div class="table-responsive">
             <table class="table table-hover">
                 <thead>
                     <tr>
+                        <th></th>
                         <th>CRN</th>
                         <th>Course ID</th>
                         <th>Title</th>
@@ -18,20 +41,24 @@
                 <tbody>
                     {% for course in courses %}
                         <tr>
+                            <td>
+                                <a href="#" class="remove-btn" onclick="removeCourse({{ course.crn }})">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                </a>
+                            </td>
                             <td>{{ course.crn }}</td>
                             <td>{{ course.subject }} {{ course.course_number }} {{ course.section }}</td>
                             <td>{{ course.title }}</td>
                             <td>{{ course.instructor }}</td>
                             <td>{{ course.meeting_days }} {{ course.start_time }}-{{ course.end_time }}</td>
-                            <td>
-                                {{ course.distribution }}
-                            </td>
+                            <td>{{ course.distribution }}</td>
                             <td>{{ course.credits }}</td>
                         </tr>
                     {% empty %}
                         <tr><td>No courses found</td></tr>
                     {% endfor %}
                     <tr>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
