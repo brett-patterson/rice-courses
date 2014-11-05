@@ -3,11 +3,10 @@
 from setuptools import setup
 
 setup(
-    name='YourAppName',
-    version='1.0',
-    description='OpenShift App',
-    author='Your Name',
-    author_email='example@example.com',
-    url='http://www.python.org/sigs/distutils-sig/',
-    install_requires=['Django<=1.4'],
+    name='rice_course_manager',
+    version='0.1',
+    description='Course manager and planner for Rice University',
+    author='Brett Patterson',
+    author_email='brett.patterson@rice.edu',
+    install_requires=['Django<=1.7.1'],
 )
