@@ -7,3 +7,4 @@
 source $OPENSHIFT_HOMEDIR/python/virtenv/bin/activate
 
 python $OPENSHIFT_REPO_DIR/wsgi/rice_course_manager/manage.py syncdb
+python $OPENSHIFT_REPO_DIR/wsgi/rice_course_manager/manage.py collectstatic --noinput
