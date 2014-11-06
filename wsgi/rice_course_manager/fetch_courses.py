@@ -27,7 +27,8 @@ def fetch_courses(term, verbose=False):
     """ Get all Rice courses for the current term.
 
     """
-    print('Fetching data...')
+    if verbose:
+        print('Fetching data...')
 
     session = Session()
     response = session.post(

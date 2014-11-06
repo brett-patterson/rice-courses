@@ -34,7 +34,7 @@ class Course(models.Model):
     """ A model to represent a Rice course.
 
     """
-    meeting_days = models.CharField(max_length=5, default='')
+    meeting_days = models.CharField(max_length=10, default='')
 
     subject = models.CharField(max_length=4, default='')
 
@@ -60,7 +60,7 @@ class Course(models.Model):
 
     max_enrollment = models.PositiveIntegerField(default=0)
 
-    instructor = models.CharField(max_length=50, default='')
+    instructor = models.CharField(max_length=200, default='')
 
     crn = models.CharField(max_length=5, primary_key=True)
 

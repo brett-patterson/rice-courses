@@ -1,0 +1,5 @@
+#!/usr/bin/python
+
+from rice_course_manager.fetch_courses import fetch_courses
+
+fetch_courses('201520')
