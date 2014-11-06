@@ -44,7 +44,7 @@ class RangeField(models.CharField):
     def __init__(self, minimum=0, maximum=0, *args, **kwargs):
         self.minimum = minimum
         self.maximum = maximum
-        kwargs['max_length'] = 10
+        kwargs['max_length'] = 20
         super(RangeField, self).__init__(*args, **kwargs)
 
     def deconstruct(self):
