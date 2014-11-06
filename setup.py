@@ -8,5 +8,5 @@ setup(
     description='Course manager and planner for Rice University',
     author='Brett Patterson',
     author_email='brett.patterson@rice.edu',
-    install_requires=['Django<=1.7.1'],
+    install_requires=['Django==1.7.1'],
 )
