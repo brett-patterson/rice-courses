@@ -41,7 +41,7 @@ def user_or_current(request, username):
 
 def courses(request, username):
     user = user_or_current(request, username)
-    course_list = user.usercourses.courses.all()
+    course_list = user.userprofile.courses.all()
     return HttpResponse(json.dumps([c.json() for c in course_list]))
 
 
@@ -49,7 +49,7 @@ def add_course(request, username, crn):
     user = user_or_current(request, username)
     course = Course.objects.get(crn=crn)
 
-    user.usercourses.courses.add(course)
+    user.userprofile.courses.add(course)
 
     return HttpResponse(json.dumps({'status': 'success'}))
 
@@ -58,6 +58,6 @@ def remove_course(request, username, crn):
     user = user_or_current(request, username)
     course = Course.objects.get(crn=crn)
 
-    user.usercourses.courses.remove(course)
+    user.userprofile.courses.remove(course)
 
     return HttpResponse(json.dumps({'status': 'success'}))
