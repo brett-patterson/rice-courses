@@ -40,6 +40,10 @@ function removeCourse(crn) {
                 </thead>
                 <tbody>
                     {% for course in courses %}
+                        {% with forloop.counter0 as start %}
+                        {% with start|add:1|slugify as end %}
+                        {% with start|slugify|add:":"|add:end as subset %}
+                        {% with distributions|slice:subset as distributions_sublist %}
                         <tr>
                             <td>
                                 <a href="#" class="remove-btn" onclick="removeCourse({{ course.crn }})">
@@ -51,9 +55,13 @@ function removeCourse(crn) {
                             <td>{{ course.title }}</td>
                             <td>{{ course.instructor }}</td>
                             <td>{{ course.meeting_days }} {{ course.start_time }}-{{ course.end_time }}</td>
-                            <td>{{ course.distribution }}</td>
+                            <td>{{ distributions_sublist.0 }}</td>
                             <td>{{ course.credits }}</td>
                         </tr>
+                        {% endwith %}
+                        {% endwith %}
+                        {% endwith %}
+                        {% endwith %}
                     {% empty %}
                         <tr><td>No courses found</td></tr>
                     {% endfor %}

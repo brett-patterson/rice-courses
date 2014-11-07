@@ -26,6 +26,7 @@ def index(request):
     context = {
         'nav_active': 'account',
         'courses': course_list,
+        'distributions': distribution_list,
         'total_credits': total_credits,
         'total_can_vary': total_can_vary
     }
