@@ -8,7 +8,7 @@ from courses.models import Course
 
 
 def index(request):
-    course_list = request.user.usercourses.courses.all()
+    course_list = request.user.userprofile.courses.all()
     distribution_list = []
     total_credits = 0.0
     total_can_vary = False
