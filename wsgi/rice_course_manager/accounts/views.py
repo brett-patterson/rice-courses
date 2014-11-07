@@ -4,9 +4,12 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render
 
+from django_cas.decorators import login_required
+
 from courses.models import Course
 
 
+@login_required(login_url='/login/')
 def index(request):
     course_list = request.user.userprofile.courses.all()
     distribution_list = []
