@@ -1,11 +1,11 @@
-var coursesApp = angular.module('coursesApp', ['ui.bootstrap', 'angularUtils.directives.dirPagination']);
+var coursesApp = angular.module('coursesApp', ['angularUtils.directives.dirPagination', 'services']);
 
 coursesApp.config(function($interpolateProvider) {
     $interpolateProvider.startSymbol('{$');
     $interpolateProvider.endSymbol('$}');
 });
 
-coursesApp.controller('CoursesController', function($scope, $http, $timeout, $modal) {
+coursesApp.controller('CoursesController', function($scope, $http, $timeout, $modal, filters, courseDetail) {
     $scope.orderProp = 'course_id';
     $scope.rawCourseFilter = '';
     $scope.courses = [];
@@ -113,141 +113,13 @@ coursesApp.controller('CoursesController', function($scope, $http, $timeout, $mo
         }
     };
 
-    var exactFactory = function(field, value) {
-        return function(course) {
-            return String(course[field]).toLowerCase() == value.toLowerCase();
-        };
-    };
-
-    var containsFactory = function(field, value) {
-        return function(course) {
-            var haystack = String(course[field]).toLowerCase();
-            var needle = value.toLowerCase();
-            return haystack.indexOf(needle) > -1;
-        };
-    };
-
-    var FilterManager = function() {
-        this.filters = [];
-
-        this.addFilter = function(filter) {
-            if (this.filters.indexOf(filter) == -1)
-                this.filters.push(filter);
-        };
-
-        this.removeFilter = function(filter) {
-            var index = this.filters.indexOf(filter);
-            if (index > -1)
-                this.filters.splice(index, 1);
-        };
-
-        this.filterForKeyword = function(keyword) {
-            for (var i = 0; i < this.filters.length; i++) {
-                var filter = this.filters[i];
-
-                if (filter.keywords.indexOf(keyword) > -1)
-                    return filter;
-            }
-
-            return null;
-        };
-    };
-
-    var crnFilter = {
-        id: 'crn',
-        keywords: ['crn'],
-        factory: containsFactory
-    };
-
-    var courseIdFilter = {
-        id: 'course_id',
-        keywords: ['courseid', 'course_id', 'course id'],
-        factory: containsFactory
-    };
-
-    var titleFilter = {
-        id: 'title',
-        keywords: ['title'],
-        factory: containsFactory
-    };
-
-    var instructorFilter = {
-        id: 'instructor',
-        keywords: ['instructor'],
-        factory: containsFactory
-    };
-
-    var meetingFilter = {
-        id: 'meeting',
-        keywords: ['meeting', 'meetings'],
-        factory: containsFactory
-    };
-
-    var creditsFilter = {
-        id: 'credits',
-        keywords: ['credits'],
-        factory: containsFactory
-    };
-
-    var distributionFilter = {
-        id: 'distribution',
-        keywords: ['dist', 'distribution'],
-        factory: exactFactory
-    };
-
-    var filterManager = new FilterManager();
-
-    filterManager.addFilter(crnFilter);
-    filterManager.addFilter(courseIdFilter);
-    filterManager.addFilter(titleFilter);
-    filterManager.addFilter(instructorFilter);
-    filterManager.addFilter(meetingFilter);
-    filterManager.addFilter(creditsFilter);
-    filterManager.addFilter(distributionFilter);
-
-    var filterPattern = /([\w]+[\s]*[\w]*):[\s]*(.+)/i;
+    var filterManager = filters.defaultFilterManager();
 
     $scope.courseFilter = function(courses) {
         if ($scope.rawCourseFilter == '')
             return courses;
 
-        var result = [];
-        var filters = [];
-
-        var expressions = $scope.rawCourseFilter.split(',');
-
-        if (expressions.length == 0)
-            return courses;
-
-        for (var i=0; i<expressions.length; i++) {
-            var expression = expressions[i];
-            var matches = filterPattern.exec(expression);
-
-            if (!matches)
-                continue
-
-            var kwd = matches[1].toLowerCase();
-            var filter = filterManager.filterForKeyword(kwd);
-
-            if (filter) {
-                var field = filter.id;
-                var value = matches[2];
-                filters.push(filter.factory(field, value));
-            }
-        };
-
-        courses.forEach(function(course) {
-            var ok = true;
-
-            filters.forEach(function(filter) {
-                ok = ok && filter(course);
-            });
-
-            if (ok) 
-                result.push(course);
-        });
-
-        return result;
+        return filterManager.filter($scope.rawCourseFilter, courses);
     };
 
     $scope.updateCoursesForFilter = function() {
@@ -265,22 +137,6 @@ coursesApp.controller('CoursesController', function($scope, $http, $timeout, $mo
     };
 
     $scope.courseDetail = function(course) {
-        $modal.open({
-            templateUrl: '/static/partials/courseDetail.html',
-            controller: 'courseDetailController',
-            resolve: {
-                course: function() {
-                    return course;
-                }
-            }
-        });
-    };
-});
-
-coursesApp.controller('courseDetailController', function($scope, $modalInstance, course) {
-    $scope.course = course;
-
-    $scope.close = function() {
-        $modalInstance.dismiss('cancel');
+        courseDetail.open(course);
     };
 });
