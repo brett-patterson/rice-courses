@@ -1,4 +1,13 @@
-$(function() {
+var plannerApp = angular.module('plannerApp', ['services']);
+
+plannerApp.config(function($interpolateProvider) {
+    $interpolateProvider.startSymbol('{$');
+    $interpolateProvider.endSymbol('$}');
+});
+
+plannerApp.controller('plannerController', function($scope, $http, courseDetail, util) {
+    $scope.courses = [];
+
     scheduler.skin = 'flat';
 
     scheduler.config.day_date = '%l'; // Display days as "Monday"
@@ -7,8 +16,11 @@ $(function() {
 
     scheduler.config.readonly_form = true; // don't allow lightbox edits to events
     scheduler.attachEvent("onBeforeDrag", function() {return false;});
-    scheduler.attachEvent("onClick", function() {return false;});
     scheduler.attachEvent("onDblCLick", function() {return false;});
+    scheduler.attachEvent("onClick", function(id) {
+        courseDetail.open(scheduler.getEvent(id).course);
+        return false;
+    });
     scheduler.config.dblclick_create = false;
 
     // hide Saturdays and Sundays
@@ -63,13 +75,15 @@ $(function() {
 
     function dataToEvents(data) {
         var events = [];
+        var courses = util.convertCourses(data);
 
-        data.forEach(function(course) {
+        data.forEach(function(course, index) {
             var dates = buildDates(course.meeting_days, course.start_time, course.end_time);
 
             for (var i = 0; i < dates.length; i++) {
                 var courseEvent = {};
                 courseEvent.id = course.crn + '_' + i;
+                courseEvent.course = courses[index];
 
                 var courseName = course.subject + " " + course.course_number + " " + course.section;
                 courseEvent.text = courseName;
@@ -85,7 +99,18 @@ $(function() {
         return events;
     }
 
-    $.ajax('/accounts/api/courses/current/', {dataType: 'json'}).done(function(data) {
-        scheduler.parse(dataToEvents(data), 'json');
+    function getCourses() {
+        $http.get('/accounts/api/courses/current/', {responseType: 'json'}).
+            success(function(data, status, headers, config) {
+                $scope.$evalAsync(function() {
+                    $scope.courses = data;
+                });
+        });
+    }
+
+    $scope.$watch('courses', function() {
+        scheduler.parse(dataToEvents($scope.courses), 'json');
     });
+
+    getCourses();
 });
