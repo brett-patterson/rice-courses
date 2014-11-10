@@ -5,7 +5,7 @@ coursesApp.config(function($interpolateProvider) {
     $interpolateProvider.endSymbol('$}');
 });
 
-coursesApp.controller('CoursesController', function($scope, $http, $timeout, $modal, filters, courseDetail) {
+coursesApp.controller('CoursesController', function($scope, $http, $timeout, $modal, filters, courseDetail, userCourses, util) {
     $scope.orderProp = 'course_id';
     $scope.courses = [];
     $scope.filteredCourses = [];
@@ -15,16 +15,6 @@ coursesApp.controller('CoursesController', function($scope, $http, $timeout, $mo
     $scope.rawCourseFilter = sessionStorage.getItem('filterString');
     if (!$scope.rawCourseFilter)
         $scope.rawCourseFilter = '';
-
-    function numToDistribution(num) {
-        var result = '';
-
-        for (var i = 0; i < num; i++) {
-            result += 'I';
-        }
-
-        return result;
-    };
 
     function convertCourses(courses) {
         var result = [];
@@ -37,7 +27,7 @@ coursesApp.controller('CoursesController', function($scope, $http, $timeout, $mo
                 'instructor': course.instructor,
                 'meeting': course.meeting_days + ' ' + course.start_time + '-' + course.end_time,
                 'credits': course.credits,
-                'distribution': numToDistribution(course.distribution),
+                'distribution': util.numToDistribution(course.distribution),
                 'description': course.description,
                 'enrollment': course.enrollment,
                 'max_enrollment': course.max_enrollment,
@@ -59,17 +49,12 @@ coursesApp.controller('CoursesController', function($scope, $http, $timeout, $mo
     };
 
     function getUserCourses() {
-        $http.get('/accounts/api/courses/current/', {responseType: 'json'}).
-            success(function(data, status, headers, config) {
-                var result = [];
-                data.forEach(function(course) {
-                    result.push(course.crn);
-                });
-                $timeout(function() {
-                    $scope.userCourses = result;
-                });
+        userCourses.get(function(result) {
+            $timeout(function() {
+                $scope.userCourses = result;
+            });
         });
-    }
+    };
 
     getCourses();
     getUserCourses();
@@ -79,23 +64,21 @@ coursesApp.controller('CoursesController', function($scope, $http, $timeout, $mo
     };
 
     $scope.toggleUserCourse = function(course) {
-        var action;
         var td = $('#uc-'+course.crn);
         var span = td.find('span');
         if ($scope.isUserCourse(course)) {
-            action = 'remove';
             td.removeClass('user-course');
             td.addClass('not-user-course');
             span.removeClass('glyphicon-heart');
             span.addClass('glyphicon-heart-empty');
+            userCourses.remove(course.crn);
         } else {
-            action = 'add';
             td.removeClass('not-user-course');
             td.addClass('user-course');
             span.removeClass('glyphicon-heart-empty');
             span.addClass('glyphicon-heart');
+            userCourses.add(course.crn);
         }
-        $http.get('/accounts/api/courses/current/'+action+'/'+course.crn);
         getUserCourses();
     };
 

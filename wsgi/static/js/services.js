@@ -163,3 +163,40 @@ servicesApp.controller('courseDetailController', function($scope, $modalInstance
         $modalInstance.dismiss('cancel');
     };
 });
+
+servicesApp.factory('userCourses', function($http) {
+    return {
+        get: function(cb) {
+            $http.get('/accounts/api/courses/current/', {responseType: 'json'}).
+                success(function(data, status, headers, config) {
+                    var result = [];
+                    data.forEach(function(course) {
+                        result.push(course.crn);
+                    });
+                    cb(result);
+            });
+        },
+
+        add: function(crn) {
+            $http.get('/accounts/api/courses/current/add/'+crn);
+        },
+
+        remove: function(crn) {
+            $http.get('/accounts/api/courses/current/remove/'+crn);
+        }
+    };
+});
+
+servicesApp.factory('util', function() {
+    return {
+        numToDistribution: function(num) {
+            var result = '';
+
+            for (var i = 0; i < num; i++) {
+                result += 'I';
+            }
+
+            return result;
+        }
+    };
+});
