@@ -34,16 +34,14 @@ coursesApp.controller('CoursesController', function($scope, $http, filters, cour
         });
     };
 
-    getCourses();
     getUserCourses();
+    getCourses();
 
     $scope.isUserCourse = function(course) {
-        $scope.userCourses.forEach(function(userCourse) {
-            if (userCourse.crn == course.crn) {
-                console.log('match');
+        for (var i = 0; i < $scope.userCourses.length; i++) {
+            if ($scope.userCourses[i].crn == course.crn)
                 return true;
-            }
-        });
+        }
         return false;
     };
 
