@@ -24,6 +24,7 @@ function removeCourse(crn) {
 
 {% block content %}
     <h2>My Courses:</h2>
+    <a class="btn btn-success" target="_blank" href="{% url 'accounts_export' %}">Export CRNs</a>
     <div class="table-responsive">
             <table class="table table-hover">
                 <thead>

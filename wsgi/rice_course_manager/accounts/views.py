@@ -33,6 +33,12 @@ def index(request):
     return render(request, 'accounts/index.html', context)
 
 
+@login_required(login_url='/login/')
+def export(request):
+    crns = [course.crn for course in request.user.userprofile.courses.all()]
+    return HttpResponse('<br/>'.join(crns))
+
+
 def user_or_current(request, username):
     if username == 'current':
         return request.user
