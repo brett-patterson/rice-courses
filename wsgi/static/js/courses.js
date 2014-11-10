@@ -7,11 +7,14 @@ coursesApp.config(function($interpolateProvider) {
 
 coursesApp.controller('CoursesController', function($scope, $http, $timeout, $modal, filters, courseDetail) {
     $scope.orderProp = 'course_id';
-    $scope.rawCourseFilter = '';
     $scope.courses = [];
     $scope.filteredCourses = [];
     $scope.loadingCourses = false;
     $scope.userCourses = [];
+
+    $scope.rawCourseFilter = sessionStorage.getItem('filterString');
+    if (!$scope.rawCourseFilter)
+        $scope.rawCourseFilter = '';
 
     function numToDistribution(num) {
         var result = '';
@@ -123,6 +126,7 @@ coursesApp.controller('CoursesController', function($scope, $http, $timeout, $mo
     };
 
     $scope.updateCoursesForFilter = function() {
+        sessionStorage.setItem('filterString', $scope.rawCourseFilter);
         $scope.filteredCourses = $scope.courseFilter($scope.courses);
     };
 
