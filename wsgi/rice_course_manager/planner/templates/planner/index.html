@@ -3,12 +3,12 @@
 
 {% block head %}
 
-
-<script type="text/javascript" src="{% static 'js/scheduler.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/scheduler_readonly.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/lib/angular.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/lib/scheduler.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/lib/scheduler_readonly.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/planner.js' %}"></script>
 
-<link type="text/css" media="screen" rel="stylesheet" href="{% static 'css/scheduler.css' %}" />
+<link type="text/css" media="screen" rel="stylesheet" href="{% static 'css/lib/scheduler.css' %}" />
 <style type="text/css">
 
 .dhx_scale_holder_now {
@@ -20,13 +20,14 @@
 {% endblock %}
 
 {% block content %}
-
-<div id="scheduler" class="dhx_cal_container" style='width:100%; height:700px;'>
-    <div class="dhx_cal_navline" style="display: none;">
-        <div class="dhx_cal_date"></div>
+<div ng-app='plannerApp' ng-controller='plannerController'>
+    <div id="scheduler" class="dhx_cal_container" style='width:100%; height:700px;'>
+        <div class="dhx_cal_navline" style="display: none;">
+            <div class="dhx_cal_date"></div>
+        </div>
+        <div class="dhx_cal_header"></div>
+        <div class="dhx_cal_data"></div>       
     </div>
-    <div class="dhx_cal_header"></div>
-    <div class="dhx_cal_data"></div>       
 </div>
 
 {% endblock %}
