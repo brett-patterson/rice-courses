@@ -17,12 +17,10 @@ accountsApp.controller('accountsController', function($scope, $http, courseDetai
         for (var i = 0; i < $scope.courses.length; i++) {
             var course = $scope.courses[i];
 
-            try {
-                total += parseFloat(course.credits);
-            }
-            catch(err) {
+            if (course.credits.toLowerCase().indexOf('to') != -1)
                 totalCanVary = true;
-            }
+
+            total += parseFloat(course.credits);
         }
 
         $scope.totalCredits = total;
