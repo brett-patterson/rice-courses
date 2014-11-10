@@ -5,7 +5,7 @@ coursesApp.config(function($interpolateProvider) {
     $interpolateProvider.endSymbol('$}');
 });
 
-coursesApp.controller('CoursesController', function($scope, $http, $timeout, $modal, filters, courseDetail, userCourses, util) {
+coursesApp.controller('CoursesController', function($scope, $http, filters, courseDetail, userCourses, util) {
     $scope.orderProp = 'course_id';
     $scope.courses = [];
     $scope.filteredCourses = [];
@@ -16,33 +16,11 @@ coursesApp.controller('CoursesController', function($scope, $http, $timeout, $mo
     if (!$scope.rawCourseFilter)
         $scope.rawCourseFilter = '';
 
-    function convertCourses(courses) {
-        var result = [];
-
-        courses.forEach(function(course) {
-            result.push({
-                'crn': course.crn,
-                'course_id': course.subject + ' ' + course.course_number + ' ' + course.section,
-                'title': course.title,
-                'instructor': course.instructor,
-                'meeting': course.meeting_days + ' ' + course.start_time + '-' + course.end_time,
-                'credits': course.credits,
-                'distribution': util.numToDistribution(course.distribution),
-                'description': course.description,
-                'enrollment': course.enrollment,
-                'max_enrollment': course.max_enrollment,
-                'location': course.location
-            });
-        });
-
-        return result;
-    };
-
     function getCourses() {
         $scope.loadingCourses = true;
         $http.get('/courses/api/all/', {responseType: 'json'}).
             success(function(data, status, headers, config) {
-                $scope.courses = convertCourses(data);
+                $scope.courses = util.convertCourses(data);
                 $scope.updateCoursesForFilter();
                 $scope.loadingCourses = false;
         });
@@ -50,8 +28,8 @@ coursesApp.controller('CoursesController', function($scope, $http, $timeout, $mo
 
     function getUserCourses() {
         userCourses.get(function(result) {
-            $timeout(function() {
-                $scope.userCourses = result;
+            $scope.$evalAsync(function() {
+                $scope.userCourses = util.convertCourses(result);
             });
         });
     };
@@ -60,7 +38,13 @@ coursesApp.controller('CoursesController', function($scope, $http, $timeout, $mo
     getUserCourses();
 
     $scope.isUserCourse = function(course) {
-        return $scope.userCourses.indexOf(course.crn) != -1;
+        $scope.userCourses.forEach(function(userCourse) {
+            if (userCourse.crn == course.crn) {
+                console.log('match');
+                return true;
+            }
+        });
+        return false;
     };
 
     $scope.toggleUserCourse = function(course) {
@@ -71,15 +55,18 @@ coursesApp.controller('CoursesController', function($scope, $http, $timeout, $mo
             td.addClass('not-user-course');
             span.removeClass('glyphicon-heart');
             span.addClass('glyphicon-heart-empty');
-            userCourses.remove(course.crn);
+            userCourses.remove(course.crn, function() {
+                getUserCourses();
+            });
         } else {
             td.removeClass('not-user-course');
             td.addClass('user-course');
             span.removeClass('glyphicon-heart-empty');
             span.addClass('glyphicon-heart');
-            userCourses.add(course.crn);
+            userCourses.add(course.crn, function() {
+                getUserCourses();
+            });
         }
-        getUserCourses();
     };
 
     $scope.pagination = {

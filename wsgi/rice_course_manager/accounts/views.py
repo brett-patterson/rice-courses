@@ -11,24 +11,8 @@ from courses.models import Course
 
 @login_required(login_url='/login/')
 def index(request):
-    course_list = request.user.userprofile.courses.all()
-    distribution_list = []
-    total_credits = 0.0
-    total_can_vary = False
-
-    for course in course_list:
-        distribution_list.append('I' * course.distribution)
-        try:
-            total_credits += float(course.credits)
-        except ValueError:
-            total_can_vary = True
-
     context = {
         'nav_active': 'account',
-        'courses': course_list,
-        'distributions': distribution_list,
-        'total_credits': total_credits,
-        'total_can_vary': total_can_vary
     }
     return render(request, 'accounts/index.html', context)
 

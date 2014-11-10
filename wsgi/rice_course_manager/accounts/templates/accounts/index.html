@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block head %}
 
@@ -10,72 +11,64 @@
 .remove-btn:hover {
     color: #DB3927;
 }
+
+.course-entry td:hover {
+    cursor: pointer;
+}
 </style>
 
-<script type="text/javascript">
-function removeCourse(crn) {
-    $.ajax("/accounts/api/courses/current/remove/" + crn).done(function() {
-        location.reload();
-    });
-}
-</script>
+<script type="text/javascript" src="{% static 'js/lib/angular.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/lib/ui-bootstrap-tpls.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/services.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/accounts.js' %}"></script>
 
 {% endblock %}
 
 {% block content %}
+<div ng-app="accountsApp" ng-controller="accountsController">
     <h2>My Courses:</h2>
     <a class="btn btn-success" target="_blank" href="{% url 'accounts_export' %}">Export CRNs</a>
     <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>CRN</th>
-                        <th>Course ID</th>
-                        <th>Title</th>
-                        <th>Instructor</th>
-                        <th>Meetings</th>
-                        <th>Distribution</th>
-                        <th>Credits</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for course in courses %}
-                        {% with forloop.counter0 as start %}
-                        {% with start|add:1|slugify as end %}
-                        {% with start|slugify|add:":"|add:end as subset %}
-                        {% with distributions|slice:subset as distributions_sublist %}
-                        <tr>
-                            <td>
-                                <a href="#" class="remove-btn" onclick="removeCourse({{ course.crn }})">
-                                    <span class="glyphicon glyphicon-remove"></span>
-                                </a>
-                            </td>
-                            <td>{{ course.crn }}</td>
-                            <td>{{ course.subject }} {{ course.course_number }} {{ course.section }}</td>
-                            <td>{{ course.title }}</td>
-                            <td>{{ course.instructor }}</td>
-                            <td>{{ course.meeting_days }} {{ course.start_time }}-{{ course.end_time }}</td>
-                            <td>{{ distributions_sublist.0 }}</td>
-                            <td>{{ course.credits }}</td>
-                        </tr>
-                        {% endwith %}
-                        {% endwith %}
-                        {% endwith %}
-                        {% endwith %}
-                    {% empty %}
-                        <tr><td>No courses found</td></tr>
-                    {% endfor %}
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td class="text-right"><strong>Total Credits{% if total_can_vary %} (approximate){% endif %}:</strong></td>
-                        <td><strong>{{ total_credits }}</strong></td>
-                    </tr>
-                </tbody>
-            </table>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>CRN</th>
+                    <th>Course ID</th>
+                    <th>Title</th>
+                    <th>Instructor</th>
+                    <th>Meetings</th>
+                    <th>Distribution</th>
+                    <th>Credits</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="course in courses" class="course-entry">
+                    <td>
+                        <a href="#" class="remove-btn" ng-click="removeCourse(course.crn)">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </a>
+                    </td>
+                    <td ng-click="courseDetail(course)">{$ course.crn $}</td>
+                    <td ng-click="courseDetail(course)">{$ course.course_id $}</td>
+                    <td ng-click="courseDetail(course)">{$ course.title $}</td>
+                    <td ng-click="courseDetail(course)">{$ course.instructor $}</td>
+                    <td ng-click="courseDetail(course)">{$ course.meeting $}</td>
+                    <td ng-click="courseDetail(course)">{$ course.distribution $}</td>
+                    <td ng-click="courseDetail(course)">{$ course.credits $}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right"><strong>Total Credits<span ng-if="totalCanVary"> (approximate)</span>:</strong></td>
+                    <td><strong>{$ totalCredits | number:1 $}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

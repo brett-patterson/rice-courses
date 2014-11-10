@@ -45,3 +45,8 @@ def page(request, page_num):
     }
 
     return HttpResponse(json.dumps(response))
+
+
+def get_course(request, crn):
+    course = Course.objects.get(crn=crn)
+    return HttpResponse(json.dumps(course.json()))

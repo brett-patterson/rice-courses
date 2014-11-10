@@ -169,20 +169,24 @@ servicesApp.factory('userCourses', function($http) {
         get: function(cb) {
             $http.get('/accounts/api/courses/current/', {responseType: 'json'}).
                 success(function(data, status, headers, config) {
-                    var result = [];
-                    data.forEach(function(course) {
-                        result.push(course.crn);
-                    });
-                    cb(result);
+                   cb(data);
             });
         },
 
-        add: function(crn) {
-            $http.get('/accounts/api/courses/current/add/'+crn);
+        add: function(crn, cb) {
+            $http.get('/accounts/api/courses/current/add/'+crn).
+                success(function(data, status, headers, config) {
+                    if (cb)
+                        cb();
+                });
         },
 
-        remove: function(crn) {
-            $http.get('/accounts/api/courses/current/remove/'+crn);
+        remove: function(crn, cb) {
+            $http.get('/accounts/api/courses/current/remove/'+crn).
+                success(function(data, status, headers, config) {
+                    if (cb)
+                        cb();
+                });
         }
     };
 });
@@ -195,6 +199,29 @@ servicesApp.factory('util', function() {
             for (var i = 0; i < num; i++) {
                 result += 'I';
             }
+
+            return result;
+        },
+
+        convertCourses: function(courses) {
+            var result = [];
+            var numToDistribution = this.numToDistribution;
+
+            courses.forEach(function(course) {
+                result.push({
+                    'crn': course.crn,
+                    'course_id': course.subject + ' ' + course.course_number + ' ' + course.section,
+                    'title': course.title,
+                    'instructor': course.instructor,
+                    'meeting': course.meeting_days + ' ' + course.start_time + '-' + course.end_time,
+                    'credits': course.credits,
+                    'distribution': numToDistribution(course.distribution),
+                    'description': course.description,
+                    'enrollment': course.enrollment,
+                    'max_enrollment': course.max_enrollment,
+                    'location': course.location
+                });
+            });
 
             return result;
         }
