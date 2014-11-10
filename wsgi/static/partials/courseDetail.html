@@ -1,0 +1,14 @@
+<style type="text/css">
+.close-btn:hover {
+    cursor: pointer;
+}
+</style>
+
+<div class="modal-body">
+<a ng-click="close()" class="close-btn pull-right"><span class="glyphicon glyphicon-remove"></span></a>
+<h3>{$ course.course_id $} - {$ course.title $}<br/><small>{$ course.instructor $}</small></h3>
+<p><strong>Credits:</strong> {$ course.credits $}</p>
+<p><strong>Meetings:</strong> {$ course.meeting $} </p>
+<p><strong>Location:</strong> {$ course.location $}</p>
+<p>{$ course.description $}</p>
+</div>

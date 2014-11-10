@@ -1,11 +1,11 @@
-var coursesApp = angular.module('coursesApp', ['angularUtils.directives.dirPagination']);
+var coursesApp = angular.module('coursesApp', ['ui.bootstrap', 'angularUtils.directives.dirPagination']);
 
 coursesApp.config(function($interpolateProvider) {
     $interpolateProvider.startSymbol('{$');
     $interpolateProvider.endSymbol('$}');
 });
 
-coursesApp.controller('CoursesController', function($scope, $http, $timeout) {
+coursesApp.controller('CoursesController', function($scope, $http, $timeout, $modal) {
     $scope.orderProp = 'course_id';
     $scope.rawCourseFilter = '';
     $scope.courses = [];
@@ -113,28 +113,99 @@ coursesApp.controller('CoursesController', function($scope, $http, $timeout) {
         }
     };
 
-    var filterKeywords = {
-        'crn': 'crn',
-        'courseid': 'course_id',
-        'course id': 'course_id',
-        'course_id': 'course_id',
-        'title': 'title',
-        'instructor': 'instructor',
-        'meeting': 'meeting',
-        'meetings': 'meeting',
-        'credits': 'credits',
-        'distribution': 'distribution'
+    var exactFactory = function(field, value) {
+        return function(course) {
+            return String(course[field]).toLowerCase() == value.toLowerCase();
+        };
     };
 
-    var filterPattern = /([\w]+[\s]*[\w]*):[\s]*(.+)/i;
-
-    var filterFactory = function(field, value) {
+    var containsFactory = function(field, value) {
         return function(course) {
             var haystack = String(course[field]).toLowerCase();
             var needle = value.toLowerCase();
             return haystack.indexOf(needle) > -1;
         };
     };
+
+    var FilterManager = function() {
+        this.filters = [];
+
+        this.addFilter = function(filter) {
+            if (this.filters.indexOf(filter) == -1)
+                this.filters.push(filter);
+        };
+
+        this.removeFilter = function(filter) {
+            var index = this.filters.indexOf(filter);
+            if (index > -1)
+                this.filters.splice(index, 1);
+        };
+
+        this.filterForKeyword = function(keyword) {
+            for (var i = 0; i < this.filters.length; i++) {
+                var filter = this.filters[i];
+
+                if (filter.keywords.indexOf(keyword) > -1)
+                    return filter;
+            }
+
+            return null;
+        };
+    };
+
+    var crnFilter = {
+        id: 'crn',
+        keywords: ['crn'],
+        factory: containsFactory
+    };
+
+    var courseIdFilter = {
+        id: 'course_id',
+        keywords: ['courseid', 'course_id', 'course id'],
+        factory: containsFactory
+    };
+
+    var titleFilter = {
+        id: 'title',
+        keywords: ['title'],
+        factory: containsFactory
+    };
+
+    var instructorFilter = {
+        id: 'instructor',
+        keywords: ['instructor'],
+        factory: containsFactory
+    };
+
+    var meetingFilter = {
+        id: 'meeting',
+        keywords: ['meeting', 'meetings'],
+        factory: containsFactory
+    };
+
+    var creditsFilter = {
+        id: 'credits',
+        keywords: ['credits'],
+        factory: containsFactory
+    };
+
+    var distributionFilter = {
+        id: 'distribution',
+        keywords: ['dist', 'distribution'],
+        factory: exactFactory
+    };
+
+    var filterManager = new FilterManager();
+
+    filterManager.addFilter(crnFilter);
+    filterManager.addFilter(courseIdFilter);
+    filterManager.addFilter(titleFilter);
+    filterManager.addFilter(instructorFilter);
+    filterManager.addFilter(meetingFilter);
+    filterManager.addFilter(creditsFilter);
+    filterManager.addFilter(distributionFilter);
+
+    var filterPattern = /([\w]+[\s]*[\w]*):[\s]*(.+)/i;
 
     $scope.courseFilter = function(courses) {
         if ($scope.rawCourseFilter == '')
@@ -156,11 +227,12 @@ coursesApp.controller('CoursesController', function($scope, $http, $timeout) {
                 continue
 
             var kwd = matches[1].toLowerCase();
-            var field = filterKeywords[kwd];
+            var filter = filterManager.filterForKeyword(kwd);
 
-            if (field) {
+            if (filter) {
+                var field = filter.id;
                 var value = matches[2];
-                filters.push(filterFactory(field, value));
+                filters.push(filter.factory(field, value));
             }
         };
 
@@ -193,6 +265,22 @@ coursesApp.controller('CoursesController', function($scope, $http, $timeout) {
     };
 
     $scope.courseDetail = function(course) {
-        window.location = '/courses/' + course.crn;
+        $modal.open({
+            templateUrl: '/static/partials/courseDetail.html',
+            controller: 'courseDetailController',
+            resolve: {
+                course: function() {
+                    return course;
+                }
+            }
+        });
+    };
+});
+
+coursesApp.controller('courseDetailController', function($scope, $modalInstance, course) {
+    $scope.course = course;
+
+    $scope.close = function() {
+        $modalInstance.dismiss('cancel');
     };
 });

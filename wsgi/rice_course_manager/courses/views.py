@@ -18,15 +18,6 @@ def index(request):
     return render(request, 'courses/index.html', context)
 
 
-@login_required(login_url='/login/')
-def detail(request, crn):
-    context = {
-        'course': Course.objects.get(crn=crn),
-        'nav_active': 'courses'
-    }
-    return render(request, 'courses/detail.html', context)
-
-
 def all(request):
     return HttpResponse(json.dumps([c.json() for c in Course.objects.all()]))
 
