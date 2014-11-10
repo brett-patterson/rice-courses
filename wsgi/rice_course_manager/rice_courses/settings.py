@@ -35,7 +35,7 @@ SECRET_KEY = use_keys['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if ON_OPENSHIFT:
-    DEBUG = True
+    DEBUG = False
 else:
     DEBUG = True
 
@@ -63,6 +63,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'adminsortable',
 
     'accounts',
     'courses',

@@ -1,9 +1,13 @@
 import markdown
 
+from adminsortable.models import Sortable
 from django.db import models
 
 
-class HelpArticle(models.Model):
+class HelpArticle(Sortable):
+    class Meta(Sortable.Meta):
+        pass
+
     title = models.CharField(max_length=100)
     text = models.TextField()
 
