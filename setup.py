@@ -9,4 +9,6 @@ setup(
     author='Brett Patterson',
     author_email='brett.patterson@rice.edu',
     install_requires=['Django==1.7.1'],
+    package_dir = {'': 'wsgi'},
+    packages = ['rice_course_manager'],
 )
