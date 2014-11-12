@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/1.6/howto/deployment/wsgi/
 import os
 import sys
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'rice_courses.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'rice_course_manager.rice_courses.settings'
 
 if 'OPENSHIFT_REPO_DIR' in os.environ:
     sys.path.append(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'wsgi','rice_course_manager')) # noqa
