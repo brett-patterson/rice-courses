@@ -41,7 +41,7 @@
 {% block content %}
 <div ng-app='plannerApp' ng-controller='plannerController'>
     <div class="container btn-group showButtons">
-        <button ng-repeat="course in courses" class="btn"
+        <button ng-repeat="course in courses | orderBy:'course_id'" class="btn"
                 ng-click="toggle(course)"
                 ng-class="{'btn-success':showMap[course.crn], 'btn-danger':!showMap[course.crn]}">
             {$ course.course_id $}
