@@ -7,13 +7,18 @@ plannerApp.config(function($interpolateProvider) {
 
 plannerApp.controller('plannerController', function($scope, $http, courseDetail, util) {
     $scope.courses = [];
+    $scope.showMap = JSON.parse(sessionStorage.getItem('showMap'));
+    if ($scope.showMap === null)
+        $scope.showMap = {};
+
+    var courseMap = {};
 
     scheduler.skin = 'flat';
 
     scheduler.config.day_date = '%l'; // Display days as "Monday"
     scheduler.config.hour_date = '%h:%i %A'; // Display hours as "08:00 PM"
     scheduler.config.first_hour = 8; // Start day at 8AM
-
+    scheduler.config.last_hour = 22; // End day at 9PM
     scheduler.config.readonly_form = true; // don't allow lightbox edits to events
     scheduler.attachEvent("onBeforeDrag", function() {return false;});
     scheduler.attachEvent("onDblCLick", function() {return false;});
@@ -75,42 +80,71 @@ plannerApp.controller('plannerController', function($scope, $http, courseDetail,
 
     function dataToEvents(data) {
         var events = [];
-        var courses = util.convertCourses(data);
 
         data.forEach(function(course, index) {
+            if ($scope.showMap[course.crn] === undefined)
+                $scope.showMap[course.crn] = true;
+
             var dates = buildDates(course.meeting_days, course.start_time, course.end_time);
+            console.log(dates);
 
             for (var i = 0; i < dates.length; i++) {
                 var courseEvent = {};
                 courseEvent.id = course.crn + '_' + i;
-                courseEvent.course = courses[index];
+                courseEvent.course = $scope.courses[index];
 
-                var courseName = course.subject + " " + course.course_number + " " + course.section;
-                courseEvent.text = courseName;
+                courseEvent.text = courseEvent.course.course_id;
 
                 var date = dates[i];
                 courseEvent.start_date = date.start_date;
-                courseEvent.end_date = date.end_date;
+                courseEvent.end_date = date.end_date;                
+
+                if (courseMap[course.crn] !== undefined) {
+                    courseMap[course.crn].push(courseEvent);
+                }
+                else
+                    courseMap[course.crn] = [courseEvent];
 
                 events.push(courseEvent);
             }
         });
 
-        return events;
+        return events
+    }
+
+    function updateScheduler(course) {
+        if ($scope.showMap[course.crn]) {
+            courseMap[course.crn].forEach(function(event) {
+                scheduler.parse([event], 'json');
+            });
+        }
+        else {
+            courseMap[course.crn].forEach(function(event) {
+                scheduler.deleteEvent(event.id);
+            });
+        }
     }
 
     function getCourses() {
         $http.get('/accounts/api/courses/current/', {responseType: 'json'}).
             success(function(data, status, headers, config) {
                 $scope.$evalAsync(function() {
-                    $scope.courses = data;
+                    $scope.courses = util.convertCourses(data);
+                    $scope.events = dataToEvents(data);
+
+                    $scope.courses.forEach(function(course) {
+                        updateScheduler(course);
+                    });
                 });
         });
     }
 
-    $scope.$watch('courses', function() {
-        scheduler.parse(dataToEvents($scope.courses), 'json');
-    });
-
     getCourses();
+
+    $scope.toggle = function(course) {
+        $scope.showMap[course.crn] = !$scope.showMap[course.crn];
+        sessionStorage.setItem('showMap', JSON.stringify($scope.showMap));
+
+        updateScheduler(course);
+    }
 });
