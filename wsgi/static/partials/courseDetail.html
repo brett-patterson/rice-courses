@@ -2,14 +2,45 @@
 .close-btn:hover {
     cursor: pointer;
 }
+
+.chart {
+    height: 500px;
+}
 </style>
 
 <div class="modal-body">
-<a ng-click="close()" class="close-btn pull-right"><span class="glyphicon glyphicon-remove"></span></a>
-<h3>{$ course.course_id $} - {$ course.title $}<br/><small>{$ course.instructor $}</small></h3>
-<p><strong>Credits:</strong> {$ course.credits $}</p>
-<p><strong>Meetings:</strong> {$ course.meeting $} </p>
-<p><strong>Location:</strong> {$ course.location $}</p>
-<p><strong>Enrollment:</strong> {$ course.enrollment $}/{$ course.max_enrollment $}</p>
-<p>{$ course.description $}</p>
+<a ng-click="close()" class="close-btn pull-right">
+    <span class="glyphicon glyphicon-remove"></span>
+</a>
+
+<ul class="nav nav-tabs">
+    <li class="active"><a href="#info" data-toggle="tab">Info</a></li>
+    <li><a href="#course-eval" data-toggle="tab">Course Evaluation</a></li>
+    <li><a href="#course-comments" data-toggle="tab">Course Comments</a></li>
+    <li><a href="#instr-eval" data-toggle="tab">Instructor Evaluation</a></li>
+    <li><a href="#instr-comments" data-toggle="tab">Instructor Comments</a></li>
+</ul>
+
+<!-- Tab panes -->
+<div class="tab-content">
+
+<div class="tab-pane active" id="info">
+    <h3>{$ course.course_id $} - {$ course.title $}<br/><small>{$ course.instructor $}</small></h3>
+    <p><strong>Credits:</strong> {$ course.credits $}</p>
+    <p><strong>Meetings:</strong> {$ course.meeting $} </p>
+    <p><strong>Location:</strong> {$ course.location $}</p>
+    <p><strong>Enrollment:</strong> {$ course.enrollment $}/{$ course.max_enrollment $}</p>
+    <p>{$ course.description $}</p>
+</div>
+
+<div class="tab-pane" id="course-eval">
+    <div id="course-eval-chart" class="chart"></div>
+</div>
+
+<div class="tab-pane" id="course-comments">...</div>
+<div class="tab-pane" id="instr-eval">...</div>
+<div class="tab-pane" id="instr-comments">...</div>
+</div>
+
+
 </div>

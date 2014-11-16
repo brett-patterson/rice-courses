@@ -52,6 +52,7 @@ else:
 # Website specific settings
 
 API_ITEMS_PER_PAGE = 50
+EVAL_DATE_FORMAT = '%m/%d/%Y %I:%M %p'
 
 
 # Application definition
@@ -68,6 +69,7 @@ INSTALLED_APPS = (
 
     'accounts',
     'courses',
+    'evaluation',
     'help',
     'planner',
 )

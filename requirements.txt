@@ -2,3 +2,5 @@ requests
 markdown
 -e hg+http://bitbucket.org/cpcc/django-cas#egg=django_cas
 django-admin-sortable
+mechanize
+beautifulsoup4
