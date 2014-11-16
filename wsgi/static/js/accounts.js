@@ -5,7 +5,7 @@ accountsApp.config(function($interpolateProvider) {
     $interpolateProvider.endSymbol('$}');
 });
 
-accountsApp.controller('accountsController', function($scope, $http, courseDetail, userCourses, util) {
+accountsApp.controller('accountsController', function($scope, courseDetail, userCourses, util) {
     $scope.courses = [];
     $scope.totalCredits = 0.0;
     $scope.totalCanVary = false;
@@ -39,7 +39,7 @@ accountsApp.controller('accountsController', function($scope, $http, courseDetai
     getUserCourses();
 
     $scope.removeCourse = function(crn) {
-        userCourses.remove(crn, function() {
+        userCourses.remove(crn, function(response) {
             getUserCourses();
         });
     };

@@ -5,7 +5,7 @@ coursesApp.config(function($interpolateProvider) {
     $interpolateProvider.endSymbol('$}');
 });
 
-coursesApp.controller('CoursesController', function($scope, $http, filters, courseDetail, userCourses, util) {
+coursesApp.controller('CoursesController', function($scope, filters, courseDetail, userCourses, util) {
     $scope.orderProp = 'course_id';
     $scope.courses = [];
     $scope.filteredCourses = [];
@@ -18,11 +18,16 @@ coursesApp.controller('CoursesController', function($scope, $http, filters, cour
 
     function getCourses() {
         $scope.loadingCourses = true;
-        $http.get('/courses/api/all/', {responseType: 'json'}).
-            success(function(data, status, headers, config) {
+        $.ajax({
+            'url': '/courses/api/all/',
+            'method': 'POST',
+            'dataType': 'json'
+        }).done(function(data) {
+            $scope.$evalAsync(function() {
                 $scope.courses = util.convertCourses(data);
                 $scope.updateCoursesForFilter();
                 $scope.loadingCourses = false;
+            });
         });
     };
 

@@ -1,8 +1,8 @@
 import json
 
-from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 
 from django_cas.decorators import login_required
 
@@ -23,32 +23,42 @@ def export(request):
     return HttpResponse('<br/>'.join(crns))
 
 
-def user_or_current(request, username):
-    if username == 'current':
-        return request.user
-    else:
-        return User.objects.get(username=username)
-
-
-def courses(request, username):
-    user = user_or_current(request, username)
+@csrf_exempt
+@login_required(login_url='/login/')
+def courses(request):
+    user = request.user
     course_list = user.userprofile.courses.all()
     return HttpResponse(json.dumps([c.json() for c in course_list]))
 
 
-def add_course(request, username, crn):
-    user = user_or_current(request, username)
-    course = Course.objects.get(crn=crn)
+@csrf_exempt
+@login_required(login_url='/login/')
+def add_course(request):
+    crn = request.POST.get('crn')
 
-    user.userprofile.courses.add(course)
+    user = request.user
 
-    return HttpResponse(json.dumps({'status': 'success'}))
+    if crn:
+        course = Course.objects.get(crn=crn)
+        user.userprofile.courses.add(course)
+
+        return HttpResponse(json.dumps({'status': 'success'}))
+    else:
+        return HttpResponse(json.dumps({'status': 'error'}))
 
 
-def remove_course(request, username, crn):
-    user = user_or_current(request, username)
-    course = Course.objects.get(crn=crn)
+@csrf_exempt
+@login_required(login_url='/login/')
+def remove_course(request):
+    crn = request.POST.get('crn')
+    print request.POST
 
-    user.userprofile.courses.remove(course)
+    user = request.user
 
-    return HttpResponse(json.dumps({'status': 'success'}))
+    if crn:
+        course = Course.objects.get(crn=crn)
+        user.userprofile.courses.remove(course)
+
+        return HttpResponse(json.dumps({'status': 'success'}))
+    else:
+        return HttpResponse(json.dumps({'status': 'error'}))

@@ -164,29 +164,40 @@ servicesApp.controller('courseDetailController', function($scope, $modalInstance
     };
 });
 
-servicesApp.factory('userCourses', function($http) {
+servicesApp.factory('userCourses', function() {
     return {
         get: function(cb) {
-            $http.get('/accounts/api/courses/current/', {responseType: 'json'}).
-                success(function(data, status, headers, config) {
-                   cb(data);
+            $.ajax({
+                url:'/accounts/api/courses/',
+                method: 'POST',
+                dataType: 'json'
+            }).done(function(data) {
+                cb(data);
             });
         },
 
         add: function(crn, cb) {
-            $http.get('/accounts/api/courses/current/add/'+crn).
-                success(function(data, status, headers, config) {
-                    if (cb)
-                        cb();
-                });
+            $.ajax({
+                url:'/accounts/api/courses/add/',
+                method: 'POST',
+                data: {crn: crn},
+                dataType: 'json'
+            }).done(function(data) {
+                if (cb)
+                    cb(data);
+            });
         },
 
         remove: function(crn, cb) {
-            $http.get('/accounts/api/courses/current/remove/'+crn).
-                success(function(data, status, headers, config) {
-                    if (cb)
-                        cb();
-                });
+            $.ajax({
+                url:'/accounts/api/courses/remove/',
+                method: 'POST',
+                data: {crn: crn},
+                dataType: 'json'
+            }).done(function(data) {
+                if (cb)
+                    cb(data);
+            });
         }
     };
 });

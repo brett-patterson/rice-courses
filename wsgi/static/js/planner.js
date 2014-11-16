@@ -5,7 +5,7 @@ plannerApp.config(function($interpolateProvider) {
     $interpolateProvider.endSymbol('$}');
 });
 
-plannerApp.controller('plannerController', function($scope, $http, courseDetail, util) {
+plannerApp.controller('plannerController', function($scope, courseDetail, util) {
     $scope.courses = [];
     $scope.showMap = JSON.parse(sessionStorage.getItem('showMap'));
     if ($scope.showMap === null)
@@ -126,16 +126,19 @@ plannerApp.controller('plannerController', function($scope, $http, courseDetail,
     }
 
     function getCourses() {
-        $http.get('/accounts/api/courses/current/', {responseType: 'json'}).
-            success(function(data, status, headers, config) {
-                $scope.$evalAsync(function() {
-                    $scope.courses = util.convertCourses(data);
-                    $scope.events = dataToEvents(data);
+        $.ajax({
+            url:'/accounts/api/courses/',
+            method: 'POST',
+            dataType: 'json'
+        }).done(function(data) {
+            $scope.$evalAsync(function() {
+                $scope.courses = util.convertCourses(data);
+                $scope.events = dataToEvents(data);
 
-                    $scope.courses.forEach(function(course) {
-                        updateScheduler(course);
-                    });
+                $scope.courses.forEach(function(course) {
+                    updateScheduler(course);
                 });
+            });
         });
     }
 
