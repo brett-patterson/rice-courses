@@ -1,4 +1,4 @@
-from rice_course_manager import fetch_courses
+from rice_course_manager.courses import fetch_courses
 fetch_courses('201520')
 
 import os
