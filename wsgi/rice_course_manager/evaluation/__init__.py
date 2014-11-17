@@ -135,6 +135,9 @@ def get_instructor_evaluation(instructor, crn):
         web_id = instructor_element.get('WEBID')
         instructor_map[name] = web_id
 
+    if instructor not in instructor_map:
+        return Evaluation()
+
     response = session.post(
         url=EVALS_URL,
         data={
