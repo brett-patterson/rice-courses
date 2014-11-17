@@ -86,7 +86,6 @@ plannerApp.controller('plannerController', function($scope, courseDetail, util) 
                 $scope.showMap[course.crn] = true;
 
             var dates = buildDates(course.meeting_days, course.start_time, course.end_time);
-            console.log(dates);
 
             for (var i = 0; i < dates.length; i++) {
                 var courseEvent = {};
