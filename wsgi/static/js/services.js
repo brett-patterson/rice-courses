@@ -143,15 +143,17 @@ servicesApp.factory('filters', function() {
 servicesApp.factory('courseDetail', function($modal) {
     return {
         open: function(course) {
-            $modal.open({
-                templateUrl: '/static/partials/courseDetail.html',
-                controller: 'courseDetailController',
-                size: 'lg',
-                resolve: {
-                    course: function() {
-                        return course;
+            $.getScript('http://code.highcharts.com/highcharts.src.js').done(function() {
+                $modal.open({
+                    templateUrl: '/static/partials/courseDetail.html',
+                    controller: 'courseDetailController',
+                    size: 'lg',
+                    resolve: {
+                        course: function() {
+                            return course;
+                        }
                     }
-                }
+                });
             });
         }
     };
@@ -225,15 +227,13 @@ servicesApp.controller('courseDetailController', function($scope, $modalInstance
     }
 
     function buildCharts() {
-        $.getScript('http://code.highcharts.com/highcharts.src.js').done(function() {
-            $scope.evaluations.forEach(function(evaluation) {
-                evaluation.data.questions.forEach(function(question, i) {
-                    if ($scope.plotType == 'pie')
-                        buildPieChart(question, i, evaluation.name);
-                    else if ($scope.plotType == 'column')
-                        buildColumnChart(question, i, evaluation.name);
-                    alignCharts();
-                });
+        $scope.evaluations.forEach(function(evaluation) {
+            evaluation.data.questions.forEach(function(question, i) {
+                if ($scope.plotType == 'pie')
+                    buildPieChart(question, i, evaluation.name);
+                else if ($scope.plotType == 'column')
+                    buildColumnChart(question, i, evaluation.name);
+                alignCharts();
             });
         });
     }
@@ -260,11 +260,16 @@ servicesApp.controller('courseDetailController', function($scope, $modalInstance
             legend: {
                 enabled: false
             },
+            plotOptions: {
+                pie: {
+                    dataLabels: {
+                        useHTML: true,
+                        format: '<strong>{point.name}</strong>: {point.y}%'
+                    }
+                }
+            },
             tooltip: {
-                useHTML: true,
-                headerFormat: '<strong>{point.key}</strong>: ',
-                pointFormat: '{point.y}%',
-                hideDelay: 0
+                enabled: false
             }
         });
     }
