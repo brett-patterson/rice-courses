@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 from requests import Session
 from django.conf import settings
 
+from courses.models import Course
 from models import Evaluation, Question, Choice, Comment
 
 
@@ -43,8 +44,19 @@ def clean_text(text):
 
 def parse_evaluation(text, crn):
     soup = BeautifulSoup(text)
-    data = soup.find('header', {'survey_crn': crn})
+    course = Course.objects.get(crn=crn)
+    headers = soup.find_all('header')
+    data = None
+    for header in headers:
+        course_element = header.find('course')
+        if (course_element.get('subj_code') == course.subject and
+                course_element.get('crse_numb') == str(course.course_number)):
+            data = header
+
     evaluation = Evaluation()
+
+    if not data:
+        return evaluation
 
     for question in data.find_all('question'):
         q = Question()
@@ -63,7 +75,7 @@ def parse_evaluation(text, crn):
 
         evaluation.add_question(q)
 
-    for comment in soup.find_all('student-comment'):
+    for comment in data.find_all('student-comment'):
         c = Comment()
         c.text = clean_text(comment.find('response').get_text())
         date_text = clean_text(comment.get('activity_date').replace('.', ''))
