@@ -86,12 +86,32 @@ def parse_evaluation(text, crn):
 
 
 def get_course_evaluation(crn):
+    course = Course.objects.get(crn=crn)
+
+    course_response = session.post(
+        url=DATA_URL,
+        data={
+            'p_term': '201420',
+            'p_data': 'COURSES',
+        }
+    )
+
+    term_crn = None
+    root = ElementTree.fromstring(course_response.text.encode('utf-8'))
+    for course_element in root.findall('COURSE'):
+        if (course_element.get('SUBJ') == course.subject and
+                course_element.get('NUMB') == str(course.course_number)):
+            term_crn = course_element.get('CRN')
+
+    if not term_crn:
+        return Evaluation()
+
     response = session.post(
         url=EVALS_URL,
         data={
             'p_term': '201420',
             'p_type': 'Course',
-            'p_crn': crn,
+            'p_crn': term_crn,
             'p_confirm': '1'
         }
     )
