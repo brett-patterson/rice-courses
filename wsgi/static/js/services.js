@@ -159,79 +159,162 @@ servicesApp.factory('courseDetail', function($modal) {
 
 servicesApp.controller('courseDetailController', function($scope, $modalInstance, course) {
     $scope.course = course;
+    $scope.plotType = 'pie';
+    $scope.evaluations = [];
+    $scope.courseComments = [];
+    $scope.instructorComments = [];  
 
     $scope.close = function() {
         $modalInstance.dismiss('cancel');
     };
 
-    $('.chart').css('width', $('.modal-body').width());
+    $.ajax({
+        url: '/evaluations/api/course/',
+        data: {
+            crn: course.crn
+        },
+        method: 'POST',
+        dataType: 'json'
+    }).done(function(data) {
+        var name = 'course';
 
-    $.getScript('http://code.highcharts.com/highcharts.src.js').done(function() {
-       $('#course-eval-chart').highcharts({
-        chart: {
-            type: 'column'
+        createChartDOMElements(data.questions, name);
+
+        $scope.evaluations.push({
+            name: name,
+            data: data
+        });
+        $scope.courseComments = data.comments;
+
+        buildCharts();
+    });
+
+    $.ajax({
+        url: '/evaluations/api/instructor/',
+        data: {
+            crn: course.crn,
+            instructor: course.instructor
         },
-        title: {
-            text: 'Monthly Average Rainfall'
-        },
-        subtitle: {
-            text: 'Source: WorldClimate.com'
-        },
-        xAxis: {
-            categories: [
-                'Jan',
-                'Feb',
-                'Mar',
-                'Apr',
-                'May',
-                'Jun',
-                'Jul',
-                'Aug',
-                'Sep',
-                'Oct',
-                'Nov',
-                'Dec'
-            ]
-        },
-        yAxis: {
-            min: 0,
+        method: 'POST',
+        dataType: 'json'
+    }).done(function(data) {
+        var name = 'instr';
+
+        createChartDOMElements(data.questions, name);
+
+        $scope.evaluations.push({
+            name: name,
+            data: data
+        });
+        $scope.instructorComments = data.comments;
+
+        buildCharts();
+    });
+
+    function createChartDOMElements(questions, name) {
+        questions.forEach(function(question, i) {
+            $('#'+name+'-eval').append($('<div/>',{
+                id: name+'-eval-chart-'+i,
+                'class': 'chart'
+            }));
+        });
+    }
+
+    function alignCharts() {
+        $('.chart').width($('.modal-body').width());
+    }
+
+    function buildCharts() {
+        $.getScript('http://code.highcharts.com/highcharts.src.js').done(function() {
+            $scope.evaluations.forEach(function(evaluation) {
+                evaluation.data.questions.forEach(function(question, i) {
+                    if ($scope.plotType == 'pie')
+                        buildPieChart(question, i, evaluation.name);
+                    else if ($scope.plotType == 'column')
+                        buildColumnChart(question, i, evaluation.name);
+                    alignCharts();
+                });
+            });
+        });
+    }
+
+    $scope.$watch('plotType', function() {
+        buildCharts();
+    });
+
+    function buildPieChart(question, index, name) {
+        var choice_data = {type: 'pie', data: []};
+
+        question.choices.forEach(function(choice) {
+            choice_data.data.push([choice.prompt, choice.percent]);
+        });
+
+        $('#'+name+'-eval-chart-'+index).highcharts({
+            chart: {
+                type: 'pie'
+            },
             title: {
-                text: 'Rainfall (mm)'
+                text: question.text
+            },
+            series: [choice_data],
+            legend: {
+                enabled: false
+            },
+            tooltip: {
+                useHTML: true,
+                headerFormat: '<strong>{point.key}</strong>: ',
+                pointFormat: '{point.y}%',
+                hideDelay: 0
             }
-        },
-        tooltip: {
-            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
-            footerFormat: '</table>',
-            shared: true,
-            useHTML: true
-        },
-        plotOptions: {
-            column: {
-                pointPadding: 0.2,
-                borderWidth: 0
+        });
+    }
+
+    function buildColumnChart(question, index, name) {
+        var x_bins = [];
+        var choice_data = {data: []};
+
+        question.choices.forEach(function(choice) {
+            x_bins.push(choice.prompt);
+            choice_data.data.push(choice.percent);
+        });
+
+        $('#'+name+'-eval-chart-'+index).highcharts({
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: question.text
+            },
+            xAxis: {
+                categories: x_bins
+            },
+            yAxis: {
+                min: 0,
+                max: 100,
+                title: {
+                    text: 'Percentage of Students (%)'
+                }
+            },
+            series: [choice_data],
+            legend: {
+                enabled: false
+            },
+            tooltip: {
+                enabled: false
+            },
+            plotOptions: {
+                column: {
+                    dataLabels: {
+                        enabled: true,
+                        format: '{y}%',
+                        style: {
+                            fontWeight: 'bold'
+                        }
+                    }
+                }
             }
-        },
-        series: [{
-            name: 'Tokyo',
-            data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
-
-        }, {
-            name: 'New York',
-            data: [83.6, 78.8, 98.5, 93.4, 106.0, 84.5, 105.0, 104.3, 91.2, 83.5, 106.6, 92.3]
-
-        }, {
-            name: 'London',
-            data: [48.9, 38.8, 39.3, 41.4, 47.0, 48.3, 59.0, 59.6, 52.4, 65.2, 59.3, 51.2]
-
-        }, {
-            name: 'Berlin',
-            data: [42.4, 33.2, 34.5, 39.7, 52.6, 75.5, 57.4, 60.4, 47.6, 39.1, 46.8, 51.1]
-
-        }]
-    });
-    });
+        });
+    }
 });
 
 servicesApp.factory('userCourses', function() {

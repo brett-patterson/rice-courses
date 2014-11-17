@@ -4,7 +4,27 @@
 }
 
 .chart {
-    height: 500px;
+    margin: 20px 0;
+}
+
+.comment {
+    margin: 10px 0;
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+.comment:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.comment-text {
+    margin-bottom: 0px;
+}
+
+.comment-date {
+    color: #ccc;
+    text-align: right;
 }
 </style>
 
@@ -34,12 +54,37 @@
 </div>
 
 <div class="tab-pane" id="course-eval">
-    <div id="course-eval-chart" class="chart"></div>
+    <div class="btn-group" data-toggle="buttons" style="float: right; clear:left;">
+        <label class="btn btn-primary" ng-class="{'active': plotType=='pie'}" ng-click="plotType='pie'">
+            <input type="radio" name="plotType" ng-checked="plotType=='pie'">Pie
+        </label>
+        <label class="btn btn-primary" ng-class="{'active': plotType=='column'}" ng-click="plotType='column'">
+            <input type="radio" name="plotType" ng-checked="plotType=='column'">Column
+        </label>
+    </div>
 </div>
-
-<div class="tab-pane" id="course-comments">...</div>
-<div class="tab-pane" id="instr-eval">...</div>
-<div class="tab-pane" id="instr-comments">...</div>
+<div class="tab-pane" id="course-comments">
+    <div class="comment" ng-repeat="comment in courseComments">
+        <p class="comment-text">{$ comment.text $}</p>
+        <p class="comment-date">{$ comment.date $}</p>
+    </div>
+</div>
+<div class="tab-pane" id="instr-eval">
+    <div class="btn-group" data-toggle="buttons" style="float: right; clear:left;">
+        <label class="btn btn-primary" ng-class="{'active': plotType=='pie'}" ng-click="plotType='pie'">
+            <input type="radio" name="plotType" ng-checked="plotType=='pie'">Pie
+        </label>
+        <label class="btn btn-primary" ng-class="{'active': plotType=='column'}" ng-click="plotType='column'">
+            <input type="radio" name="plotType" ng-checked="plotType=='column'">Column
+        </label>
+    </div>
+</div>
+<div class="tab-pane" id="instr-comments">
+    <div class="comment" ng-repeat="comment in instructorComments">
+        <p class="comment-text">{$ comment.text $}</p>
+        <p class="comment-date">{$ comment.date $}</p>
+    </div>
+</div>
 </div>
 
 
