@@ -143,28 +143,31 @@ servicesApp.factory('filters', function() {
 servicesApp.factory('courseDetail', function($modal) {
     return {
         open: function(course) {
-            $.getScript('http://code.highcharts.com/highcharts.src.js').done(function() {
-                $modal.open({
-                    templateUrl: '/static/partials/courseDetail.html',
-                    controller: 'courseDetailController',
-                    size: 'lg',
-                    resolve: {
-                        course: function() {
-                            return course;
-                        }
+            $modal.open({
+                templateUrl: '/static/partials/courseDetail.html',
+                controller: 'courseDetailController',
+                size: 'lg',
+                resolve: {
+                    course: function() {
+                        return course;
                     }
-                });
+                }
             });
         }
     };
 });
 
-servicesApp.controller('courseDetailController', function($scope, $modalInstance, course) {
+servicesApp.controller('courseDetailController', function($scope, $rootScope, $modalInstance, course) {
+    var buildLock = false;
+
+    if ($rootScope.highchartsLoaded === undefined)
+        $rootScope.highchartsLoaded = false; 
+
     $scope.course = course;
     $scope.plotType = 'pie';
     $scope.evaluations = [];
     $scope.courseComments = [];
-    $scope.instructorComments = [];  
+    $scope.instructorComments = []; 
 
     $scope.close = function() {
         $modalInstance.dismiss('cancel');
@@ -227,15 +230,32 @@ servicesApp.controller('courseDetailController', function($scope, $modalInstance
     }
 
     function buildCharts() {
-        $scope.evaluations.forEach(function(evaluation) {
-            evaluation.data.questions.forEach(function(question, i) {
-                if ($scope.plotType == 'pie')
-                    buildPieChart(question, i, evaluation.name);
-                else if ($scope.plotType == 'column')
-                    buildColumnChart(question, i, evaluation.name);
-                alignCharts();
+        if (buildLock)
+            return
+
+        buildLock = true;
+
+        if ($rootScope.highchartsLoaded)
+            build();
+        else {
+            $.getScript('http://code.highcharts.com/highcharts.src.js').done(function() {
+                $rootScope.highchartsLoaded = true;
+                build();
             });
-        });
+        }
+        
+        function build() {
+            $scope.evaluations.forEach(function(evaluation) {
+                evaluation.data.questions.forEach(function(question, i) {
+                    if ($scope.plotType == 'pie')
+                        buildPieChart(question, i, evaluation.name);
+                    else if ($scope.plotType == 'column')
+                        buildColumnChart(question, i, evaluation.name);
+                    alignCharts();
+                });
+            });
+            buildLock = false;
+        }
     }
 
     $scope.$watch('plotType', function() {
