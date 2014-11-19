@@ -7,8 +7,7 @@ from bs4 import BeautifulSoup
 from requests import Session
 from django.conf import settings
 
-from courses.models import Course
-from models import Evaluation, Question, Choice, Comment
+from models import Evaluation
 
 
 EVALS_URL = 'https://esther.rice.edu/selfserve/swkscmt.main'
@@ -42,10 +41,15 @@ def clean_text(text):
     return text.strip().replace('\\n', '')
 
 
-def parse_evaluation(text, crn):
+def convert_date(text):
+    date_text = clean_text(text).replace('.', '')
+    return datetime.strptime(date_text, settings.EVAL_DATE_FORMAT)
+
+
+def parse_evaluation(text, course, evaluation_type):
     soup = BeautifulSoup(text)
-    course = Course.objects.get(crn=crn)
     headers = soup.find_all('header')
+
     data = None
     for header in headers:
         course_element = header.find('course')
@@ -53,99 +57,96 @@ def parse_evaluation(text, crn):
                 course_element.get('crse_numb') == str(course.course_number)):
             data = header
 
-    evaluation = Evaluation()
-
     if not data:
-        return evaluation
+        return None
+
+    evaluation = Evaluation.objects.create(evaluation_type=evaluation_type,
+                                           crn=course.crn)
 
     for question in data.find_all('question'):
-        q = Question()
-
-        q.text = clean_text(question.find('text').get_text())
-        q.class_mean = float(question.get('class_mean'))
-        q.rice_mean = float(question.get('rice_mean'))
-        q.total_count = int(question.get('total_count'))
+        q = evaluation.question_set.create(
+            text=clean_text(question.find('text').get_text()),
+            class_mean=float(question.get('class_mean')),
+            rice_mean=float(question.get('rice_mean'))
+        )
 
         for choice in question.find_all('choice'):
-            c = Choice()
-            c.value = int(choice.get('choice'))
-            c.percent = int(choice.get('perc'))
-            c.prompt = clean_text(choice.find('prompt').get_text())
-            q.add_choice(c)
-
-        evaluation.add_question(q)
+            q.choice_set.create(
+                value=int(choice.get('choice')),
+                percent=int(choice.get('perc')),
+                prompt=clean_text(choice.find('prompt').get_text())
+            )
 
     for comment in data.find_all('student-comment'):
-        c = Comment()
-        c.text = clean_text(comment.find('response').get_text())
-        date_text = clean_text(comment.get('activity_date').replace('.', ''))
-        c.date = datetime.strptime(date_text, settings.EVAL_DATE_FORMAT)
-        evaluation.add_comment(c)
+        evaluation.comment_set.create(
+            text=clean_text(comment.find('response').get_text()),
+            date=convert_date(comment.get('activity_date'))
+        )
 
     return evaluation
 
+course_response = session.post(
+    url=DATA_URL,
+    data={
+        'p_term': '201420',
+        'p_data': 'COURSES',
+    }
+)
 
-def get_course_evaluation(crn):
-    course = Course.objects.get(crn=crn)
+course_root = ElementTree.fromstring(course_response.text.encode('utf-8'))
 
-    course_response = session.post(
-        url=DATA_URL,
-        data={
-            'p_term': '201420',
-            'p_data': 'COURSES',
-        }
-    )
 
-    term_crn = None
-    root = ElementTree.fromstring(course_response.text.encode('utf-8'))
-    for course_element in root.findall('COURSE'):
+def get_course_evaluation(course):
+    crn = None
+    for course_element in course_root.findall('COURSE'):
         if (course_element.get('SUBJ') == course.subject and
                 course_element.get('NUMB') == str(course.course_number)):
-            term_crn = course_element.get('CRN')
+            crn = course_element.get('CRN')
 
-    if not term_crn:
-        return Evaluation()
+    if not crn:
+        return None
 
     response = session.post(
         url=EVALS_URL,
         data={
             'p_term': '201420',
             'p_type': 'Course',
-            'p_crn': term_crn,
+            'p_crn': crn,
             'p_confirm': '1'
         }
     )
 
-    return parse_evaluation(response.text.encode('utf-8'), crn)
+    return parse_evaluation(response.text.encode('utf-8'), course, 'c')
 
 
-def get_instructor_evaluation(instructor, crn):
-    instructor_response = session.post(
-        url=DATA_URL,
-        data={
-            'p_term': '201420',
-            'p_data': 'INSTRUCTORS'
-        }
-    )
+instructor_response = session.post(
+    url=DATA_URL,
+    data={
+        'p_term': '201420',
+        'p_data': 'INSTRUCTORS'
+    }
+)
 
-    root = ElementTree.fromstring(instructor_response.text.encode('utf-8'))
-    instructor_map = {}
-    for instructor_element in root.findall('INSTRUCTOR'):
-        name = instructor_element.get('NAME')
-        web_id = instructor_element.get('WEBID')
-        instructor_map[name] = web_id
+root = ElementTree.fromstring(instructor_response.text.encode('utf-8'))
+instructor_map = {}
+for instructor_element in root.findall('INSTRUCTOR'):
+    name = instructor_element.get('NAME')
+    web_id = instructor_element.get('WEBID')
+    instructor_map[name] = web_id
 
-    if instructor not in instructor_map:
-        return Evaluation()
+
+def get_instructor_evaluation(course):
+    if course.instructor not in instructor_map:
+        return None
 
     response = session.post(
         url=EVALS_URL,
         data={
             'p_term': '201420',
             'p_type': 'Instructor',
-            'p_instr': instructor_map[instructor],
+            'p_instr': instructor_map[course.instructor],
             'p_confirm': '1'
         }
     )
 
-    return parse_evaluation(response.text.encode('utf-8'), crn)
+    return parse_evaluation(response.text.encode('utf-8'), course, 'i')

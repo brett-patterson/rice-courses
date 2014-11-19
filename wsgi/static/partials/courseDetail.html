@@ -3,6 +3,15 @@
     cursor: pointer;
 }
 
+.plot-toggle-btns {
+    float: right;
+    clear: left;
+}
+
+.tab-msg {
+    margin-top: 20px;
+}
+
 .chart {
     margin: 20px 0;
 }
@@ -55,32 +64,44 @@
 </div>
 
 <div class="tab-pane" id="course-eval">
-    <div class="btn-group" data-toggle="buttons" style="float: right; clear:left;">
-        <label class="btn btn-primary" ng-class="{'active': plotType=='pie'}" ng-click="plotType='pie'">
-            <input type="radio" name="plotType" ng-checked="plotType=='pie'">Pie
-        </label>
-        <label class="btn btn-primary" ng-class="{'active': plotType=='column'}" ng-click="plotType='column'">
-            <input type="radio" name="plotType" ng-checked="plotType=='column'">Column
-        </label>
+    <div ng-if="courseEvalLoading"><p class="tab-msg">Loading...</p></div>
+    <div ng-if="courseEvalCount > 0" class="btn-group plot-toggle-btns">
+        <button class="btn btn-primary" ng-class="{ 'active': option.val == plotType }"
+                ng-repeat="option in plotOptions" ng-click="setPlotType(option.val)">
+                {$ option.name $}
+        </button>
+    </div>
+    <div ng-if="!courseEvalLoading && courseEvalCount == 0">
+        <p class="tab-msg">No course evaluations found.</p>
     </div>
 </div>
 <div class="tab-pane" id="course-comments">
+    <div ng-if="courseEvalLoading"><p class="tab-msg">Loading...</p></div>
+    <div ng-if="!courseEvalLoading && courseComments.length == 0">
+        <p class="tab-msg">No course comments found.</p>
+    </div>
     <div class="comment" ng-repeat="comment in courseComments">
         <p class="comment-text">{$ comment.text $}</p>
         <p class="comment-date">{$ comment.date $}</p>
     </div>
 </div>
 <div class="tab-pane" id="instr-eval">
-    <div class="btn-group" data-toggle="buttons" style="float: right; clear:left;">
-        <label class="btn btn-primary" ng-class="{'active': plotType=='pie'}" ng-click="plotType='pie'">
-            <input type="radio" name="plotType" ng-checked="plotType=='pie'">Pie
-        </label>
-        <label class="btn btn-primary" ng-class="{'active': plotType=='column'}" ng-click="plotType='column'">
-            <input type="radio" name="plotType" ng-checked="plotType=='column'">Column
-        </label>
+    <div ng-if="instructorEvalLoading"><p class="tab-msg">Loading...</p></div>
+    <div ng-if="instructorEvalCount > 0" class="btn-group plot-toggle-btns">
+        <button class="btn btn-primary" ng-class="{ 'active': option.val == plotType }"
+                ng-repeat="option in plotOptions" ng-click="setPlotType(option.val)">
+                {$ option.name $}
+        </button>
+    </div>
+    <div ng-if="!instructorEvalLoading && instructorEvalCount == 0">
+        <p class="tab-msg">No instructor evaluations found.</p>
     </div>
 </div>
 <div class="tab-pane" id="instr-comments">
+    <div ng-if="instructorEvalLoading"><p class="tab-msg">Loading...</p></div>
+    <div ng-if="!instructorEvalLoading && instructorComments.length == 0">
+        <p class="tab-msg">No instructor comments found.</p>
+    </div>
     <div class="comment" ng-repeat="comment in instructorComments">
         <p class="comment-text">{$ comment.text $}</p>
         <p class="comment-date">{$ comment.date $}</p>

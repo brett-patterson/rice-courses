@@ -158,16 +158,22 @@ servicesApp.factory('courseDetail', function($modal) {
 });
 
 servicesApp.controller('courseDetailController', function($scope, $rootScope, $modalInstance, course) {
-    var buildLock = false;
-
     if ($rootScope.highchartsLoaded === undefined)
         $rootScope.highchartsLoaded = false; 
 
     $scope.course = course;
     $scope.plotType = 'pie';
+    $scope.plotOptions = [{name: 'Pie', val: 'pie'}, {name: 'Column', val: 'column'}];
+
     $scope.evaluations = [];
+    $scope.courseEvalCount = 0;
+    $scope.instructorEvalCount = 0;
     $scope.courseComments = [];
-    $scope.instructorComments = []; 
+    $scope.instructorComments = [];
+
+    $scope.buildLock = false;
+    $scope.instructorEvalLoading = true;
+    $scope.courseEvalLoading = true;
 
     $scope.close = function() {
         $modalInstance.dismiss('cancel');
@@ -184,14 +190,16 @@ servicesApp.controller('courseDetailController', function($scope, $rootScope, $m
         var name = 'course';
 
         createChartDOMElements(data.questions, name);
-
         $scope.evaluations.push({
             name: name,
             data: data
         });
         $scope.courseComments = data.comments;
+        $scope.courseEvalCount += data.questions.length > 0;
 
         buildCharts();
+
+        $scope.courseEvalLoading = false;
     });
 
     $.ajax({
@@ -206,14 +214,16 @@ servicesApp.controller('courseDetailController', function($scope, $rootScope, $m
         var name = 'instr';
 
         createChartDOMElements(data.questions, name);
-
         $scope.evaluations.push({
             name: name,
             data: data
         });
         $scope.instructorComments = data.comments;
+        $scope.instructorEvalCount += data.questions.length > 0;
 
         buildCharts();
+
+        $scope.instructorEvalLoading = false;
     });
 
     function createChartDOMElements(questions, name) {
@@ -230,10 +240,12 @@ servicesApp.controller('courseDetailController', function($scope, $rootScope, $m
     }
 
     function buildCharts() {
-        if (buildLock)
+        if ($scope.buildLock)
             return
 
-        buildLock = true;
+        $scope.$evalAsync(function() {
+            $scope.buildLock = true;
+        });
 
         if ($rootScope.highchartsLoaded)
             build();
@@ -254,13 +266,16 @@ servicesApp.controller('courseDetailController', function($scope, $rootScope, $m
                     alignCharts();
                 });
             });
-            buildLock = false;
+            $scope.$evalAsync(function() {
+                $scope.buildLock = false;
+            });
         }
     }
 
-    $scope.$watch('plotType', function() {
+    $scope.setPlotType = function(pType) {
+        $scope.plotType = pType;
         buildCharts();
-    });
+    };
 
     function buildPieChart(question, index, name) {
         var choice_data = {type: 'pie', data: []};
