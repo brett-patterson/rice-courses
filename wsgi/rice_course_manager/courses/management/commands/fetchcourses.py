@@ -58,12 +58,10 @@ class Command(BaseCommand):
     help = 'Update courses in the database'
 
     def add_arguments(self, parser):
-        parser.add_argument('term', nargs=1, type=str)
-        parser.add_argument('-v', '--verbose', action='store_true',
-                            default=False)
+        parser.add_argument('term', type=str)
 
     def handle(self, *args, **options):
-        term = options['term']
-        verbose = options['verbose']
+        term = args[0]
+        verbose = options['verbosity'] > 0
 
         fetch_courses(term, verbose=verbose)
