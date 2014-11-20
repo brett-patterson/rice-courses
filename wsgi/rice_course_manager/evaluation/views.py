@@ -63,5 +63,5 @@ def instructor_evaluation(request):
         return HttpResponse(json.dumps(evaluation_to_json('i', crn)))
 
     else:
-        msg = 'Must specify instructor and crn'
+        msg = 'Must specify crn'
         return HttpResponse(json.dumps({'error': msg}))

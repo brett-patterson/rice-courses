@@ -200,13 +200,17 @@ servicesApp.controller('courseDetailController', function($scope, $rootScope, $m
         buildCharts();
 
         $scope.courseEvalLoading = false;
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+        console.log('course failure');
+        console.log(jqXHR);
+        console.log(textStatus);
+        console.log(errorThrown);
     });
 
     $.ajax({
         url: '/evaluations/api/instructor/',
         data: {
             crn: course.crn,
-            instructor: course.instructor
         },
         method: 'POST',
         dataType: 'json'
@@ -224,6 +228,11 @@ servicesApp.controller('courseDetailController', function($scope, $rootScope, $m
         buildCharts();
 
         $scope.instructorEvalLoading = false;
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+        console.log('instructor failure');
+        console.log(jqXHR);
+        console.log(textStatus);
+        console.log(errorThrown);
     });
 
     function createChartDOMElements(questions, name) {
