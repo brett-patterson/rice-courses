@@ -34,7 +34,9 @@ def suggest_alternate(request):
                     alternate.start_time != course.start_time):
                 result.append(alternate.crn)
 
-        return HttpResponse(json.dumps(result))
+        return HttpResponse(json.dumps(result),
+                            content_type='application/json')
 
     else:
-        return HttpResponse(json.dumps({'error': 'Must specify crn'}))
+        return HttpResponse(json.dumps({'error': 'Must specify crn'}),
+                            content_type='application/json')

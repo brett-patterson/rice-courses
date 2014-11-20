@@ -49,10 +49,12 @@ def course_evaluation(request):
     crn = request.POST.get('crn')
 
     if crn:
-        return HttpResponse(json.dumps(evaluation_to_json('c', crn)))
+        return HttpResponse(json.dumps(evaluation_to_json('c', crn)),
+                            content_type='application/json')
     else:
         msg = 'Must specify crn'
-        return HttpResponse(json.dumps({'error': msg}))
+        return HttpResponse(json.dumps({'error': msg}),
+                            content_type='application/json')
 
 
 @csrf_exempt
@@ -60,8 +62,10 @@ def instructor_evaluation(request):
     crn = request.POST.get('crn')
 
     if crn:
-        return HttpResponse(json.dumps(evaluation_to_json('i', crn)))
+        return HttpResponse(json.dumps(evaluation_to_json('i', crn)),
+                            content_type='application/json')
 
     else:
         msg = 'Must specify crn'
-        return HttpResponse(json.dumps({'error': msg}))
+        return HttpResponse(json.dumps({'error': msg}),
+                            content_type='application/json')

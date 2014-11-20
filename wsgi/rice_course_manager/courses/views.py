@@ -21,7 +21,8 @@ def index(request):
 
 @csrf_exempt
 def all(request):
-    return HttpResponse(json.dumps([c.json() for c in Course.objects.all()]))
+    return HttpResponse(json.dumps([c.json() for c in Course.objects.all()]),
+                        content_type='application/json')
 
 
 @csrf_exempt
@@ -54,7 +55,7 @@ def page(request):
             'error': 'Must specify a page number'
         }
 
-    return HttpResponse(json.dumps(response))
+    return HttpResponse(json.dumps(response), content_type='application/json')
 
 
 @csrf_exempt
@@ -63,6 +64,8 @@ def get_course(request):
 
     if crn:
         course = Course.objects.get(crn=crn)
-        return HttpResponse(json.dumps(course.json()))
+        return HttpResponse(json.dumps(course.json()),
+                            content_type='application/json')
     else:
-        return HttpResponse(json.dumps({'error': 'Must specify crn'}))
+        return HttpResponse(json.dumps({'error': 'Must specify crn'}),
+                            content_type='application/json')

@@ -28,37 +28,39 @@ def export(request):
 def courses(request):
     user = request.user
     course_list = user.userprofile.courses.all()
-    return HttpResponse(json.dumps([c.json() for c in course_list]))
+    return HttpResponse(json.dumps([c.json() for c in course_list]),
+                        content_type='application/json')
 
 
 @csrf_exempt
 @login_required(login_url='/login/')
 def add_course(request):
     crn = request.POST.get('crn')
-
     user = request.user
 
     if crn:
         course = Course.objects.get(crn=crn)
         user.userprofile.courses.add(course)
 
-        return HttpResponse(json.dumps({'status': 'success'}))
+        return HttpResponse(json.dumps({'status': 'success'}),
+                            content_type='application/json')
     else:
-        return HttpResponse(json.dumps({'status': 'error'}))
+        return HttpResponse(json.dumps({'status': 'error'}),
+                            content_type='application/json')
 
 
 @csrf_exempt
 @login_required(login_url='/login/')
 def remove_course(request):
     crn = request.POST.get('crn')
-    print request.POST
-
     user = request.user
 
     if crn:
         course = Course.objects.get(crn=crn)
         user.userprofile.courses.remove(course)
 
-        return HttpResponse(json.dumps({'status': 'success'}))
+        return HttpResponse(json.dumps({'status': 'success'}),
+                            content_type='application/json')
     else:
-        return HttpResponse(json.dumps({'status': 'error'}))
+        return HttpResponse(json.dumps({'status': 'error'}),
+                            content_type='application/json')
