@@ -423,6 +423,8 @@ servicesApp.factory('util', function() {
                     'description': course.description,
                     'enrollment': course.enrollment,
                     'max_enrollment': course.max_enrollment,
+                    'waitlist': course.waitlist,
+                    'max_waitlist': course.max_waitlist,
                     'location': course.location
                 });
             });

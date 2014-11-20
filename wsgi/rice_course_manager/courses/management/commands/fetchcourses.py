@@ -15,7 +15,9 @@ ATTRIBUTE_MAP = {
     'end-time': 'end_time',
     'meeting-days': 'meeting_days',
     'max-enrollment': 'max_enrollment',
-    'actual-enrollment': 'actual_enrollment'
+    'actual-enrollment': 'enrollment',
+    'xlst-wait-capacity': 'max_waitlist',
+    'xlst-wait-count': 'waitlist'
 }
 
 
