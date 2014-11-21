@@ -424,6 +424,9 @@ servicesApp.factory('util', function() {
                     'max_enrollment': course.max_enrollment,
                     'waitlist': course.waitlist,
                     'max_waitlist': course.max_waitlist,
+                    'restrictions': course.restrictions,
+                    'prerequisites': course.prerequisites,
+                    'corequisites': course.corequisites,
                     'location': course.location
                 });
             });

@@ -17,7 +17,10 @@ ATTRIBUTE_MAP = {
     'max-enrollment': 'max_enrollment',
     'actual-enrollment': 'enrollment',
     'xlst-wait-capacity': 'max_waitlist',
-    'xlst-wait-count': 'waitlist'
+    'xlst-wait-count': 'waitlist',
+    'major-restrictions': 'restrictions',
+    'pre-requisites': 'prerequisites',
+    'co-requisites': 'corequisites',
 }
 
 

@@ -61,6 +61,9 @@
     <p><strong>Location:</strong> {$ course.location $}</p>
     <p><strong>Enrollment:</strong> {$ course.enrollment $}/{$ course.max_enrollment $}</p>
     <p><strong>Waitlist:</strong> {$ course.waitlist $}/{$ course.max_waitlist $}</p>
+    <p ng-if="course.prerequisites.length > 0"><strong>Prerequisites:</strong> {$ course.prerequisites $}</p>
+    <p ng-if="course.corequisites.length > 0"><strong>Corequisites:</strong> {$ course.corequisites $}</p>
+    <p ng-if="course.restrictions.length > 0"><strong>Restrictions:</strong> {$ course.restrictions $}</p>
     <p>{$ course.description $}</p>
 </div>
 

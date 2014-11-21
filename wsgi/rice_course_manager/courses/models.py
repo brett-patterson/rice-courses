@@ -27,6 +27,9 @@ COERCE_MAP = {
     'max_enrollment': int,
     'waitlist': int,
     'max_waitlist': int,
+    'restrictions': unicode,
+    'prerequisites': unicode,
+    'corequisites': unicode,
     'instructor': unicode,
     'crn': unicode,
 }
@@ -66,6 +69,12 @@ class Course(models.Model):
 
     max_waitlist = models.PositiveIntegerField(default=0)
 
+    restrictions = models.TextField(default='')
+
+    prerequisites = models.TextField(default='')
+
+    corequisites = models.TextField(default='')
+
     instructor = models.CharField(max_length=200, default='')
 
     crn = models.CharField(max_length=5, primary_key=True)
@@ -90,6 +99,9 @@ class Course(models.Model):
             'max_enrollment': self.max_enrollment,
             'waitlist': self.waitlist,
             'max_waitlist': self.max_waitlist,
+            'restrictions': self.restrictions,
+            'prerequisites': self.prerequisites,
+            'corequisites': self.corequisites,
             'instructor': self.instructor,
             'crn': self.crn
         }
