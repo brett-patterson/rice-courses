@@ -1,17 +1,46 @@
-var plannerApp = angular.module('plannerApp', ['services']);
+var meApp = angular.module('meApp', ['services']);
 
-plannerApp.config(function($interpolateProvider) {
+meApp.config(function($interpolateProvider) {
     $interpolateProvider.startSymbol('{$');
     $interpolateProvider.endSymbol('$}');
 });
 
-plannerApp.controller('plannerController', function($scope, courseDetail, util) {
+meApp.controller('meController', function($scope, courseDetail, userCourses, util) {
     $scope.courses = [];
+    $scope.totalCredits = 0.0;
+    $scope.totalCanVary = false;
     $scope.showMap = JSON.parse(sessionStorage.getItem('showMap'));
     if ($scope.showMap === null)
         $scope.showMap = {};
 
     var courseMap = {};
+
+    function updateTotalCredits() {
+        var total = 0.0;
+        var totalCanVary = false;
+
+        for (var i = 0; i < $scope.courses.length; i++) {
+            var course = $scope.courses[i];
+
+            if (course.credits.toLowerCase().indexOf('to') != -1)
+                totalCanVary = true;
+
+            total += parseFloat(course.credits);
+        }
+
+        $scope.totalCredits = total;
+        $scope.totalCanVary = totalCanVary;
+    }
+
+    $scope.removeCourse = function(crn) {
+        userCourses.remove(crn, function(response) {
+            getCourses();
+        });
+    };
+
+    $scope.courseDetail = function(course) {
+        courseDetail.open(course);
+    };
 
     scheduler.skin = 'flat';
 
@@ -125,15 +154,11 @@ plannerApp.controller('plannerController', function($scope, courseDetail, util) 
     }
 
     function getCourses() {
-        $.ajax({
-            url:'/accounts/api/courses/',
-            method: 'POST',
-            dataType: 'json'
-        }).done(function(data) {
+        userCourses.get(function(courses) {
             $scope.$evalAsync(function() {
-                $scope.courses = util.convertCourses(data);
-                $scope.events = dataToEvents(data);
-
+                $scope.courses = util.convertCourses(courses);
+                updateTotalCredits();
+                $scope.events = dataToEvents(courses);
                 $scope.courses.forEach(function(course) {
                     updateScheduler(course);
                 });

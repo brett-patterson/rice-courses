@@ -42,14 +42,9 @@
                                     <span class="glyphicon glyphicon-list"></span> Courses
                                 </a>
                             </li>
-                            <li {% if nav_active == 'planner' %}class="active"{% endif %}>
-                                <a href="{% url 'planner' %}">
-                                    <span class="glyphicon glyphicon-road"></span> Planner
-                                </a>
-                            </li>
-                            <li {% if nav_active == 'account' %}class="active"{% endif %}>
-                                <a href="{% url 'accounts' %}">
-                                    <span class="glyphicon glyphicon-user"></span> Account
+                            <li {% if nav_active == 'me' %}class="active"{% endif %}>
+                                <a href="{% url 'me' %}">
+                                    <span class="glyphicon glyphicon-user"></span> Me
                                 </a>
                             </li>
                             <li {% if nav_active == 'help' %}class="active"{% endif %}>

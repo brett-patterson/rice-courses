@@ -3,51 +3,40 @@
 
 {% block head %}
 
-<style type="text/css">
-.remove-btn {
-    color: #F5402C;
-}
-
-.remove-btn:hover {
-    color: #DB3927;
-}
-
-.course-entry td:hover {
-    cursor: pointer;
-}
-</style>
+<link type="text/css" media="screen" rel="stylesheet" href="{% static 'css/lib/scheduler.css' %}"/>
+<link type="text/css" media="screen" rel="stylesheet" href="{% static 'css/me.css' %}"/>
 
 <script type="text/javascript" src="{% static 'js/lib/angular.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/lib/ui-bootstrap-tpls.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/lib/scheduler.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/lib/scheduler_readonly.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/services.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/accounts.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/me.js' %}"></script>
 
 {% endblock %}
 
 {% block content %}
-<div ng-app="accountsApp" ng-controller="accountsController">
-    <h2>My Courses:</h2>
-    <a class="btn btn-success" target="_blank" href="{% url 'accounts_export' %}">Export CRNs</a>
+<div ng-app="meApp" ng-controller="meController">
     <div class="table-responsive">
         <table class="table table-hover">
             <thead>
                 <tr>
                     <th></th>
-                    <th>CRN</th>
+                    <th>CRN (<a href="{% url 'me_export' %}" target="_blank">Export</a>)</th>
                     <th>Course ID</th>
                     <th>Title</th>
                     <th>Instructor</th>
                     <th>Meetings</th>
                     <th>Distribution</th>
                     <th>Credits</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="course in courses" class="course-entry">
-                    <td>
-                        <a href="#" class="remove-btn" ng-click="removeCourse(course.crn)">
-                            <span class="glyphicon glyphicon-remove"></span>
-                        </a>
+                    <td ng-click="toggle(course)"
+                        ng-class="{'toggle-btn-show':showMap[course.crn], 'toggle-btn-hide':!showMap[course.crn]}">
+                       <span class="glyphicon" ng-class="{'glyphicon-eye-open':showMap[course.crn], 'glyphicon-eye-close':!showMap[course.crn]}"></span>
                     </td>
                     <td ng-click="courseDetail(course)">{$ course.crn $}</td>
                     <td ng-click="courseDetail(course)">{$ course.course_id $}</td>
@@ -56,6 +45,9 @@
                     <td ng-click="courseDetail(course)">{$ course.meeting $}</td>
                     <td ng-click="courseDetail(course)">{$ course.distribution $}</td>
                     <td ng-click="courseDetail(course)">{$ course.credits $}</td>
+                    <td class="remove-btn" ng-click="removeCourse(course.crn)">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </td>
                 </tr>
                 <tr>
                     <td></td>
@@ -66,9 +58,17 @@
                     <td></td>
                     <td class="text-right"><strong>Total Credits<span ng-if="totalCanVary"> (approximate)</span>:</strong></td>
                     <td><strong>{$ totalCredits | number:1 $}</strong></td>
+                    <td></td>
                 </tr>
             </tbody>
         </table>
+    </div>
+    <div id="scheduler" class="dhx_cal_container" style='width:100%; height:700px;'>
+        <div class="dhx_cal_navline">
+            <div class="dhx_cal_date"></div>
+        </div>
+        <div class="dhx_cal_header"></div>
+        <div class="dhx_cal_data"></div>       
     </div>
 </div>
 {% endblock %}

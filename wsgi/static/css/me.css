@@ -1,0 +1,48 @@
+.remove-btn {
+    color: #F5402C;
+}
+
+.remove-btn:hover {
+    color: #DB3927;
+}
+
+.toggle-btn-show {
+    color: #74C279;
+}
+
+.toggle-btn-show:hover {
+    color: #63A668;
+}
+
+.toggle-btn-hide {
+    color: #FFB029;
+}
+
+.toggle-btn-hide:hover {
+    color: #E09B24;
+}
+
+.course-entry td:hover {
+    cursor: pointer;
+}
+
+.showButtons {
+    margin-bottom: 20px;
+}
+
+.dhx_scale_holder_now {
+    background-image: url({% static 'img/scheduler/databg.png' %});
+}
+
+.dhx_cal_navline {
+    display: none;
+}
+
+.dhx_cal_data {
+    top: 36px !important;
+}
+
+.dhx_cal_header {
+    height: 35px !important;
+    top: 0px !important;
+}

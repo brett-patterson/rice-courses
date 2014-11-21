@@ -8,9 +8,8 @@ from django.conf import settings
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('courses', '0009_auto_20141106_2240'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('accounts', '0001_initial'),
+        ('courses', '0010_auto_20141120_2225'),
     ]
 
     operations = [
@@ -24,16 +23,5 @@ class Migration(migrations.Migration):
             options={
             },
             bases=(models.Model,),
-        ),
-        migrations.RemoveField(
-            model_name='usercourses',
-            name='courses',
-        ),
-        migrations.RemoveField(
-            model_name='usercourses',
-            name='user',
-        ),
-        migrations.DeleteModel(
-            name='UserCourses',
         ),
     ]

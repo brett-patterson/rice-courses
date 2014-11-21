@@ -67,11 +67,10 @@ INSTALLED_APPS = (
 
     'adminsortable',
 
-    'accounts',
     'courses',
     'evaluation',
     'help',
-    'planner',
+    'me',
 )
 
 TEMPLATE_DIRS = (

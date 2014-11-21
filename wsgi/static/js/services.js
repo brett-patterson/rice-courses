@@ -200,11 +200,6 @@ servicesApp.controller('courseDetailController', function($scope, $rootScope, $m
         buildCharts();
 
         $scope.courseEvalLoading = false;
-    }).fail(function(jqXHR, textStatus, errorThrown) {
-        console.log('course failure');
-        console.log(jqXHR);
-        console.log(textStatus);
-        console.log(errorThrown);
     });
 
     $.ajax({
@@ -228,11 +223,6 @@ servicesApp.controller('courseDetailController', function($scope, $rootScope, $m
         buildCharts();
 
         $scope.instructorEvalLoading = false;
-    }).fail(function(jqXHR, textStatus, errorThrown) {
-        console.log('instructor failure');
-        console.log(jqXHR);
-        console.log(textStatus);
-        console.log(errorThrown);
     });
 
     function createChartDOMElements(questions, name) {
@@ -370,7 +360,7 @@ servicesApp.factory('userCourses', function() {
     return {
         get: function(cb) {
             $.ajax({
-                url:'/accounts/api/courses/',
+                url:'/me/api/courses/',
                 method: 'POST',
                 dataType: 'json'
             }).done(function(data) {
@@ -380,7 +370,7 @@ servicesApp.factory('userCourses', function() {
 
         add: function(crn, cb) {
             $.ajax({
-                url:'/accounts/api/courses/add/',
+                url:'/me/api/courses/add/',
                 method: 'POST',
                 data: {crn: crn},
                 dataType: 'json'
@@ -392,7 +382,7 @@ servicesApp.factory('userCourses', function() {
 
         remove: function(crn, cb) {
             $.ajax({
-                url:'/accounts/api/courses/remove/',
+                url:'/me/api/courses/remove/',
                 method: 'POST',
                 data: {crn: crn},
                 dataType: 'json'

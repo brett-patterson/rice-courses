@@ -12,9 +12,9 @@ from courses.models import Course
 @login_required(login_url='/login/')
 def index(request):
     context = {
-        'nav_active': 'account',
+        'nav_active': 'me'
     }
-    return render(request, 'accounts/index.html', context)
+    return render(request, 'me/index.html', context)
 
 
 @login_required(login_url='/login/')
@@ -63,4 +63,29 @@ def remove_course(request):
                             content_type='application/json')
     else:
         return HttpResponse(json.dumps({'status': 'error'}),
+                            content_type='application/json')
+
+
+@csrf_exempt
+@login_required(login_url='/login/')
+def suggest_alternate(request):
+    crn = request.POST.get('crn')
+
+    if crn:
+        course = Course.objects.get(crn=crn)
+
+        alternates = Course.objects.filter(subject=course.subject,
+                                           course_number=course.course_number)
+
+        result = []
+        for alternate in alternates:
+            if (alternate.meeting_days != course.meeting_days or
+                    alternate.start_time != course.start_time):
+                result.append(alternate.crn)
+
+        return HttpResponse(json.dumps(result),
+                            content_type='application/json')
+
+    else:
+        return HttpResponse(json.dumps({'error': 'Must specify crn'}),
                             content_type='application/json')
