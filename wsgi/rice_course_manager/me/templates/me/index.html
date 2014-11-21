@@ -28,6 +28,7 @@
                     <th>Instructor</th>
                     <th>Meetings</th>
                     <th>Distribution</th>
+                    <th>Enrollment</th>
                     <th>Credits</th>
                     <th></th>
                 </tr>
@@ -44,12 +45,18 @@
                     <td ng-click="courseDetail(course)">{$ course.instructor $}</td>
                     <td ng-click="courseDetail(course)">{$ course.meeting $}</td>
                     <td ng-click="courseDetail(course)">{$ course.distribution $}</td>
+                    <td ng-click="courseDetail(course)">
+                        <span ng-class="{'enroll-warning': enrollPercent(course) > 50, 'enroll-full': enrollPercent(course) >= 100}">
+                            {$ course.enrollment $}/{$ course.max_enrollment $}
+                        </span>
+                    </td>
                     <td ng-click="courseDetail(course)">{$ course.credits $}</td>
                     <td class="remove-btn" ng-click="removeCourse(course.crn)">
                         <span class="glyphicon glyphicon-remove"></span>
                     </td>
                 </tr>
                 <tr>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>

@@ -11,3 +11,11 @@
 .main-nav {
     text-align: center;
 }
+
+.enroll-warning {
+    background-color: rgba(255, 153, 0, 0.4);
+}
+
+.enroll-full {
+    background-color: rgba(255, 0, 0, 0.4);
+}

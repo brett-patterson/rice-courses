@@ -32,6 +32,8 @@ meApp.controller('meController', function($scope, courseDetail, userCourses, uti
         $scope.totalCanVary = totalCanVary;
     }
 
+    $scope.enrollPercent = util.enrollPercent;
+
     $scope.removeCourse = function(crn) {
         userCourses.remove(crn, function(response) {
             getCourses();

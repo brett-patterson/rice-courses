@@ -429,6 +429,10 @@ servicesApp.factory('util', function() {
             });
 
             return result;
+        },
+
+        enrollPercent: function(course) {
+            return course.enrollment / course.max_enrollment * 100;
         }
     };
 });

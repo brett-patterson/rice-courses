@@ -72,6 +72,8 @@ coursesApp.controller('CoursesController', function($scope, filters, courseDetai
         }
     };
 
+    $scope.enrollPercent = util.enrollPercent;
+
     $scope.pagination = {
         current: 1
     };

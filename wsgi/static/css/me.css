@@ -26,10 +26,6 @@
     cursor: pointer;
 }
 
-.showButtons {
-    margin-bottom: 20px;
-}
-
 .dhx_scale_holder_now {
     background-image: url({% static 'img/scheduler/databg.png' %});
 }
