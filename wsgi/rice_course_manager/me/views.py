@@ -76,11 +76,13 @@ def overlap(course_one, course_two):
     end_times_two = [int(t) for t in course_two.end_time.split(',')]
 
     for i, day in enumerate(days_one):
-        j = days_two.index(day)
-        if j > -1:
+        try:
+            j = days_two.index(day)
             if (start_times_one[i] >= start_times_two[j] and
                     start_times_one[i] <= end_times_two[j]):
                 return True
+        except ValueError:
+            continue
 
     return False
 

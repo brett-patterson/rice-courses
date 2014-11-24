@@ -190,7 +190,7 @@ meApp.controller('meController',
                                 });
                                 updateSchedulerAll();
 
-                                var msg = 'Do you want to keep the added' +
+                                var msg = 'Do you want to keep the added ' +
                                           'alternate sections?';
 
                                 var yes = {
@@ -233,7 +233,7 @@ meApp.controller('meController',
                                            'sections found for ' + course_id +
                                            '.');
                             }
-                        }).fail(function(jqXHR) {console.log(jqXHR)});
+                        });
                 }
             });
         });
