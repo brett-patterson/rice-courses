@@ -5,7 +5,8 @@ meApp.config(function($interpolateProvider) {
     $interpolateProvider.endSymbol('$}');
 });
 
-meApp.controller('meController', function($scope, courseDetail, userCourses, util) {
+meApp.controller('meController',
+    function($scope, courseDetail, userCourses, util) {
     $scope.courses = [];
     $scope.totalCredits = 0.0;
     $scope.totalCanVary = false;
@@ -53,10 +54,10 @@ meApp.controller('meController', function($scope, courseDetail, userCourses, uti
     scheduler.config.hour_date = '%h:%i %A'; // Display hours as "08:00 PM"
     scheduler.config.first_hour = 8; // Start day at 8AM
     scheduler.config.last_hour = 22; // End day at 9PM
-    scheduler.config.readonly_form = true; // don't allow lightbox edits to events
-    scheduler.attachEvent("onBeforeDrag", function() {return false;});
-    scheduler.attachEvent("onDblCLick", function() {return false;});
-    scheduler.attachEvent("onClick", function(id) {
+    scheduler.config.readonly_form = true; // No lightbox edits to events
+    scheduler.attachEvent('onBeforeDrag', function() {return false;});
+    scheduler.attachEvent('onDblCLick', function() {return false;});
+    scheduler.attachEvent('onClick', function(id) {
         courseDetail.open(scheduler.getEvent(id).course);
         return false;
     });
@@ -102,11 +103,13 @@ meApp.controller('meController', function($scope, courseDetail, userCourses, uti
                 var date = {};
                 var day = dayString[j];
 
-                date.start_date = '01/' + dayMap[day] + '/2007 ' + startTime.hours + ':' + startTime.minutes;
-                date.end_date = '01/' + dayMap[day] + '/2007 ' + endTime.hours + ':' + endTime.minutes;
+                date.start_date = '01/' + dayMap[day] + '/2007 ' +
+                                   startTime.hours + ':' + startTime.minutes;
+                date.end_date = '01/' + dayMap[day] + '/2007 ' +
+                                endTime.hours + ':' + endTime.minutes;
 
                 dates.push(date);
-            };
+            }
         }
 
         return dates;
@@ -119,7 +122,8 @@ meApp.controller('meController', function($scope, courseDetail, userCourses, uti
             if ($scope.showMap[course.crn] === undefined)
                 $scope.showMap[course.crn] = true;
 
-            var dates = buildDates(course.meeting_days, course.start_time, course.end_time);
+            var dates = buildDates(course.meeting_days, course.start_time,
+                                   course.end_time);
 
             for (var i = 0; i < dates.length; i++) {
                 var courseEvent = {};
@@ -133,7 +137,7 @@ meApp.controller('meController', function($scope, courseDetail, userCourses, uti
 
                 var date = dates[i];
                 courseEvent.start_date = date.start_date;
-                courseEvent.end_date = date.end_date;                
+                courseEvent.end_date = date.end_date;
 
                 if (courseMap[course.crn] !== undefined) {
                     courseMap[course.crn].push(courseEvent);
@@ -145,7 +149,7 @@ meApp.controller('meController', function($scope, courseDetail, userCourses, uti
             }
         });
 
-        return events
+        return events;
     }
 
     function updateScheduler(course) {
@@ -162,8 +166,9 @@ meApp.controller('meController', function($scope, courseDetail, userCourses, uti
 
         $('div.dhx_cal_event').each(function(i, ele) {
             var event_element = $(ele);
-            var crn = event_element.attr('event_id').substring(0,5);
-            var course_id = ele.textContent.substring(ele.textContent.length - 12);
+            var crn = event_element.attr('event_id').substring(0, 5);
+            var eleText = ele.textContent;
+            var course_id = eleText.substring(eleText.length - 12);
 
             event_element.contextmenu({
                 target: '#event-menu',
@@ -185,15 +190,18 @@ meApp.controller('meController', function($scope, courseDetail, userCourses, uti
                                 });
                                 updateSchedulerAll();
 
-                                var msg = 'Do you want to keep the added alternate sections?';
+                                var msg = 'Do you want to keep the added' +
+                                          'alternate sections?';
 
                                 var yes = {
-                                    html: '<span class="glyphicon glyphicon-ok"></span>',
+                                    html: '<span class="glyphicon ' +
+                                          'glyphicon-ok"></span>',
                                     val: 1
                                 };
 
                                 var no = {
-                                    html: '<span class="glyphicon glyphicon-remove"></span>',
+                                    html: '<span class="glyphicon ' +
+                                          'glyphicon-remove"></span>',
                                     val: 0
                                 };
 
@@ -202,15 +210,18 @@ meApp.controller('meController', function($scope, courseDetail, userCourses, uti
                                         alternates.forEach(function(altCourse) {
                                             userCourses.add(altCourse.crn);
 
-                                            var index = coursesData.indexOf(altCourse);
+                                            var index = coursesData
+                                                        .indexOf(altCourse);
                                             delete altCourse.color;
                                             if (index > -1)
-                                                coursesData.splice(index, 1, altCourse);
+                                                coursesData.splice(index, 1,
+                                                                   altCourse);
                                         });
                                         updateSchedulerAll();
                                     } else {
                                         alternates.forEach(function(altCourse) {
-                                            var index = coursesData.indexOf(altCourse);
+                                            var index = coursesData
+                                                        .indexOf(altCourse);
                                             if (index > -1)
                                                 coursesData.splice(index, 1);
                                         });
@@ -218,9 +229,11 @@ meApp.controller('meController', function($scope, courseDetail, userCourses, uti
                                     }
                                 });
                             } else {
-                                util.alert('No alternate, non-conflicting sections found for ' + course_id + '.');
+                                util.alert('No alternate, non-conflicting ' +
+                                           'sections found for ' + course_id +
+                                           '.');
                             }
-                        });
+                        }).fail(function(jqXHR) {console.log(jqXHR)});
                 }
             });
         });
@@ -252,5 +265,5 @@ meApp.controller('meController', function($scope, courseDetail, userCourses, uti
         sessionStorage.setItem('showMap', JSON.stringify($scope.showMap));
 
         updateScheduler(course);
-    }
+    };
 });

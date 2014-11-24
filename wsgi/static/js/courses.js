@@ -1,11 +1,13 @@
-var coursesApp = angular.module('coursesApp', ['angularUtils.directives.dirPagination', 'services']);
+var coursesApp = angular.module('coursesApp',
+    ['angularUtils.directives.dirPagination', 'services']);
 
 coursesApp.config(function($interpolateProvider) {
     $interpolateProvider.startSymbol('{$');
     $interpolateProvider.endSymbol('$}');
 });
 
-coursesApp.controller('CoursesController', function($scope, filters, courseDetail, userCourses, util) {
+coursesApp.controller('CoursesController',
+    function($scope, filters, courseDetail, userCourses, util) {
     $scope.orderProp = 'course_id';
     $scope.courses = [];
     $scope.filteredCourses = [];
@@ -51,7 +53,7 @@ coursesApp.controller('CoursesController', function($scope, filters, courseDetai
     };
 
     $scope.toggleUserCourse = function(course) {
-        var td = $('#uc-'+course.crn);
+        var td = $('#uc-' + course.crn);
         var span = td.find('span');
         if ($scope.isUserCourse(course)) {
             td.removeClass('user-course');
@@ -112,7 +114,7 @@ coursesApp.controller('CoursesController', function($scope, filters, courseDetai
         else {
             $scope.rawCourseFilter += ', ' + filterField + ': ';
         }
-        $("#courseFilterInput").focus();
+        $('#courseFilterInput').focus();
     };
 
     $scope.courseDetail = function(course) {

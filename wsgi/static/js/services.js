@@ -68,7 +68,7 @@ servicesApp.factory('filters', function() {
                         ok = ok && filter(obj);
                     });
 
-                    if (ok) 
+                    if (ok)
                         result.push(obj);
                 });
 
@@ -78,7 +78,8 @@ servicesApp.factory('filters', function() {
 
         exactFactory: function(field, value) {
             return function(course) {
-                return String(course[field]).toLowerCase() == value.toLowerCase();
+                var fieldText = String(course[field]);
+                return fieldText.toLowerCase() == value.toLowerCase();
             };
         },
 
@@ -92,7 +93,7 @@ servicesApp.factory('filters', function() {
 
         defaultFilterManager: function() {
             manager = new this.FilterManager(/([\w]+[\s]*[\w]*):[\s]*(.+)/i);
-            
+
             manager.addFilter({
                 id: 'crn',
                 keywords: ['crn'],
@@ -135,8 +136,8 @@ servicesApp.factory('filters', function() {
                 factory: this.exactFactory
             });
 
-            return manager;       
-        },
+            return manager;
+        }
     };
 });
 
@@ -157,13 +158,17 @@ servicesApp.factory('courseDetail', function($modal) {
     };
 });
 
-servicesApp.controller('courseDetailController', function($scope, $rootScope, $modalInstance, course) {
+servicesApp.controller('courseDetailController',
+    function($scope, $rootScope, $modalInstance, course) {
     if ($rootScope.highchartsLoaded === undefined)
-        $rootScope.highchartsLoaded = false; 
+        $rootScope.highchartsLoaded = false;
 
     $scope.course = course;
     $scope.plotType = 'pie';
-    $scope.plotOptions = [{name: 'Pie', val: 'pie'}, {name: 'Column', val: 'column'}];
+    $scope.plotOptions = [
+        {name: 'Pie', val: 'pie'},
+        {name: 'Column', val: 'column'}
+    ];
 
     $scope.evaluations = [];
     $scope.courseEvalCount = 0;
@@ -205,7 +210,7 @@ servicesApp.controller('courseDetailController', function($scope, $rootScope, $m
     $.ajax({
         url: '/evaluations/api/instructor/',
         data: {
-            crn: course.crn,
+            crn: course.crn
         },
         method: 'POST',
         dataType: 'json'
@@ -227,8 +232,8 @@ servicesApp.controller('courseDetailController', function($scope, $rootScope, $m
 
     function createChartDOMElements(questions, name) {
         questions.forEach(function(question, i) {
-            $('#'+name+'-eval').append($('<div/>',{
-                id: name+'-eval-chart-'+i,
+            $('#' + name + '-eval').append($('<div/>', {
+                id: name + '-eval-chart-' + i,
                 'class': 'chart'
             }));
         });
@@ -240,7 +245,7 @@ servicesApp.controller('courseDetailController', function($scope, $rootScope, $m
 
     function buildCharts() {
         if ($scope.buildLock)
-            return
+            return;
 
         $scope.$evalAsync(function() {
             $scope.buildLock = true;
@@ -249,12 +254,13 @@ servicesApp.controller('courseDetailController', function($scope, $rootScope, $m
         if ($rootScope.highchartsLoaded)
             build();
         else {
-            $.getScript('http://code.highcharts.com/highcharts.src.js').done(function() {
+            $.getScript('http://code.highcharts.com/highcharts.src.js')
+                .done(function() {
                 $rootScope.highchartsLoaded = true;
                 build();
             });
         }
-        
+
         function build() {
             $scope.evaluations.forEach(function(evaluation) {
                 evaluation.data.questions.forEach(function(question, i) {
@@ -283,7 +289,7 @@ servicesApp.controller('courseDetailController', function($scope, $rootScope, $m
             choice_data.data.push([choice.prompt, choice.percent]);
         });
 
-        $('#'+name+'-eval-chart-'+index).highcharts({
+        $('#' + name + '-eval-chart-' + index).highcharts({
             chart: {
                 type: 'pie'
             },
@@ -317,7 +323,7 @@ servicesApp.controller('courseDetailController', function($scope, $rootScope, $m
             choice_data.data.push(choice.percent);
         });
 
-        $('#'+name+'-eval-chart-'+index).highcharts({
+        $('#' + name + '-eval-chart-' + index).highcharts({
             chart: {
                 type: 'column'
             },
@@ -360,7 +366,7 @@ servicesApp.factory('userCourses', function() {
     return {
         get: function(cb) {
             $.ajax({
-                url:'/me/api/courses/',
+                url: '/me/api/courses/',
                 method: 'POST',
                 dataType: 'json'
             }).done(function(data) {
@@ -370,7 +376,7 @@ servicesApp.factory('userCourses', function() {
 
         add: function(crn, cb) {
             $.ajax({
-                url:'/me/api/courses/add/',
+                url: '/me/api/courses/add/',
                 method: 'POST',
                 data: {crn: crn},
                 dataType: 'json'
@@ -382,7 +388,7 @@ servicesApp.factory('userCourses', function() {
 
         remove: function(crn, cb) {
             $.ajax({
-                url:'/me/api/courses/remove/',
+                url: '/me/api/courses/remove/',
                 method: 'POST',
                 data: {crn: crn},
                 dataType: 'json'
@@ -411,12 +417,17 @@ servicesApp.factory('util', function($timeout, $rootElement) {
             var numToDistribution = this.numToDistribution;
 
             courses.forEach(function(course) {
+                var course_id = course.subject + ' ' + course.course_number +
+                                ' ' + course.section;
+
+                var course_meeting = course.meeting_days + ' ' +
+                                     course.start_time + '-' + course.end_time;
                 result.push({
                     'crn': course.crn,
-                    'course_id': course.subject + ' ' + course.course_number + ' ' + course.section,
+                    'course_id': course_id,
                     'title': course.title,
                     'instructor': course.instructor,
-                    'meeting': course.meeting_days + ' ' + course.start_time + '-' + course.end_time,
+                    'meeting': course_meeting,
                     'credits': course.credits,
                     'distribution': numToDistribution(course.distribution),
                     'description': course.description,
@@ -446,9 +457,9 @@ servicesApp.factory('util', function($timeout, $rootElement) {
                 type = 'danger';
 
             var alertDOM = $('<div/>', {
-                class: "alert alert-"+type,
+                class: 'alert alert-' + type,
                 text: msg,
-                style: "display: none;"
+                style: 'display: none;'
             });
 
             if (closeBtn !== false)
@@ -486,7 +497,7 @@ servicesApp.factory('util', function($timeout, $rootElement) {
                     dialogDOM.slideUp(400, function() {
                         dialogDOM.remove();
                     });
-            }
+            };
 
             dialogDOM = $('<div/>', {
                 class: 'alert alert-info text-right',
@@ -495,7 +506,7 @@ servicesApp.factory('util', function($timeout, $rootElement) {
 
             dialogDOM.append($('<p/>', {
                 text: prompt,
-                class: 'text-left',
+                class: 'text-left'
             }));
 
             var btnDOM = $('<div/>', {
@@ -506,7 +517,7 @@ servicesApp.factory('util', function($timeout, $rootElement) {
                 btnDOM.append($('<button/>', {
                     class: 'btn btn-primary',
                     html: btn.html,
-                    onclick: 'dialogFinished("'+btn.val+'")',
+                    onclick: 'dialogFinished("' + btn.val + '")'
                 }));
             });
 
