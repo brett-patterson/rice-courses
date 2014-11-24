@@ -26,8 +26,7 @@ def export(request):
 @csrf_exempt
 @login_required(login_url='/login/')
 def courses(request):
-    user = request.user
-    course_list = user.userprofile.courses.all()
+    course_list = request.user.userprofile.courses.all()
     return HttpResponse(json.dumps([c.json() for c in course_list]),
                         content_type='application/json')
 
@@ -36,11 +35,10 @@ def courses(request):
 @login_required(login_url='/login/')
 def add_course(request):
     crn = request.POST.get('crn')
-    user = request.user
 
     if crn:
         course = Course.objects.get(crn=crn)
-        user.userprofile.courses.add(course)
+        request.user.userprofile.courses.add(course)
 
         return HttpResponse(json.dumps({'status': 'success'}),
                             content_type='application/json')
@@ -53,11 +51,10 @@ def add_course(request):
 @login_required(login_url='/login/')
 def remove_course(request):
     crn = request.POST.get('crn')
-    user = request.user
 
     if crn:
         course = Course.objects.get(crn=crn)
-        user.userprofile.courses.remove(course)
+        request.user.userprofile.courses.remove(course)
 
         return HttpResponse(json.dumps({'status': 'success'}),
                             content_type='application/json')
