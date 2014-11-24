@@ -17,6 +17,7 @@ meApp.controller('meController',
     var courseMap = {};
     var coursesData = [];
 
+
     function updateTotalCredits() {
         var total = 0.0;
         var totalCanVary = false;
@@ -265,5 +266,18 @@ meApp.controller('meController',
         sessionStorage.setItem('showMap', JSON.stringify($scope.showMap));
 
         updateScheduler(course);
+    };
+});
+
+meApp.directive('bindClipboardOnFinish', function(util) {
+    return function(scope, element, attrs) {
+        if (scope.$last == true) {
+            scope.clipboardClient = new ZeroClipboard($('.copy-btn'));
+            scope.clipboardClient.on('copy', function(e) {
+                var crn = $(e.target).attr('data-clipboard-text');
+                util.alert('Copied CRN <strong>' + crn +
+                           '</strong> to clipboard.', 'success');
+            });
+        }
     };
 });

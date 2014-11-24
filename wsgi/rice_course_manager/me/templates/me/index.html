@@ -11,6 +11,7 @@
 <script type="text/javascript" src="{% static 'js/lib/scheduler.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/lib/scheduler_readonly.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/lib/bootstrap-contextmenu.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/lib/ZeroClipboard.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/services.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/me.js' %}"></script>
 
@@ -23,7 +24,11 @@
             <thead>
                 <tr>
                     <th></th>
-                    <th>CRN (<a href="{% url 'me_export' %}" target="_blank">Export</a>)</th>
+                    <th>CRN
+                        <a href="{% url 'me_export' %}" target="_blank">
+                            <span class="glyphicon glyphicon-export"></span>
+                        </a>
+                    </th>
                     <th>Course ID</th>
                     <th>Title</th>
                     <th>Instructor</th>
@@ -35,12 +40,16 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="course in courses | orderBy:'course_id'" class="course-entry">
+                <tr ng-repeat="course in courses | orderBy:'course_id'" class="course-entry" bind-clipboard-on-finish>
                     <td ng-click="toggle(course)"
                         ng-class="{'toggle-btn-show':showMap[course.crn], 'toggle-btn-hide':!showMap[course.crn]}">
                        <span class="glyphicon" ng-class="{'glyphicon-eye-open':showMap[course.crn], 'glyphicon-eye-close':!showMap[course.crn]}"></span>
                     </td>
-                    <td ng-click="courseDetail(course)">{$ course.crn $}</td>
+                    <td>{$ course.crn $}
+                        <a class="copy-btn" data-clipboard-text="{$ course.crn $}">
+                            <span class="glyphicon glyphicon-paperclip"></span>
+                        </a>
+                    </td>
                     <td ng-click="courseDetail(course)">{$ course.course_id $}</td>
                     <td ng-click="courseDetail(course)">{$ course.title $}</td>
                     <td ng-click="courseDetail(course)">{$ course.instructor $}</td>

@@ -460,7 +460,7 @@ servicesApp.factory('util', function($timeout, $rootElement) {
 
             var alertDOM = $('<div/>', {
                 class: 'alert alert-' + type,
-                text: msg,
+                html: msg,
                 style: 'display: none;'
             });
 
