@@ -14,6 +14,7 @@ meApp.controller('meController', function($scope, courseDetail, userCourses, uti
         $scope.showMap = {};
 
     var courseMap = {};
+    var coursesData = [];
 
     function updateTotalCredits() {
         var total = 0.0;
@@ -28,8 +29,10 @@ meApp.controller('meController', function($scope, courseDetail, userCourses, uti
             total += parseFloat(course.credits);
         }
 
-        $scope.totalCredits = total;
-        $scope.totalCanVary = totalCanVary;
+        $scope.$evalAsync(function() {
+            $scope.totalCredits = total;
+            $scope.totalCanVary = totalCanVary;
+        });
     }
 
     $scope.enrollPercent = util.enrollPercent;
@@ -123,6 +126,9 @@ meApp.controller('meController', function($scope, courseDetail, userCourses, uti
                 courseEvent.id = course.crn + '_' + i;
                 courseEvent.course = $scope.courses[index];
 
+                if (course.color)
+                    courseEvent.color = course.color;
+
                 courseEvent.text = courseEvent.course.course_id;
 
                 var date = dates[i];
@@ -153,18 +159,91 @@ meApp.controller('meController', function($scope, courseDetail, userCourses, uti
                 scheduler.deleteEvent(event.id);
             });
         }
+
+        $('div.dhx_cal_event').each(function(i, ele) {
+            var event_element = $(ele);
+            var crn = event_element.attr('event_id').substring(0,5);
+            var course_id = ele.textContent.substring(ele.textContent.length - 12);
+
+            event_element.contextMenu('eventMenu', {
+                bindings: {
+                    alternate: function(trigger) {
+                        $.ajax({
+                            url: '/me/api/alternate/',
+                            data: {
+                                crn: crn
+                            },
+                            method: 'POST',
+                            dataType: 'json'
+                        }).done(function(alternates) {
+                            if (alternates.length > 0) {
+                                alternates.forEach(function(alternate) {
+                                    alternate.color = '#87D175';
+                                    coursesData.push(alternate);
+                                });
+                                updateSchedulerAll();
+
+                                var msg = 'Do you want to keep the added alternate sections?';
+
+                                var yes = {
+                                    html: '<span class="glyphicon glyphicon-ok"></span>',
+                                    val: 1
+                                };
+
+                                var no = {
+                                    html: '<span class="glyphicon glyphicon-remove"></span>',
+                                    val: 0
+                                };
+
+                                util.dialog(msg, [yes, no], function(ret) {
+                                    if (ret == 1) {
+                                        alternates.forEach(function(altCourse) {
+                                            userCourses.add(altCourse.crn);
+
+                                            var index = coursesData.indexOf(altCourse);
+                                            delete altCourse.color;
+                                            if (index > -1)
+                                                coursesData.splice(index, 1, altCourse);
+                                        });
+                                        updateSchedulerAll();
+                                    } else {
+                                        alternates.forEach(function(altCourse) {
+                                            var index = coursesData.indexOf(altCourse);
+                                            if (index > -1)
+                                                coursesData.splice(index, 1);
+                                        });
+                                        updateSchedulerAll();
+                                    }
+                                });
+                            } else {
+                                util.alert('No alternate, non-conflicting sections found for ' + course_id + '.');
+                            }
+                        });
+                    }
+                },
+                menuStyle: {
+                    width: 'auto'
+                }
+            });
+        });
+    }
+
+    function updateSchedulerAll() {
+        $scope.$evalAsync(function() {
+            $scope.courses = util.convertCourses(coursesData);
+            $scope.events = dataToEvents(coursesData);
+            scheduler.clearAll();
+            $scope.courses.forEach(function(course) {
+                updateScheduler(course);
+            });
+            updateTotalCredits();
+        });
     }
 
     function getCourses() {
         userCourses.get(function(courses) {
-            $scope.$evalAsync(function() {
-                $scope.courses = util.convertCourses(courses);
-                updateTotalCredits();
-                $scope.events = dataToEvents(courses);
-                $scope.courses.forEach(function(course) {
-                    updateScheduler(course);
-                });
-            });
+            coursesData = courses;
+            updateSchedulerAll();
         });
     }
 

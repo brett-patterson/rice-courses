@@ -394,7 +394,7 @@ servicesApp.factory('userCourses', function() {
     };
 });
 
-servicesApp.factory('util', function() {
+servicesApp.factory('util', function($timeout, $rootElement) {
     return {
         numToDistribution: function(num) {
             var result = '';
@@ -436,6 +436,84 @@ servicesApp.factory('util', function() {
 
         enrollPercent: function(course) {
             return course.enrollment / course.max_enrollment * 100;
+        },
+
+        alert: function(msg, type, timeout, closeBtn) {
+            if (timeout === undefined)
+                timeout = 3000;
+
+            if (type === undefined)
+                type = 'danger';
+
+            var alertDOM = $('<div/>', {
+                class: "alert alert-"+type,
+                text: msg,
+                style: "display: none;"
+            });
+
+            if (closeBtn !== false)
+                alertDOM.prepend($('<button/>', {
+                    type: 'button',
+                    'data-dismiss': 'alert',
+                    class: 'close',
+                    text: 'x'
+                }));
+
+            $rootElement.prepend(alertDOM);
+            alertDOM.slideDown(400, function() {
+                if (timeout > -1)
+                    $timeout(function() {
+                        alertDOM.slideUp(400, function() {
+                            alertDOM.remove();
+                        });
+                    }, timeout);
+            });
+
+            return alertDOM;
+        },
+
+        dialog: function(prompt, buttons, cb, type) {
+            var dialogDOM;
+
+            if (type === undefined)
+                type = 'info';
+
+            window.dialogFinished = function(ret) {
+                if (cb !== undefined)
+                    cb(ret);
+
+                if (dialogDOM !== undefined)
+                    dialogDOM.slideUp(400, function() {
+                        dialogDOM.remove();
+                    });
+            }
+
+            dialogDOM = $('<div/>', {
+                class: 'alert alert-info text-right',
+                style: 'display: none;'
+            });
+
+            dialogDOM.append($('<p/>', {
+                text: prompt,
+                class: 'text-left',
+            }));
+
+            var btnDOM = $('<div/>', {
+                class: 'btn-group'
+            });
+
+            buttons.forEach(function(btn) {
+                btnDOM.append($('<button/>', {
+                    class: 'btn btn-primary',
+                    html: btn.html,
+                    onclick: 'dialogFinished("'+btn.val+'")',
+                }));
+            });
+
+            dialogDOM.append(btnDOM);
+
+            $rootElement.prepend(dialogDOM);
+            dialogDOM.slideDown();
         }
     };
 });
