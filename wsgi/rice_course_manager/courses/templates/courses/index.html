@@ -64,7 +64,7 @@
                 <tbody>
                     <tr ng-show="loadingCourses"><td>Loading courses...</td></tr>
                     <tr ng-show="filteredCourses.length == 0 && !loadingCourses"><td>No courses found</td></tr>
-                    <tr dir-paginate="course in filteredCourses | itemsPerPage: {{ items_per_page }} | orderBy: orderProp" class="course-entry">
+                    <tr dir-paginate="course in filteredCourses | orderBy: orderProp | itemsPerPage: {{ items_per_page }}" class="course-entry">
                         <td ng-class="{'user-course': isUserCourse(course), 'not-user-course': !isUserCourse(course)}" id="uc-{$ course.crn $}">
                             <a ng-click="toggleUserCourse(course)">
                                 <span class="glyphicon" ng-class="{'glyphicon-heart': isUserCourse(course), 'glyphicon-heart-empty': !isUserCourse(course)}"></span>
