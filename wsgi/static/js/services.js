@@ -446,7 +446,9 @@ servicesApp.factory('util', function($timeout, $rootElement) {
         },
 
         enrollPercent: function(course) {
-            return course.enrollment / course.max_enrollment * 100;
+            if (course.enrollment <= course.max_enrollment)
+                return course.enrollment / course.max_enrollment * 100;
+            return 0;
         },
 
         alert: function(msg, type, timeout, closeBtn) {
