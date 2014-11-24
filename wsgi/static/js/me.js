@@ -165,9 +165,11 @@ meApp.controller('meController', function($scope, courseDetail, userCourses, uti
             var crn = event_element.attr('event_id').substring(0,5);
             var course_id = ele.textContent.substring(ele.textContent.length - 12);
 
-            event_element.contextMenu('eventMenu', {
-                bindings: {
-                    alternate: function(trigger) {
+            event_element.contextmenu({
+                target: '#event-menu',
+                onItem: function(context, e) {
+                    var clicked = $(e.target).attr('data-val');
+                    if (clicked == 'alternate')
                         $.ajax({
                             url: '/me/api/alternate/',
                             data: {
@@ -219,10 +221,6 @@ meApp.controller('meController', function($scope, courseDetail, userCourses, uti
                                 util.alert('No alternate, non-conflicting sections found for ' + course_id + '.');
                             }
                         });
-                    }
-                },
-                menuStyle: {
-                    width: 'auto'
                 }
             });
         });

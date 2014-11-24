@@ -10,7 +10,7 @@
 <script type="text/javascript" src="{% static 'js/lib/ui-bootstrap-tpls.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/lib/scheduler.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/lib/scheduler_readonly.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/lib/jquery.contextmenu.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/lib/bootstrap-contextmenu.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/services.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/me.js' %}"></script>
 
@@ -72,9 +72,9 @@
         </table>
     </div>
 
-    <div class="contextMenu" id="eventMenu">
-        <ul>
-            <li id="alternate"><span class="glyphicon glyphicon-search"></span> Add alternate sections</li>
+    <div id="event-menu">
+        <ul class="dropdown-menu" role="menu">
+            <li><a href="#" data-val="alternate"><span class="glyphicon glyphicon-search"></span> Add alternate sections</a></li>
         </ul>
     </div>
 
