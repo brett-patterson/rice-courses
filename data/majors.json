@@ -1,0 +1,928 @@
+[
+    {
+        "name": "Architecture",
+        "degrees": ["BA", "BArch"],
+        "requirements": [
+            {
+                "subj": "ARCH",
+                "number": 101
+            },
+            {
+                "subj": "ARCH",
+                "number": 225
+            },
+            {
+                "subj": "ARCH",
+                "number": 102
+            },
+            {
+                "subj": "ARCH",
+                "number": 201
+            },
+            {
+                "subj": "ARCH",
+                "number": 207
+            },
+            {
+                "subj": "ARCH",
+                "number": 202
+            },
+            {
+                "subj": "ARCH",
+                "number": 345
+            },
+            {
+                "subj": "ARCH",
+                "number": 309
+            },
+            {
+                "subj": "ARCH",
+                "number": 301
+            },
+            {
+                "subj": "ARCH",
+                "number": 346
+            },
+            {
+                "subj": "ARCH",
+                "number": 314
+            },
+            {
+                "subj": "ARCH",
+                "number": 302
+            },
+            {
+                "subj": "ARCH",
+                "number": 352
+            },
+            {
+                "subj": "ARCH",
+                "number": 316
+            },
+            {
+                "subj": "ARCH",
+                "number": 401
+            },
+            {
+                "subj": "ARCH",
+                "number": 403
+            },
+            {
+                "subj": "ARCH",
+                "number": 402
+            },
+            {
+                "subj": "ARCH",
+                "number": 500,
+                "restrict": ["BArch"]
+            },
+            {
+                "subj": "ARCH",
+                "number": 601,
+                "restrict": ["BArch"]
+            },
+            {
+                "subj": "ARCH",
+                "number": 602,
+                "restrict": ["BArch"]
+            },
+            {
+                "subj": "ARCH",
+                "number": 423,
+                "restrict": ["BArch"]
+            },
+            {
+                "subj": "ARCH",
+                "number": 623,
+                "restrict": ["BArch"]
+            }
+        ]
+    },
+    {
+        "name": "Architectural Studies",
+        "degrees": ["BA"],
+        "requirements": [
+            {
+                "subj": "ARCH",
+                "number": 101
+            },
+            {
+                "subj": "ARCH",
+                "number": 102
+            },
+            {
+                "subj": "ARCH",
+                "number": 201
+            },
+            {
+                "subj": "ARCH",
+                "number": 202
+            },
+            {
+                "subj": "ARCH",
+                "number": 225
+            },
+            {
+                "subj": "ARCH",
+                "number": 345
+            },
+            {
+                "subj": "ARCH",
+                "number": 207
+            },
+            {
+                "subj": "ARCH",
+                "number": 309
+            }
+        ]
+    },
+    {
+        "name": "Bioengineering",
+        "degrees": ["BS"],
+        "requirements": [
+            {
+                "subj": "BIOE",
+                "number": 252
+            },
+            {
+                "subj": "BIOE",
+                "number": 320
+            },
+            {
+                "subj": "BIOE",
+                "number": 322
+            },
+            {
+                "subj": "BIOE",
+                "number": 330
+            },
+            {
+                "subj": "BIOE",
+                "number": 332
+            },
+            {
+                "subj": "BIOE",
+                "number": 342
+            },
+            {
+                "subj": "BIOE",
+                "number": 370
+            },
+            {
+                "subj": "BIOE",
+                "number": 372
+            },
+            {
+                "subj": "BIOE",
+                "number": 383
+            },
+            {
+                "subj": "BIOE",
+                "number": 385
+            },
+            {
+                "subj": "BIOE",
+                "number": 391
+            },
+            {
+                "subj": "BIOE",
+                "number": 420
+            },
+            {
+                "subj": "BIOE",
+                "number": 440
+            },
+            {
+                "subj": "BIOE",
+                "number": 442
+            },
+            {
+                "subj": "BIOE",
+                "number": 443
+            },
+            {
+                "subj": "BIOE",
+                "number": 444
+            },
+            {
+                "subj": "BIOE",
+                "number": 445
+            },
+            {
+                "subj": "BIOE",
+                "number": 446
+            },
+            {
+                "subj": "BIOE",
+                "number": 447
+            },
+            {
+                "subj": "BIOE",
+                "number": 449
+            },
+            {
+                "subj": "BIOE",
+                "number": 451
+            },
+            {
+                "subj": "BIOE",
+                "number": 452
+            },
+            {
+                "subj": "BIOC",
+                "number": 201
+            },
+            {
+                "subj": "BIOC",
+                "number": 341
+            },
+            {
+                "subj": "CHEM",
+                "number": 121
+            },
+            {
+                "subj": "CHEM",
+                "number": 122
+            },
+            {
+                "subj": "CHEM",
+                "number": 123
+            },
+            {
+                "subj": "CHEM",
+                "number": 124
+            },
+            {
+                "subj": "CHEM",
+                "number": 211
+            },
+            {
+                "subj": "CAAM",
+                "number": 210
+            },
+            {
+                "subj": "ELEC",
+                "number": 243
+            },
+            {
+                "subj": "MATH",
+                "number": 101
+            },
+            {
+                "subj": "MATH",
+                "number": 102
+            },
+            {
+                "subj": "MATH",
+                "number": 211
+            },
+            {
+                "subj": "MATH",
+                "number": 212
+            },
+            {
+                "subj": "MECH",
+                "number": 211
+            },
+            {
+                "subj": "PHYS",
+                "number": 101
+            },
+            {
+                "subj": "PHYS",
+                "number": 111
+            },
+            {
+                "subj": "PHYS",
+                "number": 125
+            },
+            {
+                "subj": "PHYS",
+                "number": 102
+            },
+            {
+                "subj": "PHYS",
+                "number": 112
+            },
+            {
+                "subj": "PHYS",
+                "number": 126
+            }
+        ]
+    },
+    {
+        "name": "Chemical and Biomolecular Engineering",
+        "degrees": ["BSChE", "BA"],
+        "requirements": [
+            {
+                "subj": "CHEM",
+                "number": 121
+            },
+            {
+                "subj": "CHEM",
+                "number": 122
+            },
+            {
+                "subj": "CHEM",
+                "number": 151
+            },
+            {
+                "subj": "CHEM",
+                "number": 152
+            },
+            {
+                "subj": "CHEM",
+                "number": 211
+            },
+            {
+                "subj": "CHEM",
+                "number": 217
+            },
+            {
+                "subj": "CHEM",
+                "number": 215
+            },
+            {
+                "subj": "CHEM",
+                "number": 212
+            },
+            {
+                "subj": "CHEM",
+                "number": 311
+            },
+            {
+                "subj": "CHEM",
+                "number": 312
+            },
+            {
+                "subj": "CHBE",
+                "number": 301
+            },
+            {
+                "subj": "CHBE",
+                "number": 303
+            },
+            {
+                "subj": "CHBE",
+                "number": 305
+            },
+            {
+                "subj": "CHBE",
+                "number": 310,
+                "restrict": ["BSChE"]
+            },
+            {
+                "subj": "CHBE",
+                "number": 343
+            },
+            {
+                "subj": "CHBE",
+                "number": 350
+            },
+            {
+                "subj": "CHBE",
+                "number": 390
+            },
+            {
+                "subj": "CHBE",
+                "number": 401
+            },
+            {
+                "subj": "CHBE",
+                "number": 402
+            },
+            {
+                "subj": "CHBE",
+                "number": 403
+            },
+            {
+                "subj": "CHBE",
+                "number": 404,
+                "restrict": ["BSChE"]
+            },
+            {
+                "subj": "CHBE",
+                "number": 411
+            },
+            {
+                "subj": "CHBE",
+                "number": 412
+            },
+            {
+                "subj": "CHBE",
+                "number": 443,
+                "restrict": ["BSChE"]
+            },
+            {
+                "subj": "CHBE",
+                "number": 470,
+                "restrict": ["BSChE"]
+            },
+            {
+                "subj": "MATH",
+                "number": 101
+            },
+            {
+                "subj": "MATH",
+                "number": 102
+            },
+            {
+                "subj": "MATH",
+                "number": 211
+            },
+            {
+                "subj": "MATH",
+                "number": 212
+            },
+            {
+                "subj": "MATH",
+                "number": 381
+            },
+            {
+                "subj": "CAAM",
+                "number": 336
+            },
+            {
+                "subj": "PHYS",
+                "number": 101
+            },
+            {
+                "subj": "PHYS",
+                "number": 111
+            },
+            {
+                "subj": "PHYS",
+                "number": 102
+            },
+            {
+                "subj": "PHYS",
+                "number": 112
+            }
+        ]
+    },
+    {
+        "name": "Civil and Environmental Engineering",
+        "degrees": ["BA", "BS"],
+        "requirements": [
+            {
+                "subj": "CAAM",
+                "number": 210
+            },
+            {
+                "subj": "CAAM",
+                "number": 335
+            },
+            {
+                "subj": "MATH",
+                "number": 354
+            },
+            {
+                "subj": "MATH",
+                "number": 355
+            },
+            {
+                "subj": "CHEM",
+                "number": 121
+            },
+            {
+                "subj": "CHEM",
+                "number": 123
+            },
+            {
+                "subj": "CHEM",
+                "number": 122
+            },
+            {
+                "subj": "CHEM",
+                "number": 124
+            },
+            {
+                "subj": "BIOC",
+                "number": 201
+            },
+            {
+                "subj": "ESCI",
+                "number": 321
+            },
+            {
+                "subj": "ESCI",
+                "number": 340
+            },
+            {
+                "subj": "ESCI",
+                "number": 435
+            },
+            {
+                "subj": "EBIO",
+                "number": 325
+            },
+            {
+                "subj": "MATH",
+                "number": 101
+            },
+            {
+                "subj": "MATH",
+                "number": 102
+            },
+            {
+                "subj": "MATH",
+                "number": 211
+            },
+            {
+                "subj": "MATH",
+                "number": 212
+            },
+            {
+                "subj": "PHYS",
+                "number": 101
+            },
+            {
+                "subj": "PHYS",
+                "number": 102
+            },
+            {
+                "subj": "STAT",
+                "number": 312
+            },
+            {
+                "subj": "CEVE",
+                "number": 101
+            },
+            {
+                "subj": "CEVE",
+                "number": 211
+            },
+            {
+                "subj": "CEVE",
+                "number": 121,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 310
+            },
+            {
+                "subj": "CEVE",
+                "number": 311
+            },
+            {
+                "subj": "CEVE",
+                "number": 312
+            },
+            {
+                "subj": "CEVE",
+                "number": 363
+            },
+            {
+                "subj": "CEVE",
+                "number": 401
+            },
+            {
+                "subj": "CEVE",
+                "number": 480,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 481,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 302
+            },
+            {
+                "subj": "CEVE",
+                "number": 307
+            },
+            {
+                "subj": "CEVE",
+                "number": 308,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 404,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 406,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 411,
+                "restrict": ["BS"]  
+            },
+            {
+                "subj": "CEVE",
+                "number": 434,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 534,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 412
+            },
+            {
+                "subj": "CEVE",
+                "number": 418,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 420,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 514,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 518,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 304,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 400,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 405,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 407,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 408,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 427,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 476,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 313,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 322,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 452,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 460,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 560,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 470,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 479,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 505,
+                "restrict": ["BS"]
+            },
+            {
+                "subj": "CEVE",
+                "number": 492,
+                "restrict": ["BS"]
+            }
+        ]
+    },
+    {
+        "name": "Computational and Applied Mathematics",
+        "degrees": ["BA"],
+        "requirements": [
+            {
+                "subj": "CAAM",
+                "number": 210
+            },
+            {
+                "subj": "CAAM",
+                "number": 335
+            },
+            {
+                "subj": "MATH",
+                "number": 101
+            },
+            {
+                "subj": "MATH",
+                "number": 102
+            },
+            {
+                "subj": "MATH",
+                "number": 212
+            },
+            {
+                "subj": "CAAM",
+                "number": 336
+            },
+            {
+                "subj": "CAAM",
+                "number": 378
+            },
+            {
+                "subj": "MATH",
+                "number": 302
+            },
+            {
+                "subj": "STAT",
+                "number": 310
+            },
+            {
+                "subj": "CAAM",
+                "number": 453
+            },
+            {
+                "subj": "CAAM",
+                "number": 454
+            },
+            {
+                "subj": "CAAM",
+                "number": 471
+            },
+            {
+                "subj": "CAAM",
+                "number": 495
+            },
+            {
+                "subj": "CAAM",
+                "number": 496
+            }
+        ]
+    },
+    {
+        "name": "Computer Science",
+        "degrees": ["BA", "BSCS"],
+        "requirements": [
+            {
+                "subj": "MATH",
+                "number": 101
+            },
+            {
+                "subj": "MATH",
+                "number": 102
+            },
+            {
+                "subj": "MATH",
+                "number": 211
+            },
+            {
+                "subj": "MATH",
+                "number": 212
+            },
+            {
+                "subj": "MATH",
+                "number": 221
+            },
+            {
+                "subj": "MATH",
+                "number": 222
+            },
+            {
+                "subj": "STAT",
+                "number": 310
+            },
+            {
+                "subj": "STAT",
+                "number": 331
+            },
+            {
+                "subj": "STAT",
+                "number": 312
+            },
+            {
+                "subj": "MATH",
+                "number": 355
+            },
+            {
+                "subj": "MATH",
+                "number": 354
+            },
+            {
+                "subj": "CAAM",
+                "number": 335
+            },
+            {
+                "subj": "COMP",
+                "number": 140
+            },
+            {
+                "subj": "COMP",
+                "number": 160
+            },
+            {
+                "subj": "COMP",
+                "number": 182
+            },
+            {
+                "subj": "COMP",
+                "number": 215
+            },
+            {
+                "subj": "ELEC",
+                "number": 220
+            },
+            {
+                "subj": "COMP",
+                "number": 321
+            },
+            {
+                "subj": "COMP",
+                "number": 310
+            },
+            {
+                "subj": "COMP",
+                "number": 322
+            },
+            {
+                "subj": "COMP",
+                "number": 382
+            },
+            {
+                "subj": "COMP",
+                "number": 411
+            },
+            {
+                "subj": "COMP",
+                "number": 412
+            },
+            {
+                "subj": "COMP",
+                "number": 421
+            },
+            {
+                "subj": "PHYS",
+                "number": 101,
+                "restrict": ["BSCS"]
+            },
+            {
+                "subj": "PHYS",
+                "number": 111,
+                "restrict": ["BSCS"]
+            },
+            {
+                "subj": "PHYS",
+                "number": 125,
+                "restrict": ["BSCS"]
+            },
+            {
+                "subj": "PHYS",
+                "number": 102,
+                "restrict": ["BSCS"]
+            },
+            {
+                "subj": "PHYS",
+                "number": 112,
+                "restrict": ["BSCS"]
+            },
+            {
+                "subj": "PHYS",
+                "number": 126,
+                "restrict": ["BSCS"]
+            }
+        ]
+    }
+]
