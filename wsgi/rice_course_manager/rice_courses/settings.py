@@ -71,6 +71,7 @@ INSTALLED_APPS = (
     'evaluation',
     'help',
     'me',
+    'requirements',
 )
 
 TEMPLATE_DIRS = (
