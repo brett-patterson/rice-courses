@@ -9,11 +9,20 @@
 }
 
 .filter-input:focus {
-    outline: 0;
+    outline: none;
 }
 
 .filter-view {
     margin: 0 3px;
     padding: 3px 5px;
     border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+.filter-view-input {
+    border: none;
+}
+
+.filter-view-input:focus {
+    outline: none;
 }
