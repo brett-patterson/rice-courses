@@ -1,0 +1,19 @@
+.filter-widget {
+    border: 1px solid #ccc;
+    font-size: 1em;
+}
+
+.filter-input {
+    border: none;
+    padding: 10px 5px;
+}
+
+.filter-input:focus {
+    outline: 0;
+}
+
+.filter-view {
+    margin: 0 3px;
+    padding: 3px 5px;
+    border: 1px solid #ccc;
+}
