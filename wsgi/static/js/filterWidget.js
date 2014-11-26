@@ -185,8 +185,10 @@ $.fn.filterWidget = function(config) {
         $('#filter-view-input-' + filter.id).focus().on('keydown', function(e) {
             if (e.keyCode == 13)
                 filterInput.focus();
-            else if (e.keyCode == 8 && $(e.target).val() == '')
+            else if (e.keyCode == 8 && $(e.target).val() == '') {
                 filterManagerObj.removeFilter(filter);
+                filterInput.focus();
+            }
         }).autoGrowInput({
             comfortZone: 10,
             changeCallback: resizeInput
@@ -233,7 +235,7 @@ $.fn.filterWidget = function(config) {
         if (keyIndex > -1) {
             var field = text.substring(0, keyIndex).toLowerCase();
             var value = text.substring(keyIndex + 1);
-            var name = config.filterKeywords[field];
+            var name = config.filterKeywords[field].cleanName;
             if (field.length > 0 && name !== undefined) {
                 filterManagerObj.addFilter({
                     field: field,

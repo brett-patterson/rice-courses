@@ -7,23 +7,25 @@
     <script type="text/javascript" src="{% static 'js/lib/dirPagination.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/services.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/courses.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/filterWidget.js' %}"></script>
 
     <link type="text/css" rel="stylesheet" href="{% static 'css/courses.css' %}" />
+    <link type="text/css" rel="stylesheet" href="{% static 'css/filterWidget.css' %}" />
 {% endblock %}
 
 {% block content %}
     <div class="courseList" ng-app="coursesApp" ng-controller="CoursesController">
         <div class="course-filters">
             <h4>
-            <button class="btn btn-crn" ng-click="addFilterField('CRN')">CRN</button>
-            <button class="btn btn-courseid" ng-click="addFilterField('Course ID')">Course ID</button>
-            <button class="btn btn-title" ng-click="addFilterField('Title')">Title</button>
-            <button class="btn btn-instructor" ng-click="addFilterField('Instructor')">Instructor</button>
-            <button class="btn btn-meetings" ng-click="addFilterField('Meetings')">Meetings</button>
-            <button class="btn btn-credits" ng-click="addFilterField('Credits')">Credits</button>
-            <button class="btn btn-distribution" ng-click="addFilterField('Distribution')">Distribution</button>
+            <button class="btn btn-crn" ng-click="addFilterField('crn')">CRN</button>
+            <button class="btn btn-courseid" ng-click="addFilterField('course_id')">Course ID</button>
+            <button class="btn btn-title" ng-click="addFilterField('title')">Title</button>
+            <button class="btn btn-instructor" ng-click="addFilterField('instructor')">Instructor</button>
+            <button class="btn btn-meetings" ng-click="addFilterField('meeting')">Meetings</button>
+            <button class="btn btn-credits" ng-click="addFilterField('credits')">Credits</button>
+            <button class="btn btn-distribution" ng-click="addFilterField('distribution')">Distribution</button>
             </h4>
-            <input class="form-control" id="courseFilterInput" ng-model="rawCourseFilter" ng-change="updateCoursesForFilter()" placeholder="Filter" />
+            <div id="courseFilterInput" />
         </div>
         <div class="table-responsive">
             <table class="table table-hover">

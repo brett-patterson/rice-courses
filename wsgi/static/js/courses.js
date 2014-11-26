@@ -11,12 +11,33 @@ coursesApp.controller('CoursesController',
     $scope.orderProp = 'course_id';
     $scope.courses = [];
     $scope.filteredCourses = [];
+    $scope.filters = [];
     $scope.loadingCourses = false;
     $scope.userCourses = [];
 
-    $scope.rawCourseFilter = sessionStorage.getItem('filterString');
-    if (!$scope.rawCourseFilter)
-        $scope.rawCourseFilter = '';
+    $scope.updateCoursesForFilter = function() {
+        $scope.filteredCourses = filterManager.filter($scope.filters,
+                                                      $scope.courses);
+        sessionStorage.setItem('filters', JSON.stringify(filters));
+    };
+
+    var filterManager = filters.defaultFilterManager();
+
+    $scope.filterWidget = $('#courseFilterInput').filterWidget({
+        filterKeywords: filterManager.keywordMap,
+        placeholder: 'Filter',
+        filtersChanged: function(filters) {
+            $scope.$evalAsync(function() {
+                $scope.filters = filters;
+                $scope.updateCoursesForFilter();
+            });
+        }
+    });
+
+    var filterString = sessionStorage.getItem('filters');
+    if (filterString)
+        $scope.filters = JSON.parse(filterString);
+        $scope.updateCoursesForFilter();
 
     function getCourses() {
         $scope.loadingCourses = true;
@@ -93,28 +114,12 @@ coursesApp.controller('CoursesController',
         }
     };
 
-    var filterManager = filters.defaultFilterManager();
-
-    $scope.courseFilter = function(courses) {
-        if ($scope.rawCourseFilter == '')
-            return courses;
-
-        return filterManager.filter($scope.rawCourseFilter, courses);
-    };
-
-    $scope.updateCoursesForFilter = function() {
-        sessionStorage.setItem('filterString', $scope.rawCourseFilter);
-        $scope.filteredCourses = $scope.courseFilter($scope.courses);
-    };
-
     $scope.addFilterField = function(filterField) {
-        if ($scope.rawCourseFilter == '') {
-            $scope.rawCourseFilter = filterField + ': ';
-        }
-        else {
-            $scope.rawCourseFilter += ', ' + filterField + ': ';
-        }
-        $('#courseFilterInput').focus();
+        $scope.filterWidget.addFilter({
+            field: filterField,
+            name: filterManager.keywordMap[filterField].cleanName,
+            value: ''
+        });
     };
 
     $scope.courseDetail = function(course) {

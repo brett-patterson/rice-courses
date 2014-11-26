@@ -2,70 +2,49 @@ var servicesApp = angular.module('services', ['ui.bootstrap']);
 
 servicesApp.factory('filters', function() {
     return {
-        FilterManager: function(pattern) {
-            this.filters = [];
-            this.pattern = pattern;
+        FilterManager: function() {
+            this.factories = {};
+            this.keywordMap = {};
 
             this.addFilter = function(filter) {
-                if (this.filters.indexOf(filter) == -1)
-                    this.filters.push(filter);
+                for (var i = 0; i < filter.keywords.length; i++) {
+                    var keyword = filter.keywords[i];
+                    this.keywordMap[keyword] = filter;
+                }
+                this.factories[filter.id] = filter.factory;
             };
 
             this.removeFilter = function(filter) {
-                var index = this.filters.indexOf(filter);
-                if (index > -1)
-                    this.filters.splice(index, 1);
-            };
-
-            this.filterForKeyword = function(keyword) {
-                for (var i = 0; i < this.filters.length; i++) {
-                    var filter = this.filters[i];
-
-                    if (filter.keywords.indexOf(keyword) > -1)
-                        return filter;
+                for (var i = 0; i < filter.keywords.length; i++) {
+                    var keyword = filter.keywords[i];
+                    delete this.keywordMap[keyword];
                 }
-
-                return null;
+                delete this.factories[filter.id];
             };
 
-            this.parseExpression = function(expression) {
-                var match = this.pattern.exec(expression);
-
-                if (!match)
-                    return null;
-
-                var kwd = match[1].toLowerCase();
-                var val = match[2];
-                var filter = this.filterForKeyword(kwd);
-
-                return {
-                    filter: filter,
-                    value: val
-                };
+            this.factoryForId = function(id) {
+                return this.factories[id];
             };
 
-            this.filter = function(filterString, objectList) {
-                var result = [];
-                var filters = [];
-                var expressions = filterString.split(',');
-
-                if (expressions.length == 0)
+            this.filter = function(filters, objectList) {
+                if (!filters)
                     return objectList;
 
-                for (var i = 0; i < expressions.length; i++) {
-                    var filterInfo = this.parseExpression(expressions[i]);
-                    if (filterInfo) {
-                        var filter = filterInfo.filter;
-                        var value = filterInfo.value;
-                        filters.push(filter.factory(filter.id, value));
-                    }
+                var filterFuncs = [];
+                var result = [];
+
+                for (var i = 0; i < filters.length; i++) {
+                    var filter = filters[i];
+                    var id = this.keywordMap[filter.field].id;
+                    var factory = this.factoryForId(id);
+                    filterFuncs.push(factory(id, filter.value));
                 }
 
                 objectList.forEach(function(obj) {
                     var ok = true;
 
-                    filters.forEach(function(filter) {
-                        ok = ok && filter(obj);
+                    filterFuncs.forEach(function(filterFunc) {
+                        ok = ok && filterFunc(obj);
                     });
 
                     if (ok)
@@ -92,46 +71,53 @@ servicesApp.factory('filters', function() {
         },
 
         defaultFilterManager: function() {
-            manager = new this.FilterManager(/([\w]+[\s]*[\w]*):[\s]*(.+)/i);
+            manager = new this.FilterManager();
 
             manager.addFilter({
                 id: 'crn',
+                cleanName: 'CRN',
                 keywords: ['crn'],
                 factory: this.containsFactory
             });
 
             manager.addFilter({
                 id: 'course_id',
+                cleanName: 'Course ID',
                 keywords: ['courseid', 'course_id', 'course id'],
                 factory: this.containsFactory
             });
 
             manager.addFilter({
                 id: 'title',
+                cleanName: 'Title',
                 keywords: ['title'],
                 factory: this.containsFactory
             });
 
             manager.addFilter({
                 id: 'instructor',
+                cleanName: 'Instructor',
                 keywords: ['instructor'],
                 factory: this.containsFactory
             });
 
             manager.addFilter({
                 id: 'meeting',
+                cleanName: 'Meetings',
                 keywords: ['meeting', 'meetings'],
                 factory: this.containsFactory
             });
 
             manager.addFilter({
                 id: 'credits',
+                cleanName: 'Credits',
                 keywords: ['credits'],
                 factory: this.containsFactory
             });
 
             manager.addFilter({
                 id: 'distribution',
+                cleanName: 'Distribution',
                 keywords: ['dist', 'distribution'],
                 factory: this.exactFactory
             });
