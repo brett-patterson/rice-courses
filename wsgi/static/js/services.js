@@ -291,7 +291,14 @@ servicesApp.controller('courseDetailController',
                     dataLabels: {
                         useHTML: true,
                         format: '<strong>{point.name}</strong>: {point.y}%'
-                    }
+                    },
+                    colors: [
+                        '#7FD67A', // green
+                        '#FFF34A', // yellow
+                        '#FF9E4A', // orange
+                        '#FF4A4A', // red
+                        '#000000' // black
+                    ]
                 }
             },
             tooltip: {
@@ -341,7 +348,15 @@ servicesApp.controller('courseDetailController',
                         style: {
                             fontWeight: 'bold'
                         }
-                    }
+                    },
+                    colorByPoint: true,
+                    colors: [
+                        '#7FD67A', // green
+                        '#FFF34A', // yellow
+                        '#FF9E4A', // orange
+                        '#FF4A4A', // red
+                        '#000000' // black
+                    ]
                 }
             }
         });
