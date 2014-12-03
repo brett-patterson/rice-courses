@@ -197,7 +197,7 @@ $.fn.filterWidget = function(config) {
             var index = filterManagerObj.filters.indexOf(filter);
             filterManagerObj.filters.splice(index, 1, filter);
             filterManagerObj.config.filtersChanged(filterManagerObj.filters);
-        });
+        }).val(filter.value).trigger('update');
 
         resizeInput();
 

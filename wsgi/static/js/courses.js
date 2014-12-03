@@ -10,15 +10,17 @@ coursesApp.controller('CoursesController',
     function($scope, filters, courseDetail, userCourses, util) {
     $scope.orderProp = 'course_id';
     $scope.courses = [];
+
     $scope.filteredCourses = [];
     $scope.filters = [];
+
     $scope.loadingCourses = false;
     $scope.userCourses = [];
 
     $scope.updateCoursesForFilter = function() {
         $scope.filteredCourses = filterManager.filter($scope.filters,
                                                       $scope.courses);
-        sessionStorage.setItem('filters', JSON.stringify(filters));
+        sessionStorage.setItem('filters', JSON.stringify($scope.filters));
     };
 
     var filterManager = filters.defaultFilterManager();
@@ -33,6 +35,13 @@ coursesApp.controller('CoursesController',
             });
         }
     });
+
+    var storedFilters = sessionStorage.getItem('filters');
+    if (storedFilters !== null) {
+        JSON.parse(storedFilters).forEach(function(filter) {
+            $scope.filterWidget.addFilter(filter);
+        });
+    }
 
     var filterString = sessionStorage.getItem('filters');
     if (filterString)
