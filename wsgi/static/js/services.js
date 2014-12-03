@@ -116,7 +116,7 @@ servicesApp.factory('filters', function() {
             });
 
             manager.addFilter({
-                id: 'distribution',
+                id: 's_distribution',
                 cleanName: 'Distribution',
                 keywords: ['dist', 'distribution'],
                 factory: this.exactFactory
