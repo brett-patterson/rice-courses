@@ -18,7 +18,7 @@ class UserProfile(models.Model):
 
 
 class Scheduler(models.Model):
-    name = models.CharField(max_length=300, unique=True)
+    name = models.CharField(max_length=255, unique=True)
     user_profile = models.ForeignKey(UserProfile)
 
     def show_map(self):
