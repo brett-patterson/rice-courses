@@ -105,10 +105,12 @@ var Scheduler = function(name, courses, schedulerService) {
                     var date = {};
                     var day = dayString[j];
 
-                    date.start = new Date(2007, 0, this._dayMap[day],
-                                          startTime.hours, startTime.minutes);
-                    date.end = new Date(2007, 0, this._dayMap[day],
-                                        endTime.hours, endTime.minutes);
+                    date.start = '2007-01-' + this._dayMap[day] + 'T' +
+                                 startTime.hours + ':' + startTime.minutes +
+                                 ':00';
+                    date.end = '2007-01-' + this._dayMap[day] + 'T' +
+                                endTime.hours + ':' + endTime.minutes +
+                                ':00';
 
                     dates.push(date);
                 }
@@ -135,8 +137,8 @@ var Scheduler = function(name, courses, schedulerService) {
                                     ' ' + course.section;
 
                 var date = dates[i];
-                courseEvent.start = date.start.toISOString();
-                courseEvent.end = date.end.toISOString();
+                courseEvent.start = date.start;
+                courseEvent.end = date.end;
 
                 courseEvent.course = course;
 
@@ -179,6 +181,7 @@ meApp.controller('meController',
         allDaySlot: false,
         minTime: '08:00:00',
         maxTime: '21:00:00',
+        timeFormat: 'hh:mm A',
         eventRender: function(event, element) {
             attachContextMenu(event.id, element);
         },
