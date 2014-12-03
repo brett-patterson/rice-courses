@@ -12,6 +12,7 @@
 <script type="text/javascript" src="{% static 'js/lib/fullcalendar.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/lib/angular-calendar.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/lib/bootstrap-contextmenu.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/lib/bootbox.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/lib/ZeroClipboard.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/services.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/me.js' %}"></script>
@@ -100,11 +101,17 @@
         </ul>
     </div>
 
+    <div id="scheduler-menu">
+        <ul class="dropdown-menu" role="menu">
+            <li><a href="#" data-val="rename"><span class="glyphicon glyphicon-edit"></span> Rename</a></li>
+            <li><a href="#" data-val="delete"><span class="glyphicon glyphicon-remove"></span> Delete</a></li>
+        </ul>
+    </div>
+
     <tabset>
         <tab ng-repeat="scheduler in schedulers" heading="{$ scheduler.name $}"
              select="onSchedulerSelect(scheduler)"
-             deselect="onSchedulerDeselect(scheduler)"
-             id="{$ scheduler.id $}" add-tab-remove>
+             id="{$ scheduler.id $}" scheduler-context-menu>
             <a class="pull-right" ng-click="removeScheduler(scheduler)">
                 <span class="glyphicon glyphicon-remove"></span>
             </a>

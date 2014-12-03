@@ -183,3 +183,20 @@ def show_map(request):
     else:
         return HttpResponse(json.dumps({'status': 'error'}),
                             content_type='application/json')
+
+
+@csrf_exempt
+@login_required(login_url='/login/')
+def rename(request):
+    name = request.POST.get('name')
+    new = request.POST.get('new')
+
+    if name and new:
+        scheduler = Scheduler.objects.get(name=name)
+        scheduler.name = new
+        scheduler.save()
+        return HttpResponse(json.dumps({'status': 'success'}),
+                            content_type='application/json')
+    else:
+        return HttpResponse(json.dumps({'status': 'error'}),
+                            content_type='application/json')

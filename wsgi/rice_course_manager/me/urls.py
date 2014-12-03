@@ -14,4 +14,5 @@ urlpatterns = patterns('',
     url(r'^api/scheduler/remove/$', views.remove_scheduler),
     url(r'^api/scheduler/set/$', views.set_shown),
     url(r'^api/scheduler/map/$', views.show_map),
+    url(r'^api/scheduler/rename/$', views.rename),
 )

@@ -160,18 +160,13 @@ meApp.config(function($interpolateProvider) {
 });
 
 meApp.controller('meController',
-    function($scope, $timeout, courseDetail, userCourses, schedulers, util,
-             uiCalendarConfig) {
+    function($scope, $timeout, courseDetail, userCourses, schedulers, util) {
     $scope.courses = [];
     $scope.totalCredits = 0.0;
     $scope.totalCanVary = false;
 
     $scope.schedulers = [];
     $scope.currentScheduler = null;
-    $scope.$watch('schedulers', function() {
-        if ($scope.currentScheduler === null && $scope.schedulers.length > 0)
-            $scope.setCurrentScheduler($scope.schedulers[0]);
-    });
 
     $scope.calendarConfig = {
         height: 500,
@@ -354,12 +349,6 @@ meApp.controller('meController',
 
     $scope.onSchedulerSelect = function(scheduler) {
         $scope.setCurrentScheduler(scheduler);
-        var tab = $('#' + scheduler.id);
-        // TODO: RENAME STUFF
-    };
-
-    $scope.onSchedulerDeselect = function(scheduler) {
-        // TODO: REMOVE RENAME STUFF
     };
 
     $scope.toggle = function(course) {
@@ -402,18 +391,41 @@ meApp.directive('onRepeatFinish', function() {
     };
 });
 
-meApp.directive('addTabRemove', function() {
+meApp.directive('schedulerContextMenu', function(schedulers) {
     return {
         restrict: 'A',
         link: function($scope, element, attrs) {
             var schedulerId = attrs.id;
+            var scheduler;
 
-            console.log(element);
+            $scope.schedulers.forEach(function(_scheduler) {
+                if (_scheduler.id === schedulerId)
+                    scheduler = _scheduler;
+            });
 
-            // $scope.schedulers.forEach(function(scheduler) {
-            //     if (scheduler.id === schedulerId)
-            //         $scope.removeScheduler(scheduler);
-            // });
+            $(element).contextmenu({
+                target: '#scheduler-menu',
+                onItem: function(context, e) {
+                    var clicked = $(e.target).attr('data-val');
+                    if (clicked === 'rename') {
+                        bootbox.prompt({
+                            title: 'Rename Scheduler',
+                            value: $(element).attr('heading'),
+                            callback: function(input) {
+                                if (input !== null)
+                                    schedulers.rename(scheduler.name, input,
+                                        function() {
+                                            location.reload();
+                                    });
+                            }
+                        });
+                    } else if (clicked === 'delete') {
+                        schedulers.remove(scheduler.name, function() {
+                            location.reload();
+                        });
+                    }
+                }
+            });
         }
     };
 });

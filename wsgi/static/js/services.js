@@ -462,6 +462,21 @@ servicesApp.factory('schedulers', function() {
                 if (cb)
                     cb(data);
             });
+        },
+
+        rename: function(name, newName, cb) {
+            $.ajax({
+                url: '/me/api/scheduler/rename/',
+                method: 'POST',
+                data: {
+                    name: name,
+                    new: newName
+                },
+                dataType: 'json'
+            }).done(function(data) {
+                if (cb)
+                    cb(data);
+            });
         }
     };
 });
