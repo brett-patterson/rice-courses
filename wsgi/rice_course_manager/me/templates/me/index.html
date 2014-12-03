@@ -3,13 +3,14 @@
 
 {% block head %}
 
-<link type="text/css" media="screen" rel="stylesheet" href="{% static 'css/lib/scheduler.css' %}"/>
-<link type="text/css" media="screen" rel="stylesheet" href="{% static 'css/me.css' %}"/>
+<link type="text/css" rel="stylesheet" href="{% static 'css/lib/fullcalendar.min.css' %}"/>
+<link type="text/css" rel="stylesheet" href="{% static 'css/me.css' %}"/>
 
 <script type="text/javascript" src="{% static 'js/lib/angular.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/lib/ui-bootstrap-tpls.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/lib/scheduler.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/lib/scheduler_readonly.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/lib/moment.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/lib/fullcalendar.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/lib/angular-calendar.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/lib/bootstrap-contextmenu.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/lib/ZeroClipboard.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/services.js' %}"></script>
@@ -40,10 +41,10 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="course in courses | orderBy:'course_id'" class="course-entry" bind-clipboard-on-finish>
+                <tr ng-repeat="course in courses | orderBy:'course_id'" class="course-entry" on-repeat-finish="bindClipboard()">
                     <td ng-click="toggle(course)"
-                        ng-class="{'toggle-btn-show':showMap[course.crn], 'toggle-btn-hide':!showMap[course.crn]}">
-                       <span class="glyphicon" ng-class="{'glyphicon-eye-open':showMap[course.crn], 'glyphicon-eye-close':!showMap[course.crn]}"></span>
+                        ng-class="{'toggle-btn-show':currentScheduler.showMap[course.crn], 'toggle-btn-hide':!currentScheduler.showMap[course.crn]}">
+                       <span class="glyphicon" ng-class="{'glyphicon-eye-open':currentScheduler.showMap[course.crn], 'glyphicon-eye-close':!currentScheduler.showMap[course.crn]}"></span>
                     </td>
                     <td>{$ course.crn $}
                         <a class="copy-btn" data-clipboard-text="{$ course.crn $}">
@@ -54,16 +55,28 @@
                     <td ng-click="courseDetail(course)">{$ course.title $}</td>
                     <td ng-click="courseDetail(course)">{$ course.instructor $}</td>
                     <td ng-click="courseDetail(course)">{$ course.meeting $}</td>
-                    <td ng-click="courseDetail(course)">{$ course.distribution $}</td>
+                    <td ng-click="courseDetail(course)">{$ course.s_distribution $}</td>
                     <td ng-click="courseDetail(course)">
                         <span ng-class="{'enroll-warning': enrollPercent(course) > 50, 'enroll-full': enrollPercent(course) >= 100}">
                             {$ course.enrollment $}/{$ course.max_enrollment $}
                         </span>
                     </td>
                     <td ng-click="courseDetail(course)">{$ course.credits $}</td>
-                    <td class="remove-btn" ng-click="removeCourse(course.crn)">
+                    <td class="remove-btn" ng-click="removeCourse(course)">
                         <span class="glyphicon glyphicon-remove"></span>
                     </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right"><strong>Credits Shown<span ng-if="totalShownCanVary"> (approximate)</span>:</strong></td>
+                    <td><strong>{$ creditsShown | number: 1 $}</strong></td>
+                    <td></td>
                 </tr>
                 <tr>
                     <td></td>
@@ -87,12 +100,22 @@
         </ul>
     </div>
 
-    <div id="scheduler" class="dhx_cal_container" style='width:100%; height:700px;'>
-        <div class="dhx_cal_navline">
-            <div class="dhx_cal_date"></div>
-        </div>
-        <div class="dhx_cal_header"></div>
-        <div class="dhx_cal_data"></div>       
-    </div>
+    <tabset>
+        <tab ng-repeat="scheduler in schedulers" heading="{$ scheduler.name $}"
+             select="onSchedulerSelect(scheduler)"
+             deselect="onSchedulerDeselect(scheduler)"
+             id="{$ scheduler.id $}" add-tab-remove>
+            <a class="pull-right" ng-click="removeScheduler(scheduler)">
+                <span class="glyphicon glyphicon-remove"></span>
+            </a>
+            <div ui-calendar="calendarConfig" ng-model="scheduler.eventSources">
+            </div>
+        </tab>
+        <li>
+            <a href="#" ng-click="addScheduler()">
+                <span class="glyphicon glyphicon-plus"></span>
+            </a>
+        </li>
+    </tabset>
 </div>
 {% endblock %}

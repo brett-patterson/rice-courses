@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django_cas.decorators import login_required
 
 from courses.models import Course
+from models import Scheduler
 
 
 @login_required(login_url='/login/')
@@ -112,4 +113,73 @@ def suggest_alternate(request):
 
     else:
         return HttpResponse(json.dumps({'error': 'Must specify crn'}),
+                            content_type='application/json')
+
+
+@csrf_exempt
+@login_required(login_url='/login/')
+def schedulers(request):
+    profile = request.user.userprofile
+    names = [s.name for s in Scheduler.objects.filter(user_profile=profile)]
+
+    return HttpResponse(json.dumps(names), content_type='application/json')
+
+
+@csrf_exempt
+@login_required(login_url='/login/')
+def add_scheduler(request):
+    name = request.POST.get('name')
+
+    if name:
+        request.user.userprofile.create_scheduler(name)
+        return HttpResponse(json.dumps({'status': 'success'}),
+                            content_type='application/json')
+    else:
+        return HttpResponse(json.dumps({'status': 'error'}),
+                            content_type='application/json')
+
+
+@csrf_exempt
+@login_required(login_url='/login/')
+def remove_scheduler(request):
+    name = request.POST.get('name')
+
+    if name:
+        Scheduler.objects.get(name=name).delete()
+        return HttpResponse(json.dumps({'status': 'success'}),
+                            content_type='application/json')
+    else:
+        return HttpResponse(json.dumps({'status': 'error'}),
+                            content_type='application/json')
+
+
+@csrf_exempt
+@login_required(login_url='/login/')
+def set_shown(request):
+    name = request.POST.get('name')
+    crn = request.POST.get('crn')
+    shown = request.POST.get('shown')
+
+    if name and crn and shown:
+        scheduler = Scheduler.objects.get(name=name)
+        scheduler.set_shown(Course.objects.get(crn=crn),
+                            shown == 'true')
+        return HttpResponse(json.dumps({'status': 'success'}),
+                            content_type='application/json')
+    else:
+        return HttpResponse(json.dumps({'status': 'error'}),
+                            content_type='application/json')
+
+
+@csrf_exempt
+@login_required(login_url='/login/')
+def show_map(request):
+    name = request.POST.get('name')
+
+    if name:
+        scheduler = Scheduler.objects.get(name=name)
+        return HttpResponse(json.dumps(scheduler.show_map()),
+                            content_type='application/json')
+    else:
+        return HttpResponse(json.dumps({'status': 'error'}),
                             content_type='application/json')

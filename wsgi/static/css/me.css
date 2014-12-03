@@ -26,19 +26,6 @@
     cursor: pointer;
 }
 
-.dhx_scale_holder_now {
-    background-image: url({% static 'img/scheduler/databg.png' %});
-}
-
-.dhx_cal_navline {
-    display: none;
-}
-
-.dhx_cal_data {
-    top: 36px !important;
-}
-
-.dhx_cal_header {
-    height: 35px !important;
-    top: 0px !important;
+.scheduler-remove-btn:hover {
+    cursor: pointer;
 }

@@ -401,6 +401,71 @@ servicesApp.factory('userCourses', function() {
     };
 });
 
+servicesApp.factory('schedulers', function() {
+    return {
+        all: function(cb) {
+            $.ajax({
+                url: '/me/api/scheduler/all/',
+                method: 'POST',
+                dataType: 'json'
+            }).done(function(data) {
+                cb(data);
+            });
+        },
+
+        map: function(name, cb) {
+            $.ajax({
+                url: '/me/api/scheduler/map/',
+                data: {name: name},
+                method: 'POST',
+                dataType: 'json'
+            }).done(function(data) {
+                cb(data);
+            });
+        },
+
+        add: function(name, cb) {
+            $.ajax({
+                url: '/me/api/scheduler/add/',
+                method: 'POST',
+                data: {name: name},
+                dataType: 'json'
+            }).done(function(data) {
+                if (cb)
+                    cb(data);
+            });
+        },
+
+        remove: function(name, cb) {
+            $.ajax({
+                url: '/me/api/scheduler/remove/',
+                method: 'POST',
+                data: {name: name},
+                dataType: 'json'
+            }).done(function(data) {
+                if (cb)
+                    cb(data);
+            });
+        },
+
+        set: function(name, crn, shown, cb) {
+            $.ajax({
+                url: '/me/api/scheduler/set/',
+                method: 'POST',
+                data: {
+                    name: name,
+                    crn: crn,
+                    shown: shown
+                },
+                dataType: 'json'
+            }).done(function(data) {
+                if (cb)
+                    cb(data);
+            });
+        }
+    };
+});
+
 servicesApp.factory('util', function($timeout, $rootElement) {
     return {
         numToDistribution: function(num) {
@@ -420,27 +485,14 @@ servicesApp.factory('util', function($timeout, $rootElement) {
             courses.forEach(function(course) {
                 var course_id = course.subject + ' ' + course.course_number +
                                 ' ' + course.section;
-
                 var course_meeting = course.meeting_days + ' ' +
                                      course.start_time + '-' + course.end_time;
-                result.push({
-                    'crn': course.crn,
-                    'course_id': course_id,
-                    'title': course.title,
-                    'instructor': course.instructor,
-                    'meeting': course_meeting,
-                    'credits': course.credits,
-                    'distribution': numToDistribution(course.distribution),
-                    'description': course.description,
-                    'enrollment': course.enrollment,
-                    'max_enrollment': course.max_enrollment,
-                    'waitlist': course.waitlist,
-                    'max_waitlist': course.max_waitlist,
-                    'restrictions': course.restrictions,
-                    'prerequisites': course.prerequisites,
-                    'corequisites': course.corequisites,
-                    'location': course.location
-                });
+
+                course.course_id = course_id;
+                course.meeting = course_meeting;
+                course.s_distribution = numToDistribution(course.distribution);
+
+                result.push(course);
             });
 
             return result;
