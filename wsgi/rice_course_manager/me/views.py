@@ -19,9 +19,17 @@ def index(request):
 
 
 @login_required(login_url='/login/')
-def export(request):
-    crns = [course.crn for course in request.user.userprofile.courses.all()]
-    return HttpResponse('<br/>'.join(crns))
+def export(request, scheduler_name):
+    if scheduler_name:
+        profile = request.user.userprofile
+        scheduler = Scheduler.objects.get(name=scheduler_name)
+        show_map = scheduler.show_map()
+        crns = [course.crn for course in profile.courses.all()
+                if show_map[course.crn]]
+        return HttpResponse('<br/>'.join(crns))
+    else:
+        return HttpResponse(json.dumps({'status': 'error'}),
+                            content_type='application/json')
 
 
 @csrf_exempt

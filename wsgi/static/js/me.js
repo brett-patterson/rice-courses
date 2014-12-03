@@ -351,10 +351,6 @@ meApp.controller('meController',
         schedulers.remove(scheduler.name, getCourses);
     };
 
-    $scope.onSchedulerSelect = function(scheduler) {
-        $scope.setCurrentScheduler(scheduler);
-    };
-
     $scope.toggle = function(course) {
         var shown = $scope.currentScheduler.isShown(course);
         $scope.currentScheduler.setShown(course, !shown);

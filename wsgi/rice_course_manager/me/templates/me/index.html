@@ -27,7 +27,8 @@
                 <tr>
                     <th></th>
                     <th>CRN
-                        <a href="{% url 'me_export' %}" target="_blank">
+                        <a href="/me/api/export/{$ currentScheduler.name $}"
+                           target="_blank">
                             <span class="glyphicon glyphicon-export"></span>
                         </a>
                     </th>
@@ -110,11 +111,9 @@
 
     <tabset>
         <tab ng-repeat="scheduler in schedulers" heading="{$ scheduler.name $}"
-             select="onSchedulerSelect(scheduler)" class="scheduler-tab"
-             id="{$ scheduler.id $}" scheduler-context-menu>
-            <a class="pull-right" ng-click="removeScheduler(scheduler)">
-                <span class="glyphicon glyphicon-remove"></span>
-            </a>
+             select="setCurrentScheduler(scheduler)" class="scheduler-tab"
+             id="{$ scheduler.id $}" active="scheduler.active"
+             scheduler-context-menu>
             <div ui-calendar="calendarConfig" ng-model="scheduler.eventSources"
                  id="scheduler-{$ scheduler.id $}">
             </div>
