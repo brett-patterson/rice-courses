@@ -171,7 +171,7 @@ meApp.controller('meController',
     $scope.currentScheduler = null;
 
     $scope.calendarConfig = {
-        height: 500,
+        height: 'auto',
         defaultView: 'agendaWeek',
         defaultDate: new Date(2007, 0, 1).toISOString(),
         header: false,
