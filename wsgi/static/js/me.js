@@ -336,6 +336,7 @@ meApp.controller('meController',
     $scope.setCurrentScheduler = function(scheduler) {
         $scope.currentScheduler = scheduler;
         updateTotalCredits();
+        $('#scheduler-' + scheduler.id).fullCalendar('render');
     };
 
     $scope.addScheduler = function() {

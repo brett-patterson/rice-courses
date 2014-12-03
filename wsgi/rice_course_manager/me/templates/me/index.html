@@ -110,12 +110,13 @@
 
     <tabset>
         <tab ng-repeat="scheduler in schedulers" heading="{$ scheduler.name $}"
-             select="onSchedulerSelect(scheduler)"
+             select="onSchedulerSelect(scheduler)" class="scheduler-tab"
              id="{$ scheduler.id $}" scheduler-context-menu>
             <a class="pull-right" ng-click="removeScheduler(scheduler)">
                 <span class="glyphicon glyphicon-remove"></span>
             </a>
-            <div ui-calendar="calendarConfig" ng-model="scheduler.eventSources">
+            <div ui-calendar="calendarConfig" ng-model="scheduler.eventSources"
+                 id="scheduler-{$ scheduler.id $}">
             </div>
         </tab>
         <li>
