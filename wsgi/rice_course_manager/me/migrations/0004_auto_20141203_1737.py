@@ -7,7 +7,7 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('me', '0004_auto_20141129_0334'),
+        ('me', '0003_scheduler_user_profile'),
     ]
 
     operations = [
