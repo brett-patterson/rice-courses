@@ -44,22 +44,20 @@
     </head>
     <body {% block bodyattrs %}{% endblock %}>
         <div class="container-fluid header">
-            <a href="{% url 'index' %}">
-                <img src="{% static 'img/logo.png' %}" height="200px" />
-            </a>
-            <br/>
-            <p>
+            <div class="login-container">
             {% if user.is_authenticated %}
             
-                Signed in as: <strong>{{ user.username }}</strong><br/>
+                Welcome, <strong>{{ user.username }}</strong><br/>
                 (<a href="/logout/">Sign out</a>)
             
             {% else %}
-                Not signed in<br/>
-                (<a href="/login/">Sign in</a>)
+                <a href="/login/">Sign in</a>
             
             {% endif %}
-            </p>
+            </div>
+            <a href="{% url 'index' %}">
+                <img src="{% static 'img/logo_beta.png' %}" height="200px" />
+            </a>
 
             <div class="help-button">
                 <a href="#" onclick="startTutorial()">
