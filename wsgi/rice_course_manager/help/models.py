@@ -49,18 +49,16 @@ class Tutorial(models.Model):
         """
         return {
             'tutorial': [p.json() for p in self.panel_set.all()],
-            'options': {
-                'interactive': self.interactive,
-                'arrows': {
-                    'weight': self.arrow_weight,
-                    'color': self.arrow_color,
-                    'distance': self.arrow_distance
-                },
-                'backdrop': self.backdrop,
-                'closable': self.closable,
-                'annotationPadding': self.annotation_padding,
-                'counter': self.counter
-            }
+            'interactive': self.interactive,
+            'arrows': {
+                'weight': self.arrow_weight,
+                'color': self.arrow_color,
+                'distance': self.arrow_distance
+            },
+            'backdrop': self.backdrop,
+            'closable': self.closable,
+            'annotationPadding': self.annotation_padding,
+            'counter': self.counter
         }
 
 
