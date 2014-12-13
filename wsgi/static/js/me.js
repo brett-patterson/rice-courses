@@ -313,13 +313,15 @@ meApp.controller('meController',
             var course = $scope.courses[i];
             var credits = parseFloat(course.credits);
 
-            if ($scope.currentScheduler.isShown(course))
+            if ($scope.currentScheduler &&
+                $scope.currentScheduler.isShown(course))
                 creditsShown += credits;
 
             if (course.credits.toLowerCase().indexOf('to') != -1) {
                 totalCanVary = true;
 
-                if ($scope.currentScheduler.isShown(course))
+                if ($scope.currentScheduler &&
+                    $scope.currentScheduler.isShown(course))
                     totalShownCanVary = true;
             }
 
