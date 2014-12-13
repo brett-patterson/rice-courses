@@ -13,7 +13,6 @@
         <script type="text/javascript" src="{% static 'js/lib/bootstrap.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/lib/tutorialize.min.js' %}"></script>
 
-        {% if tutorial %}
         <script type="text/javascript">
             $(function() {
                 var tutorial;
@@ -21,23 +20,24 @@
                     url: '{% url "tutorial" %}',
                     method: 'POST',
                     data: {
-                        tutorial: '{{ tutorial }}'
+                        tutorial: location.pathname
                     },
                     dataType: 'json'
                 }).done(function(data) {
-                    tutorial = $.tutorialize(data);
+                    if (!data.error) {
+                        tutorial = $.tutorialize(data);
 
-                    window.startTutorial = function() {
-                        if (tutorial && tutorial.tutorial &&
-                            tutorial.tutorial.length > 0)
-                            tutorial.start();
-                    };
+                        window.startTutorial = function() {
+                            if (tutorial && tutorial.tutorial &&
+                                tutorial.tutorial.length > 0)
+                                tutorial.start();
+                        };
 
-                    $('.help-button').show();
+                        $('.help-button').show();
+                    }
                 });
             });
         </script>
-        {% endif %}
 
         {% block head %}
         {% endblock %}

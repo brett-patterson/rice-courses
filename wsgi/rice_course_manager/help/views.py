@@ -1,5 +1,6 @@
 import json
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -21,12 +22,13 @@ def tutorial(request):
     tutorial_name = request.POST.get('tutorial')
 
     if tutorial_name:
-        tutorial = Tutorial.objects.get(name=tutorial_name)
-        if tutorial:
+        try:
+            tutorial = Tutorial.objects.get(name=tutorial_name)
             return HttpResponse(json.dumps(tutorial.json()),
                                 content_type='application/json')
-        return HttpResponse(json.dumps({'error': 'No such tutorial'}),
-                            content_type='application/json')
+        except ObjectDoesNotExist:
+            return HttpResponse(json.dumps({'error': 'No such tutorial'}),
+                                content_type='application/json')
 
     return HttpResponse(json.dumps({'error': 'Must specify a tutorial name'}),
                         content_type='application/json')
