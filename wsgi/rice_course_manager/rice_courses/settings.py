@@ -66,6 +66,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'adminsortable',
+    'nested_inline',
 
     'courses',
     'evaluation',

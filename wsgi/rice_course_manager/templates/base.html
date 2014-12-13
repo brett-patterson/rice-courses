@@ -6,10 +6,38 @@
         <title>Rice Course Manager</title>
 
         <link type="text/css" rel="stylesheet" href="{% static 'css/lib/bootstrap.min.css' %}" />
+        <link type="text/css" rel="stylesheet" href="{% static 'css/lib/tutorialize.min.css' %}" />
         <link type="text/css" rel="stylesheet" href="{% static 'css/main.css' %}" />
 
         <script type="text/javascript" src="{% static 'js/lib/jquery.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/lib/bootstrap.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/lib/tutorialize.min.js' %}"></script>
+
+        {% if tutorial %}
+        <script type="text/javascript">
+            $(function() {
+                var tutorial;
+                $.ajax({
+                    url: '{% url "tutorial" %}',
+                    method: 'POST',
+                    data: {
+                        tutorial: '{{ tutorial }}'
+                    },
+                    dataType: 'json'
+                }).done(function(data) {
+                    tutorial = $.tutorialize(data);
+
+                    window.startTutorial = function() {
+                        if (tutorial && tutorial.tutorial &&
+                            tutorial.tutorial.length > 0)
+                            tutorial.start();
+                    };
+
+                    $('.help-button').show();
+                });
+            });
+        </script>
+        {% endif %}
 
         {% block head %}
         {% endblock %}
@@ -32,6 +60,12 @@
             
             {% endif %}
             </p>
+
+            <div class="help-button">
+                <a href="#" onclick="startTutorial()">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                </a>
+            </div>
         </div>
 
         {% if nav_active %}

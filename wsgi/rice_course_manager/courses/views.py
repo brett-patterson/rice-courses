@@ -14,8 +14,10 @@ from courses.models import Course
 def index(request):
     context = {
         'items_per_page': settings.API_ITEMS_PER_PAGE,
-        'nav_active': 'courses'
+        'nav_active': 'courses',
+        'tutorial': 'courses'
     }
+
     return render(request, 'courses/index.html', context)
 
 

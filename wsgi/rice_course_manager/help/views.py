@@ -1,6 +1,10 @@
-from django.shortcuts import render
+import json
 
-from help.models import HelpArticle
+from django.http import HttpResponse
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+
+from help.models import HelpArticle, Tutorial
 
 
 def index(request):
@@ -10,3 +14,19 @@ def index(request):
     }
 
     return render(request, 'help/index.html', context)
+
+
+@csrf_exempt
+def tutorial(request):
+    tutorial_name = request.POST.get('tutorial')
+
+    if tutorial_name:
+        tutorial = Tutorial.objects.get(name=tutorial_name)
+        if tutorial:
+            return HttpResponse(json.dumps(tutorial.json()),
+                                content_type='application/json')
+        return HttpResponse(json.dumps({'error': 'No such tutorial'}),
+                            content_type='application/json')
+
+    return HttpResponse(json.dumps({'error': 'Must specify a tutorial name'}),
+                        content_type='application/json')

@@ -8,6 +8,14 @@
     text-align: center;
 }
 
+.help-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 2em;
+    display: none;
+}
+
 .main-nav {
     text-align: center;
 }
