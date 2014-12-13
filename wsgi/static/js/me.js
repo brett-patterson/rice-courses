@@ -7,7 +7,7 @@ function _slugify(text) {
                .replace(/-+$/, '');
 }
 
-var Scheduler = function(name, courses, schedulerService) {
+var Scheduler = function(name, courses, readyCallback, schedulerService) {
     var scheduler = {
         name: name,
         id: _slugify(name),
@@ -30,6 +30,7 @@ var Scheduler = function(name, courses, schedulerService) {
                 });
 
                 _this.refreshEvents();
+                readyCallback(_this);
             });
         },
 
@@ -206,19 +207,16 @@ meApp.controller('meController',
     function getSchedulers(coursesData) {
         schedulers.all(function(names) {
             var schedulerObjs = [];
-            names.forEach(function(name) {
+            names.forEach(function(name, index) {
                 schedulerObjs.push(
-                    new Scheduler(name, coursesData, schedulers)
+                    new Scheduler(name, coursesData, function(scheduler) {
+                        if (index == 0)
+                            $scope.setCurrentScheduler(scheduler);
+                    }, schedulers)
                 );
             });
 
-            $timeout(function() {
-                $scope.schedulers = schedulerObjs;
-            });
-
-            if (schedulerObjs.length > 0) {
-                $scope.setCurrentScheduler(schedulerObjs[0]);
-            }
+            $scope.schedulers = schedulerObjs;
         });
     }
 
