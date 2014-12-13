@@ -212,15 +212,13 @@ meApp.controller('meController',
                 );
             });
 
-            $scope.$evalAsync(function() {
+            $timeout(function() {
                 $scope.schedulers = schedulerObjs;
-
-                if (schedulerObjs.length > 0) {
-                    $timeout(function() {
-                        $scope.setCurrentScheduler(schedulerObjs[0]);
-                    });
-                }
             });
+
+            if (schedulerObjs.length > 0) {
+                $scope.setCurrentScheduler(schedulerObjs[0]);
+            }
         });
     }
 
@@ -337,7 +335,9 @@ meApp.controller('meController',
     }
 
     $scope.setCurrentScheduler = function(scheduler) {
-        $scope.currentScheduler = scheduler;
+        $timeout(function() {
+            $scope.currentScheduler = scheduler;
+        });
         updateTotalCredits();
         $('#scheduler-' + scheduler.id).fullCalendar('render');
     };
