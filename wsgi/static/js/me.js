@@ -15,16 +15,18 @@ var Scheduler = function(name, courses, readyCallback, schedulerService) {
         showMap: {},
         eventMap: {},
         eventSources: [[]],
+        shown: false,
 
         init: function() {
             var _this = this;
             schedulerService.map(name, function(map) {
+                _this.shown = map.shown;
                 _this.courses.forEach(function(course) {
                     var events = _this._buildEventsForCourse(course);
                     _this.eventMap[course.crn] = events;
 
-                    if (map[course.crn] !== undefined)
-                        _this.showMap[course.crn] = map[course.crn];
+                    if (map.courses[course.crn] !== undefined)
+                        _this.showMap[course.crn] = map.courses[course.crn];
                     else
                         _this.showMap[course.crn] = true;
                 });
@@ -210,7 +212,7 @@ meApp.controller('meController',
             names.forEach(function(name, index) {
                 schedulerObjs.push(
                     new Scheduler(name, coursesData, function(scheduler) {
-                        if (index == 0)
+                        if (scheduler.shown === true)
                             $scope.setCurrentScheduler(scheduler);
                     }, schedulers)
                 );
@@ -337,18 +339,42 @@ meApp.controller('meController',
     $scope.setCurrentScheduler = function(scheduler) {
         $timeout(function() {
             $scope.currentScheduler = scheduler;
+            $('#scheduler-' + scheduler.id).fullCalendar('render');
         });
         updateTotalCredits();
-        $('#scheduler-' + scheduler.id).fullCalendar('render');
+    };
+
+    $scope.onSchedulerSelect = function(scheduler) {
+        $scope.setCurrentScheduler(scheduler);
+        schedulers.setScheduler(scheduler.name, true);
     };
 
     $scope.addScheduler = function() {
         var counter = $scope.schedulers.length + 1;
-        schedulers.add('Schedule ' + counter, getCourses);
+        var name = 'Schedule ' + counter;
+        schedulers.add(name, function() {
+            schedulers.setScheduler(name, true, getCourses);
+        });
     };
 
     $scope.removeScheduler = function(scheduler) {
-        schedulers.remove(scheduler.name, getCourses);
+        var index = $scope.schedulers.indexOf(scheduler);
+        schedulers.remove(scheduler.name, function() {
+            if (scheduler === $scope.currentScheduler) {
+                $scope.schedulers.splice(index, 1);
+
+                if (index == $scope.schedulers.length)
+                    index--;
+
+                schedulers.setScheduler($scope.schedulers[index].name, true,
+                                        getCourses);
+            } else
+                getCourses();
+        });
+    };
+
+    $scope.renameScheduler = function(scheduler, name) {
+        schedulers.rename(scheduler.name, name, getCourses);
     };
 
     $scope.toggle = function(course) {
@@ -413,16 +439,11 @@ meApp.directive('schedulerContextMenu', function(schedulers) {
                             value: $(element).attr('heading'),
                             callback: function(input) {
                                 if (input !== null)
-                                    schedulers.rename(scheduler.name, input,
-                                        function() {
-                                            location.reload();
-                                    });
+                                    $scope.renameScheduler(scheduler, input);
                             }
                         });
                     } else if (clicked === 'delete') {
-                        schedulers.remove(scheduler.name, function() {
-                            location.reload();
-                        });
+                        $scope.removeScheduler(scheduler);
                     }
                 }
             });

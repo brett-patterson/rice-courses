@@ -174,6 +174,13 @@ def set_shown(request):
                             shown == 'true')
         return HttpResponse(json.dumps({'status': 'success'}),
                             content_type='application/json')
+    elif name and shown:
+        scheduler = Scheduler.objects.get(name=name)
+        scheduler.shown = shown == 'true'
+        scheduler.save()
+        return HttpResponse(json.dumps({'status': 'success'}),
+                            content_type='application/json')
+
     else:
         return HttpResponse(json.dumps({'status': 'error'}),
                             content_type='application/json')
@@ -186,7 +193,11 @@ def show_map(request):
 
     if name:
         scheduler = Scheduler.objects.get(name=name)
-        return HttpResponse(json.dumps(scheduler.show_map()),
+        scheduler_map = {
+            'shown': scheduler.shown,
+            'courses': scheduler.show_map()
+        }
+        return HttpResponse(json.dumps(scheduler_map),
                             content_type='application/json')
     else:
         return HttpResponse(json.dumps({'status': 'error'}),

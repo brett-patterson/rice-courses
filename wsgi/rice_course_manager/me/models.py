@@ -20,6 +20,12 @@ class UserProfile(models.Model):
 class Scheduler(models.Model):
     name = models.CharField(max_length=255, unique=True)
     user_profile = models.ForeignKey(UserProfile)
+    shown = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if self.shown:
+            Scheduler.objects.filter(shown=True).update(shown=False)
+        super(Scheduler, self).save(*args, **kwargs)
 
     def show_map(self):
         result = {}
@@ -43,7 +49,9 @@ class CourseShown(models.Model):
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         profile, created = UserProfile.objects.get_or_create(user=instance)
-        profile.create_scheduler('Schedule 1')
+        scheduler = profile.create_scheduler('Schedule 1')
+        scheduler.shown = True
+        scheduler.save()
 
 
 models.signals.post_save.connect(create_user_profile, sender=User)

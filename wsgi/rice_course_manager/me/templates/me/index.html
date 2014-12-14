@@ -111,8 +111,8 @@
 
     <tabset>
         <tab ng-repeat="scheduler in schedulers" heading="{$ scheduler.name $}"
-             select="setCurrentScheduler(scheduler)" class="scheduler-tab"
-             id="{$ scheduler.id $}" active="scheduler.active"
+             select="onSchedulerSelect(scheduler)" class="scheduler-tab"
+             id="{$ scheduler.id $}" active="scheduler.shown"
              scheduler-context-menu>
             <div ui-calendar="calendarConfig" ng-model="scheduler.eventSources"
                  id="scheduler-{$ scheduler.id $}">

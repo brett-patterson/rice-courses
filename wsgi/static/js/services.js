@@ -448,6 +448,21 @@ servicesApp.factory('schedulers', function() {
             });
         },
 
+        setScheduler: function(name, shown, cb) {
+            $.ajax({
+                url: '/me/api/scheduler/set/',
+                method: 'POST',
+                data: {
+                    name: name,
+                    shown: shown
+                },
+                dataType: 'json'
+            }).done(function(data) {
+                if (cb)
+                    cb(data);
+            }).fail(function(jqXHR){console.log(jqXHR);});
+        },
+
         set: function(name, crn, shown, cb) {
             $.ajax({
                 url: '/me/api/scheduler/set/',
