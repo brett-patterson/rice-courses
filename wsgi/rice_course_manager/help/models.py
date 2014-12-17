@@ -1,6 +1,9 @@
+import os
+
 import markdown
 
 from adminsortable.models import Sortable
+from django.conf import settings
 from django.db import models
 
 
@@ -9,16 +12,17 @@ class HelpArticle(Sortable):
         pass
 
     title = models.CharField(max_length=100)
-    text = models.TextField()
+    filename = models.CharField(max_length=255)
 
     def __str__(self):
         return self.title
 
     def render_html(self):
-        """ Render the markdown in `text` to html.
+        """ Render the markdown in `filename` to html.
 
         """
-        return markdown.markdown(self.text)
+        with open(os.path.join(settings.HELP_DATA_DIR, self.filename)) as f:
+            return markdown.markdown(f.read())
 
 
 class Tutorial(models.Model):

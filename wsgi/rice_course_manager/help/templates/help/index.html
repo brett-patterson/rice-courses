@@ -28,7 +28,7 @@ data-spy="scroll" data-target="#affix-nav"
             {% for article in articles %}
 
             <article id="{{ article.title | slugify }}">
-                <h1>{{ article.title }}</h1>
+                <h2>{{ article.title }}</h2>
                 <hr/>
                 {% autoescape off %}
                     {{ article.render_html }}
