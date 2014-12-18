@@ -3,6 +3,7 @@
 # build hook has been run but before the application has been started back
 # up again.  This script gets executed directly, so it could be python, php,
 # ruby, etc.
+cp -r $OPENSHIFT_REPO_DIR/data/* $OPENSHIFT_DATA_DIR
 
 source $OPENSHIFT_HOMEDIR/python/virtenv/bin/activate
 
