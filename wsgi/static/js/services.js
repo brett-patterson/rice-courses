@@ -240,7 +240,7 @@ servicesApp.controller('courseDetailController',
         if ($rootScope.highchartsLoaded)
             build();
         else {
-            $.getScript('http://code.highcharts.com/highcharts.src.js')
+            $.getScript('/static/js/lib/highcharts.js')
                 .done(function() {
                 $rootScope.highchartsLoaded = true;
                 build();
@@ -460,7 +460,7 @@ servicesApp.factory('schedulers', function() {
             }).done(function(data) {
                 if (cb)
                     cb(data);
-            }).fail(function(jqXHR){console.log(jqXHR);});
+            });
         },
 
         set: function(name, crn, shown, cb) {
