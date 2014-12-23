@@ -7,6 +7,11 @@ from models import Major
 
 
 @csrf_exempt
+def majors(request):
+    return HttpResponse(json.dumps([m.name for m in Major.objects.all()]))
+
+
+@csrf_exempt
 def degrees(request):
     major_name = request.POST.get('major')
 

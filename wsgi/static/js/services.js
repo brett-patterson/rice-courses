@@ -441,6 +441,59 @@ servicesApp.factory('schedulers', function() {
     };
 });
 
+servicesApp.factory('requirements', function() {
+    return {
+        majors: function(cb) {
+            $.ajax({
+                url: '/requirements/api/majors/',
+                method: 'POST',
+                dataType: 'json'
+            }).done(function(data) {
+                if (cb)
+                    cb(data);
+            });
+        },
+
+        degrees: function(major, cb) {
+            $.ajax({
+                url: '/requirements/api/degrees/',
+                method: 'POST',
+                data: {
+                    major: major
+                },
+                dataType: 'json'
+            }).done(function(data) {
+                if (cb)
+                    cb(data);
+            });
+        },
+
+        courses: function(major, degree, cb) {
+            var data;
+            if (major && degree) {
+                data = {
+                    major: major,
+                    degree: degree
+                };
+            } else {
+                data = {
+                    major: major
+                };
+            }
+
+            $.ajax({
+                url: '/requirements/api/courses/',
+                method: 'POST',
+                data: data,
+                dataType: 'json'
+            }).done(function(data) {
+                if (cb)
+                    cb(data);
+            });
+        }
+    };
+});
+
 servicesApp.factory('util', function($timeout, $rootElement) {
     return {
         numToDistribution: function(num) {
@@ -558,6 +611,10 @@ servicesApp.factory('util', function($timeout, $rootElement) {
         },
 
         hsvToHex: function(h, s, v) {
+            // Convert a HSV color to a hexadecimal RGB color. Uses the
+            // algorithm described here:
+            // http://en.wikipedia.org/wiki/HSL_and_HSV#From_HSV
+            // to convert from HSV to RGB, then converts to hexadecimal.
             var r = 0, g = 0, b = 0;
 
             var chroma = s * v;
@@ -590,19 +647,21 @@ servicesApp.factory('util', function($timeout, $rootElement) {
                 b = x;
             }
 
-            function rgbToHex(rgbVal) {
-                var hexString = parseInt(rgbVal * 255, 10).toString(16);
-                if (hexString == '0')
-                    hexString += '0';
+            var m = v - chroma;
 
-                return hexString;
-            }
+            r = r * 255 + m;
+            g = g * 255 + m;
+            b = b * 255 + m;
 
-            r = rgbToHex(r);
-            g = rgbToHex(g);
-            b = rgbToHex(b);
+            return '#' + this.decToHex(r) + this.decToHex(g) + this.decToHex(b);
+        },
 
-            return '#' + r.toString(16) + g.toString(16) + b.toString(16);
+        decToHex: function(dec) {
+            var hexString = parseInt(dec, 10).toString(16);
+            if (hexString == '0')
+                hexString += '0';
+
+            return hexString;
         }
     };
 });

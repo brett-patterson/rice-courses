@@ -76,6 +76,19 @@ coursesApp.controller('CoursesController',
             cleanName: 'Distribution',
             keywords: ['dist', 'distribution'],
             factory: filters.exactFactory
+        },
+        {
+            id: 'major',
+            cleanName: 'Major',
+            keywords: ['major'],
+            factory: function(field, value) {
+                return function(course) {
+                    // requirements.courses(value, function(courses) {
+                    //     TODO: FACTORY SHOULD ACCEPT PROMISES
+                    // });
+                    return true;
+                };
+            }
         }
     ];
 
