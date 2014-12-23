@@ -27,9 +27,11 @@
 }
 
 .enroll-warning {
+    background-color: #f7aa36;
     background-color: rgba(255, 153, 0, 0.4);
 }
 
 .enroll-full {
+    background-color: #ff6363;
     background-color: rgba(255, 0, 0, 0.4);
 }

@@ -1,12 +1,26 @@
 var servicesApp = angular.module('services', ['ui.bootstrap']);
 
 servicesApp.factory('filters', function() {
+    /* A service used to manage the filter objects for courses.
+
+    */
     return {
         FilterManager: function() {
+            // A mapping of filter ID's to factory functions.
             this.factories = {};
+
+            // A mapping of keywords to filter objects.
             this.keywordMap = {};
 
             this.addFilter = function(filter) {
+                /* Add a filter.
+
+                Parameters:
+                -----------
+                filter : Filter object
+                    The filter to be added.
+
+                */
                 for (var i = 0; i < filter.keywords.length; i++) {
                     var keyword = filter.keywords[i];
                     this.keywordMap[keyword] = filter;
@@ -15,6 +29,14 @@ servicesApp.factory('filters', function() {
             };
 
             this.removeFilter = function(filter) {
+                /* Remove a filter.
+
+                Parameters:
+                -----------
+                filter : Filter object
+                    The filter to be removed.
+
+                */
                 for (var i = 0; i < filter.keywords.length; i++) {
                     var keyword = filter.keywords[i];
                     delete this.keywordMap[keyword];
@@ -23,10 +45,33 @@ servicesApp.factory('filters', function() {
             };
 
             this.factoryForId = function(id) {
+                /* Return the factory for a given filter ID.
+
+                Parameters:
+                -----------
+                id : int
+                    The ID of the filter to look for.
+
+                */
                 return this.factories[id];
             };
 
             this.filter = function(filters, objectList) {
+                /* Filter a list of objects using a given set of filters.
+
+                Parameters:
+                -----------
+                filters : array<Filter object>
+                    An array of filters that each object must pass through.
+
+                objectList : array
+                    The array of objects to be filtered.
+
+                Returns:
+                --------
+                An array of objects that pass all filters.
+
+                */
                 if (!filters)
                     return objectList;
 
@@ -56,6 +101,10 @@ servicesApp.factory('filters', function() {
         },
 
         exactFactory: function(field, value) {
+            /* A factory that returns a function which filters based on
+            an exact match.
+
+            */
             return function(course) {
                 var fieldText = String(course[field]);
                 return fieldText.toLowerCase() == value.toLowerCase();
@@ -63,6 +112,10 @@ servicesApp.factory('filters', function() {
         },
 
         containsFactory: function(field, value) {
+            /* A factory that returns a function which filters based on
+            a containing match.
+
+            */
             return function(course) {
                 var haystack = String(course[field]).toLowerCase();
                 var needle = value.toLowerCase();
@@ -73,8 +126,19 @@ servicesApp.factory('filters', function() {
 });
 
 servicesApp.factory('courseDetail', function($modal) {
+    /* A service that opens a modal dialog to show course details.
+
+    */
     return {
         open: function(course) {
+            /* Show the dialog for a given course.
+
+            Parameters:
+            -----------
+            course : Course object
+                The course to show details for.
+
+            */
             $modal.open({
                 templateUrl: '/static/partials/courseDetail.html',
                 controller: 'courseDetailController',
@@ -94,24 +158,46 @@ servicesApp.controller('courseDetailController',
     if ($rootScope.highchartsLoaded === undefined)
         $rootScope.highchartsLoaded = false;
 
+    // The course that is being shown.
     $scope.course = course;
+
+    // The type of plots to show.
     $scope.plotType = 'pie';
+
+    // The options for the plots.
     $scope.plotOptions = [
         {name: 'Pie', val: 'pie'},
         {name: 'Column', val: 'column'}
     ];
 
+    // The array of evaluations to show.
     $scope.evaluations = [];
+
+    // The number of course evaluations.
     $scope.courseEvalCount = 0;
+
+    // The number of instructor evaluations.
     $scope.instructorEvalCount = 0;
+
+    // The array of course evaluation commments.
     $scope.courseComments = [];
+
+    // The array of instructor evaluation comments.
     $scope.instructorComments = [];
 
+    // Whether or not the charts are being built.
     $scope.buildLock = false;
+
+    // Whether or not the instructor evaluations are being loaded.
     $scope.instructorEvalLoading = true;
+
+    // Whether or not the course evaluations are being loaded.
     $scope.courseEvalLoading = true;
 
     $scope.close = function() {
+        /* Close the modal dialog.
+
+        */
         $modalInstance.dismiss('cancel');
     };
 
@@ -162,6 +248,17 @@ servicesApp.controller('courseDetailController',
     });
 
     function createChartDOMElements(questions, name) {
+        /* Create <div/> elements for each question.
+
+        Parameters:
+        -----------
+        questions : array<Question objects>
+            The questions to create DOM elements for.
+
+        name : str
+            The name of the evaluation.
+
+        */
         questions.forEach(function(question, i) {
             $('#' + name + '-eval').append($('<div/>', {
                 id: name + '-eval-chart-' + i,
@@ -171,10 +268,16 @@ servicesApp.controller('courseDetailController',
     }
 
     function alignCharts() {
+        /* Align each chart object with the width of the modal dialog.
+
+        */
         $('.chart').width($('.modal-body').width());
     }
 
     function buildCharts() {
+        /* Build the charts for each evaluation.
+
+        */
         if ($scope.buildLock)
             return;
 
@@ -209,11 +312,33 @@ servicesApp.controller('courseDetailController',
     }
 
     $scope.setPlotType = function(pType) {
+        /* Set the plot type.
+
+        Parameters:
+        -----------
+        pType : str
+            The type of plot. Either 'column' or 'pie'.
+
+        */
         $scope.plotType = pType;
         buildCharts();
     };
 
     function buildPieChart(question, index, name) {
+        /* Build a pie chart.
+
+        Parameters:
+        -----------
+        question : Question object
+            The question describing the chart.
+
+        index : int
+            The index of the question.
+
+        name : str
+            The name of the evaluation.
+
+        */
         var choice_data = {type: 'pie', data: []};
 
         question.choices.forEach(function(choice) {
@@ -253,6 +378,20 @@ servicesApp.controller('courseDetailController',
     }
 
     function buildColumnChart(question, index, name) {
+        /* Build a column chart.
+
+        Parameters:
+        -----------
+        question : Question object
+            The question describing the chart.
+
+        index : int
+            The index of the question.
+
+        name : str
+            The name of the evaluation.
+
+        */
         var x_bins = [];
         var choice_data = {data: []};
 
@@ -309,8 +448,19 @@ servicesApp.controller('courseDetailController',
 });
 
 servicesApp.factory('userCourses', function() {
+    /* A service to communicate with the UserCourses server-side API.
+
+    */
     return {
         get: function(cb) {
+            /* Get all of the user selected courses.
+
+            Parameters:
+            -----------
+            cb : function
+                A callback invoked when the server call has finished.
+
+            */
             $.ajax({
                 url: '/me/api/courses/',
                 method: 'POST',
@@ -321,6 +471,17 @@ servicesApp.factory('userCourses', function() {
         },
 
         add: function(crn, cb) {
+            /* Select a course for the user.
+
+            Parameters:
+            -----------
+            crn : str
+                The CRN for the course to add.
+
+            cb : function
+                A callback invoked when the server call has finished.
+
+            */
             $.ajax({
                 url: '/me/api/courses/add/',
                 method: 'POST',
@@ -333,6 +494,17 @@ servicesApp.factory('userCourses', function() {
         },
 
         remove: function(crn, cb) {
+            /* Deselect a course for the user.
+
+            Parameters:
+            -----------
+            crn : str
+                The CRN for the course to remove.
+
+            cb : function
+                A callback invoked when the server call has finished.
+
+            */
             $.ajax({
                 url: '/me/api/courses/remove/',
                 method: 'POST',
@@ -347,8 +519,19 @@ servicesApp.factory('userCourses', function() {
 });
 
 servicesApp.factory('schedulers', function() {
+    /* A service to communicate with the Scheduler server-side API.
+
+    */
     return {
         all: function(cb) {
+            /* Get all of the schedulers.
+
+            Parameters:
+            -----------
+            cb : function
+                A callback invoked when the server call has finished.
+
+            */
             $.ajax({
                 url: '/me/api/scheduler/all/',
                 method: 'POST',
@@ -359,6 +542,17 @@ servicesApp.factory('schedulers', function() {
         },
 
         map: function(name, cb) {
+            /* Get the show map for a scheduler.
+
+            Parameters:
+            -----------
+            name : str
+                The name of the scheduler.
+
+            cb : function
+                A callback invoked when the server call has finished.
+
+            */
             $.ajax({
                 url: '/me/api/scheduler/map/',
                 data: {name: name},
@@ -370,6 +564,17 @@ servicesApp.factory('schedulers', function() {
         },
 
         add: function(name, cb) {
+            /* Add a scheduler.
+
+            Parameters:
+            -----------
+            name : str
+                The name of the scheduler to add.
+
+            cb : function
+                A callback invoked when the server call has finished.
+
+            */
             $.ajax({
                 url: '/me/api/scheduler/add/',
                 method: 'POST',
@@ -382,6 +587,17 @@ servicesApp.factory('schedulers', function() {
         },
 
         remove: function(name, cb) {
+            /* Remove a scheduler.
+
+            Parameters:
+            -----------
+            name : str
+                The name of the scheduler to remove.
+
+            cb : function
+                A callback invoked when the server call has finished.
+
+            */
             $.ajax({
                 url: '/me/api/scheduler/remove/',
                 method: 'POST',
@@ -394,6 +610,20 @@ servicesApp.factory('schedulers', function() {
         },
 
         setScheduler: function(name, shown, cb) {
+            /* Set whether a scheduler should be shown.
+
+            Parameters:
+            -----------
+            name : str
+                The name of the scheduler.
+
+            shown : bool
+                Whether the scheduler should be shown or not.
+
+            cb : function
+                A callback invoked when the server call has finished.
+
+            */
             $.ajax({
                 url: '/me/api/scheduler/set/',
                 method: 'POST',
@@ -409,6 +639,23 @@ servicesApp.factory('schedulers', function() {
         },
 
         set: function(name, crn, shown, cb) {
+            /* Set whether a course should be shown within a scheduler.
+
+            Parameters:
+            -----------
+            name : str
+                The name of the scheduler.
+
+            crn : str
+                The CRN of the course that should be shown or hidden.
+
+            shown : bool
+                Whether or not the course should be shown.
+
+            cb : function
+                A callback invoked when the server call has finished.
+
+            */
             $.ajax({
                 url: '/me/api/scheduler/set/',
                 method: 'POST',
@@ -425,6 +672,20 @@ servicesApp.factory('schedulers', function() {
         },
 
         rename: function(name, newName, cb) {
+            /* Rename a scheduler.
+
+            Parameters:
+            -----------
+            name : str
+                The current name of the scheduler.
+
+            newName : str
+                The new name for the scheduler.
+
+            cb : function
+                A callback invoked when the server call has finished.
+
+            */
             $.ajax({
                 url: '/me/api/scheduler/rename/',
                 method: 'POST',
@@ -442,8 +703,19 @@ servicesApp.factory('schedulers', function() {
 });
 
 servicesApp.factory('requirements', function() {
+    /* A service to communicate with the Requirements server-side API.
+
+    */
     return {
         majors: function(cb) {
+            /* Get a list of all the majors.
+
+            Parameters:
+            -----------
+            cb : function
+                A callback invoked when the server call has finished.
+
+            */
             $.ajax({
                 url: '/requirements/api/majors/',
                 method: 'POST',
@@ -455,6 +727,17 @@ servicesApp.factory('requirements', function() {
         },
 
         degrees: function(major, cb) {
+            /* Get a list of the degrees for a major.
+
+            Parameters:
+            -----------
+            major : str
+                The name of the major.
+
+            cb : function
+                A callback invoked when the server call has finished.
+
+            */
             $.ajax({
                 url: '/requirements/api/degrees/',
                 method: 'POST',
@@ -469,6 +752,20 @@ servicesApp.factory('requirements', function() {
         },
 
         courses: function(major, degree, cb) {
+            /* Get the courses for a major and degree.
+
+            Parameters:
+            -----------
+            major : str
+                The name of a major.
+
+            degree : str
+                The name of the degree.
+
+            cb : function
+                A callback invoked when the server call has finished.
+
+            */
             var data;
             if (major && degree) {
                 data = {
@@ -495,8 +792,19 @@ servicesApp.factory('requirements', function() {
 });
 
 servicesApp.factory('util', function($timeout, $rootElement) {
+    /* A service containing miscellaneous utility functions.
+
+    */
     return {
         numToDistribution: function(num) {
+            /* Convert a number to a distribution string.
+
+            Parameters:
+            -----------
+            num : int
+                The number to be converted.
+
+            */
             var result = '';
 
             for (var i = 0; i < num; i++) {
@@ -507,6 +815,18 @@ servicesApp.factory('util', function($timeout, $rootElement) {
         },
 
         convertCourses: function(courses) {
+            /* Convert the courses to a more user-friendly format.
+
+            Parameters:
+            -----------
+            courses : array<Course (server-side) objects>
+                The array of courses to be converted.
+
+            Returns:
+            --------
+            An array of converted courses.
+
+            */
             var result = [];
             var numToDistribution = this.numToDistribution;
 
@@ -527,12 +847,37 @@ servicesApp.factory('util', function($timeout, $rootElement) {
         },
 
         enrollPercent: function(course) {
+            /* Calculate the enrollment percentage for a course.
+
+            Parameters:
+            -----------
+            course : Course object
+                The course to calculate the percentage for.
+
+            */
             if (course.enrollment <= course.max_enrollment)
                 return course.enrollment / course.max_enrollment * 100;
             return 0;
         },
 
         alert: function(msg, type, timeout, closeBtn) {
+            /* Show an alert at the top of the page.
+
+            Parameters:
+            -----------
+            msg : str
+                The message for the alert.
+
+            type : str
+                The type of the alert. ('info', 'warning', 'danger', 'success')
+
+            timeout : float
+                The time before the alert closes itself.
+
+            closeBtn : bool
+                Whether or not to show a close button.
+
+            */
             if (timeout === undefined)
                 timeout = 3000;
 
@@ -567,6 +912,26 @@ servicesApp.factory('util', function($timeout, $rootElement) {
         },
 
         dialog: function(prompt, buttons, cb, type) {
+            /* Show a dialog at the top of the page.
+
+            Parameters:
+            -----------
+            prompt : str
+                The prompt for the dialog.
+
+            buttons : array<Button objects>
+                An array of button objects. Each object should have two
+                properties, `html` and `val`. `html` is the string of html
+                used as the button's text. `val` is the value that will be
+                passed to the `cb` function.
+
+            cb : function
+                The callback function invoked when a button is pressed.
+
+            type : str
+                The type of dialog. ('info', 'warning', 'danger', 'success')
+
+            */
             var dialogDOM;
 
             if (type === undefined)
@@ -611,10 +976,27 @@ servicesApp.factory('util', function($timeout, $rootElement) {
         },
 
         hsvToHex: function(h, s, v) {
-            // Convert a HSV color to a hexadecimal RGB color. Uses the
-            // algorithm described here:
-            // http://en.wikipedia.org/wiki/HSL_and_HSV#From_HSV
-            // to convert from HSV to RGB, then converts to hexadecimal.
+            /*  Convert a HSV color to a hexadecimal RGB color. Uses the
+            algorithm described here:
+            http://en.wikipedia.org/wiki/HSL_and_HSV#From_HSV
+            to convert from HSV to RGB, then converts to hexadecimal.
+
+            Parameters:
+            -----------
+            h : float
+                The hue of the color.
+
+            s : float
+                The saturation of the color.
+
+            v : float
+                The value of the color.
+
+            Returns:
+            --------
+            A hexadecimal string representing the color.
+
+            */
             var r = 0, g = 0, b = 0;
 
             var chroma = s * v;
@@ -657,6 +1039,18 @@ servicesApp.factory('util', function($timeout, $rootElement) {
         },
 
         decToHex: function(dec) {
+            /* Convert a decimal number to a hexadecimal number.
+
+            Parameters:
+            -----------
+            dec : int
+                The decimal value to convert.
+
+            Returns:
+            --------
+            A hexadecimal representation of the number.
+
+            */
             var hexString = parseInt(dec, 10).toString(16);
             if (hexString == '0')
                 hexString += '0';

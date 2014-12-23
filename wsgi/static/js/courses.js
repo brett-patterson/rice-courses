@@ -2,32 +2,55 @@ var coursesApp = angular.module('coursesApp',
     ['angularUtils.directives.dirPagination', 'services']);
 
 coursesApp.config(function($interpolateProvider) {
+    /* Change the Angular interpolation symbols to prevent conflict with
+    Django.
+
+    */
     $interpolateProvider.startSymbol('{$');
     $interpolateProvider.endSymbol('$}');
 });
 
 coursesApp.controller('CoursesController',
     function($scope, filters, courseDetail, userCourses, requirements, util) {
+    /* Controls the operations on the 'Courses' page.
+
+    */
+    // The attribute used to order the course list.
     $scope.orderProp = 'course_id';
+
+    // An array of all courses.
     $scope.courses = [];
 
+    // An array of courses that pass the current filters.
     $scope.filteredCourses = [];
+
+    // An array of current filters.
     $scope.selectedFilters = [];
+
+    // An array of all filters.
     $scope.allFilters = [];
+
+    // A mapping of course CRN's to button styles.
     $scope.filterStyles = {};
 
+    // Whether or not the courses are being loaded.
     $scope.loadingCourses = false;
+
+    // The courses that the user has selected.
     $scope.userCourses = [];
 
-    $scope.updateCoursesForFilter = function() {
-        $scope.filteredCourses = filterManager.filter($scope.selectedFilters,
-                                                      $scope.courses);
-        sessionStorage.setItem('filters',
-                               JSON.stringify($scope.selectedFilters));
+    // The function used to determine an enrollment percentage.
+    $scope.enrollPercent = util.enrollPercent;
+
+    // The object describing the pagination state of the course list.
+    $scope.pagination = {
+        current: 1
     };
 
+    // The manager for the filters.
     var filterManager = new filters.FilterManager();
 
+    // The filter objects used to filter courses.
     var filterObjs = [
         {
             id: 'crn',
@@ -93,6 +116,17 @@ coursesApp.controller('CoursesController',
     ];
 
     $scope.colorFilter = function(filter, darken) {
+        /* Generate the appropriate color for a filter button.
+
+        Parameters:
+        -----------
+        filter : Filter object
+            The filter whose button should be colored.
+
+        darken : bool
+            Whether or not to darken the color slightly.
+
+        */
         var h = 360 / $scope.allFilters.length *
                 $scope.allFilters.indexOf(filter);
         var s = 1;
@@ -105,15 +139,28 @@ coursesApp.controller('CoursesController',
         };
     };
 
+    // Add the filter objects to the manager.
     filterObjs.forEach(function(filter) {
         filterManager.addFilter(filter);
         $scope.allFilters.push(filter);
     });
 
+    // Color the button for each filter.
     $scope.allFilters.forEach(function(filter) {
         $scope.colorFilter(filter, false);
     });
 
+    $scope.updateCoursesForFilter = function() {
+        /* Update the list of shown courses based on the current filters.
+
+        */
+        $scope.filteredCourses = filterManager.filter($scope.selectedFilters,
+                                                      $scope.courses);
+        sessionStorage.setItem('filters',
+                               JSON.stringify($scope.selectedFilters));
+    };
+
+    // Create the filter widget to display and edit filters.
     $scope.filterWidget = $('#courseFilterInput').filterWidget({
         filterKeywords: filterManager.keywordMap,
         placeholder: 'Filter',
@@ -125,19 +172,20 @@ coursesApp.controller('CoursesController',
         }
     });
 
+    // Restore filters from session storage, if available.
     var storedFilters = sessionStorage.getItem('filters');
     if (storedFilters !== null) {
-        JSON.parse(storedFilters).forEach(function(filter) {
+        $scope.selectedFilters = JSON.parse(storedFilters);
+        $scope.selectedFilters.forEach(function(filter) {
             $scope.filterWidget.addFilter(filter);
         });
+        $scope.updateCoursesForFilter();
     }
 
-    var filterString = sessionStorage.getItem('filters');
-    if (filterString)
-        $scope.selectedFilters = JSON.parse(filterString);
-        $scope.updateCoursesForFilter();
-
     function getCourses() {
+        /* Get the list of all courses.
+
+        */
         $scope.loadingCourses = true;
         $.ajax({
             'url': '/courses/api/all/',
@@ -153,6 +201,9 @@ coursesApp.controller('CoursesController',
     };
 
     function getUserCourses() {
+        /* Get the list of user-selected courses.
+
+        */
         userCourses.get(function(result) {
             $scope.$evalAsync(function() {
                 $scope.userCourses = util.convertCourses(result);
@@ -164,6 +215,19 @@ coursesApp.controller('CoursesController',
     getCourses();
 
     $scope.isUserCourse = function(course) {
+        /* Determine whether a course has been selected by the user.
+
+        Parameters:
+        -----------
+        course : Course object
+            The course to examine.
+
+        Returns:
+        --------
+        A boolean representing whether or not the user has selected the
+        given course.
+
+        */
         for (var i = 0; i < $scope.userCourses.length; i++) {
             if ($scope.userCourses[i].crn == course.crn)
                 return true;
@@ -172,6 +236,14 @@ coursesApp.controller('CoursesController',
     };
 
     $scope.toggleUserCourse = function(course) {
+        /* Toggle whether a course has been selected by the user.
+
+        Parameters:
+        -----------
+        course : Course object
+            The course to toggle.
+
+        */
         var td = $('#uc-' + course.crn);
         var span = td.find('span');
         if ($scope.isUserCourse(course)) {
@@ -193,13 +265,15 @@ coursesApp.controller('CoursesController',
         }
     };
 
-    $scope.enrollPercent = util.enrollPercent;
-
-    $scope.pagination = {
-        current: 1
-    };
-
     $scope.order = function(attr) {
+        /* Order the courses by a given attribute.
+
+        Parameters:
+        -----------
+        attr : str
+            The attribute to order by.
+
+        */
         current = $scope.orderProp;
         if (current == attr && current.indexOf('-') == 0) {
             $scope.orderProp = current.substring(0);
@@ -213,6 +287,14 @@ coursesApp.controller('CoursesController',
     };
 
     $scope.addFilterField = function(filterField) {
+        /* Add a filter to the filter widget.
+
+        Parameters:
+        -----------
+        filterField : str
+            The name of the filter field.
+
+        */
         $scope.filterWidget.addFilter({
             field: filterField,
             name: filterManager.keywordMap[filterField].cleanName,
@@ -221,6 +303,14 @@ coursesApp.controller('CoursesController',
     };
 
     $scope.courseDetail = function(course) {
+        /* Open a dialog showing the course details.
+
+        Parameters:
+        -----------
+        course : Course object
+            The course to show details for.
+
+        */
         courseDetail.open(course);
     };
 });
