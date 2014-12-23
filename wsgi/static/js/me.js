@@ -413,8 +413,7 @@ meApp.controller('meController',
                             });
                         } else {
                             util.alert('No alternate, non-conflicting ' +
-                                       'sections found for ' + course_id +
-                                       '.');
+                                       'sections found.');
                         }
                     });
             }
