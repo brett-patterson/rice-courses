@@ -8,11 +8,17 @@ from models import Major
 
 @csrf_exempt
 def majors(request):
+    """ Get a list of all majors.
+
+    """
     return HttpResponse(json.dumps([m.name for m in Major.objects.all()]))
 
 
 @csrf_exempt
 def degrees(request):
+    """ Get a list of all degrees within a major.
+
+    """
     major_name = request.POST.get('major')
 
     if major_name:
@@ -25,6 +31,9 @@ def degrees(request):
 
 @csrf_exempt
 def courses(request):
+    """ Get a list of courses within a major (optionally also within a degree).
+
+    """
     major_name = request.POST.get('major')
     degree = request.POST.get('degree')
 

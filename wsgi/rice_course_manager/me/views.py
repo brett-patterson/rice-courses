@@ -12,6 +12,9 @@ from models import Scheduler
 
 @login_required(login_url='/login/')
 def index(request):
+    """ The index page for the 'Me' tab.
+
+    """
     context = {
         'nav_active': 'me'
     }
@@ -20,6 +23,9 @@ def index(request):
 
 @login_required(login_url='/login/')
 def export(request, scheduler_name):
+    """ Export a scheduler's CRNs for all shown courses.
+
+    """
     if scheduler_name:
         profile = request.user.userprofile
         scheduler = Scheduler.objects.get(name=scheduler_name)
@@ -35,6 +41,9 @@ def export(request, scheduler_name):
 @csrf_exempt
 @login_required(login_url='/login/')
 def courses(request):
+    """ Get all of the courses selected by the user.
+
+    """
     course_list = request.user.userprofile.courses.all()
     return HttpResponse(json.dumps([c.json() for c in course_list]),
                         content_type='application/json')
@@ -43,6 +52,9 @@ def courses(request):
 @csrf_exempt
 @login_required(login_url='/login/')
 def add_course(request):
+    """ Select a course for the user.
+
+    """
     crn = request.POST.get('crn')
 
     if crn:
@@ -59,6 +71,9 @@ def add_course(request):
 @csrf_exempt
 @login_required(login_url='/login/')
 def remove_course(request):
+    """ Deselect a course for the user.
+
+    """
     crn = request.POST.get('crn')
 
     if crn:
@@ -74,6 +89,18 @@ def remove_course(request):
 
 def overlap(course_one, course_two):
     """ Check whether course one overlaps with course two.
+
+    Parameters:
+    -----------
+    course_one : Course
+        The first course.
+
+    course_two : Course
+        The second course.
+
+    Returns:
+    --------
+    A boolean representing whether the two courses overlap in time.
 
     """
     days_one = course_one.meeting_days.split(',')
@@ -99,6 +126,9 @@ def overlap(course_one, course_two):
 @csrf_exempt
 @login_required(login_url='/login/')
 def suggest_alternate(request):
+    """ Suggest alternate sections for a given course.
+
+    """
     crn = request.POST.get('crn')
 
     if crn:
@@ -127,6 +157,9 @@ def suggest_alternate(request):
 @csrf_exempt
 @login_required(login_url='/login/')
 def schedulers(request):
+    """ Get all the schedulers for the user.
+
+    """
     profile = request.user.userprofile
     names = [s.name for s in Scheduler.objects.filter(user_profile=profile)]
 
@@ -136,6 +169,9 @@ def schedulers(request):
 @csrf_exempt
 @login_required(login_url='/login/')
 def add_scheduler(request):
+    """ Add a scheduler for the user.
+
+    """
     name = request.POST.get('name')
 
     if name:
@@ -150,6 +186,9 @@ def add_scheduler(request):
 @csrf_exempt
 @login_required(login_url='/login/')
 def remove_scheduler(request):
+    """ Remove a scheduler for the user.
+
+    """
     name = request.POST.get('name')
 
     if name:
@@ -164,6 +203,9 @@ def remove_scheduler(request):
 @csrf_exempt
 @login_required(login_url='/login/')
 def set_shown(request):
+    """ Set a course to be shown or hidden.
+
+    """
     name = request.POST.get('name')
     crn = request.POST.get('crn')
     shown = request.POST.get('shown')
@@ -189,6 +231,9 @@ def set_shown(request):
 @csrf_exempt
 @login_required(login_url='/login/')
 def show_map(request):
+    """ Get the mapping of shown courses for a scheduler.
+
+    """
     name = request.POST.get('name')
 
     if name:
@@ -207,6 +252,9 @@ def show_map(request):
 @csrf_exempt
 @login_required(login_url='/login/')
 def rename(request):
+    """ Rename a scheduler.
+
+    """
     name = request.POST.get('name')
     new = request.POST.get('new')
 

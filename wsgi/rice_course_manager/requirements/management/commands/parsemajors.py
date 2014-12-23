@@ -8,6 +8,9 @@ from requirements.models import Major, MajorRequirement
 
 
 class Command(BaseCommand):
+    """ Parse a JSON file of major requirements into Requirement objects.
+
+    """
     help = 'Parse a JSON file of major requirements'
 
     def add_arguments(self, parser):

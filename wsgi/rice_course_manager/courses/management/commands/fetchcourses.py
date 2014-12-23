@@ -7,6 +7,7 @@ from courses.models import Course
 
 COURSE_URL = 'https://courses.rice.edu/admweb/!SWKSECX.main'
 
+# Maps attributes in the course XML feed to attributes on the Course model.
 ATTRIBUTE_MAP = {
     'course-number': 'course_number',
     'credit-hours': 'credits',
@@ -25,7 +26,22 @@ ATTRIBUTE_MAP = {
 
 
 def fetch_courses(term, verbose=False):
-    """ Get all Rice courses for the current term.
+    """ Get all courses for the given term.
+
+    Parameters:
+    -----------
+    term : str
+        The term to fetch courses from. Should be in the form of 'yyyySS',
+        where 'yyyy' is the 4-digit year and 'SS' is the 2-digit semester code.
+        The semester codes are the following:
+            10 - Fall
+            20 - Spring
+            30 - Summer
+        For example, the Spring semester of 2015 is represented as '201520'.
+
+    verbose : bool [default False]
+        Whether or not to show messages throughout the process of fetching
+        courses.
 
     """
     if verbose:
@@ -60,6 +76,10 @@ def fetch_courses(term, verbose=False):
 
 
 class Command(BaseCommand):
+    """ A command to fetch courses for a given term and import them into
+    the database.
+
+    """
     help = 'Update courses in the database'
 
     def add_arguments(self, parser):

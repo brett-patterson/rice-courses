@@ -15,7 +15,8 @@ DATA_URL = 'https://esther.rice.edu/selfserve/!swkscmp.ajax'
 COURSE_URL = 'https://courses.rice.edu/admweb/!SWKSECX.main'
 LOGIN_URL = 'https://esther.rice.edu/selfserve/twbkwbis.P_ValLogin/'
 
-
+# Log into Esther using a simulated browser to store the necessary login
+# cookies for future requests.
 br = mechanize.Browser()
 cookie_jar = cookielib.CookieJar()
 br.set_cookiejar(cookie_jar)
@@ -40,15 +41,59 @@ session.cookies = cookie_jar
 
 
 def clean_text(text):
+    """ Strip text and remove newline characters.
+
+    Parameters:
+    -----------
+    text : str
+        The text to be cleaned.
+
+    Returns:
+    --------
+    A cleaned version of the text.
+
+    """
     return text.strip().replace('\\n', '')
 
 
 def convert_date(text):
+    """ Convert a date string to a Python date object. Dates are parsed using
+    the format defined in the setting `EVAL_DATE_FORMAT`.
+
+    Parameters:
+    -----------
+    text : str
+        The date string to be converted.
+
+    Returns:
+    --------
+    A Python date object.
+
+    """
     date_text = clean_text(text).replace('.', '')
     return datetime.strptime(date_text, settings.EVAL_DATE_FORMAT)
 
 
 def parse_evaluation(text, course, evaluation_type):
+    """ Convert a block of HTML text to an Evaluation object.
+
+    Parameters:
+    -----------
+    text : str
+        The HTML content.
+
+    course : Course
+        The course that this evaluation is for.
+
+    evaluation_type : str
+        Whether this a course or instructor evaluation. Accepts the values
+        'c' or 'i'.
+
+    Returns:
+    --------
+    An Evaluation object or None if the HTML cannot be correctly parsed.
+
+    """
     soup = BeautifulSoup(text)
     headers = soup.find_all('header')
 
@@ -91,6 +136,7 @@ def parse_evaluation(text, course, evaluation_type):
     return evaluation
 
 
+# Fetch and cache a list of term codes.
 terms_response = session.post(
     url=DATA_URL,
     data={
@@ -107,17 +153,46 @@ for term_element in term_root.findall('TERM'):
         term_codes.insert(0, code)
 
 
-def sub_element_text(elem, sub_elem_name, default=''):
-    """ Get the text of a sub element if it exists
+def child_element_text(elem, child_elem_name, default=''):
+    """ Find an XML child element's text, if it exists.
+
+    Parameters:
+    -----------
+    elem : Element
+        The XML element to look within.
+
+    child_elem_name : str
+        The name of the child element to look for.
+
+    default : str [default '']
+        The default to return if no child exists.
+
+
+    Returns:
+    --------
+    The child element's text or `default`.
 
     """
-    sub_elem = elem.find(sub_elem_name)
-    if sub_elem is not None:
-        return sub_elem.text
+    child_elem = elem.find(child_elem_name)
+    if child_elem is not None:
+        return child_elem.text
     return default
 
 
 def crn_for_course_evaluation(course):
+    """ Find a CRN for the given course that has valid evaluations. This method
+    will traverse backwards through the terms in order to find a valid CRN.
+
+    Parameters:
+    -----------
+    course : Course
+        The course to look for.
+
+    Returns:
+    --------
+    A CRN string or None.
+
+    """
     for term in term_codes:
         course_response = session.post(
             url=COURSE_URL,
@@ -132,10 +207,10 @@ def crn_for_course_evaluation(course):
         crn = None
 
         for course_element in course_root.findall('course'):
-            subject = sub_element_text(course_element, 'subject')
-            course_num = sub_element_text(course_element, 'course-number')
-            title = sub_element_text(course_element, 'title')
-            instructor = sub_element_text(course_element, 'instructor')
+            subject = child_element_text(course_element, 'subject')
+            course_num = child_element_text(course_element, 'course-number')
+            title = child_element_text(course_element, 'title')
+            instructor = child_element_text(course_element, 'instructor')
             if ((course.subject == subject and
                     course.course_number == int(course_num))
                     or (course.title == title and
@@ -149,6 +224,18 @@ def crn_for_course_evaluation(course):
 
 
 def get_course_evaluation(course):
+    """ Get the course evalution for a given course.
+
+    Parameters:
+    -----------
+    course : Course
+        The course to fetch evaluations for.
+
+    Returns:
+    --------
+    An Evaluation object or None.
+
+    """
     crn = crn_for_course_evaluation(course)
     if crn is None:
         return crn
@@ -167,6 +254,18 @@ def get_course_evaluation(course):
 
 
 def webid_for_instructor_evaluation(course):
+    """ Find an instructor's corresponding web ID.
+
+    Parameters:
+    -----------
+    course : Course
+        The course whose instructor should be looked up.
+
+    Returns:
+    --------
+    A tuple of (term, webid) or (None, None)
+
+    """
     for term in term_codes:
         instructor_response = session.post(
             url=DATA_URL,
@@ -184,6 +283,18 @@ def webid_for_instructor_evaluation(course):
 
 
 def get_instructor_evaluation(course):
+    """ Get the instructor evalution for a given course.
+
+    Parameters:
+    -----------
+    course : Course
+        The course to fetch evaluations for.
+
+    Returns:
+    --------
+    An Evaluation object or None.
+
+    """
     term, webid = webid_for_instructor_evaluation(course)
     if webid is None:
         return webid

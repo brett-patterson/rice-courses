@@ -12,6 +12,9 @@ from courses.models import Course
 
 @login_required(login_url='/login/')
 def index(request):
+    """ The index page for the 'Courses' tab.
+
+    """
     context = {
         'items_per_page': settings.API_ITEMS_PER_PAGE,
         'nav_active': 'courses'
@@ -22,12 +25,20 @@ def index(request):
 
 @csrf_exempt
 def all(request):
+    """ Returns a list of all courses as JSON objects.
+
+    """
     return HttpResponse(json.dumps([c.json() for c in Course.objects.all()]),
                         content_type='application/json')
 
 
 @csrf_exempt
 def page(request):
+    """ Returns a page of courses. The number of courses in a page is defined
+    in the setting `API_ITEMS_PER_PAGE`. Courses are represented as JSON
+    objects.
+
+    """
     page_num = request.POST.get('page_num')
 
     if page_num:
@@ -61,6 +72,9 @@ def page(request):
 
 @csrf_exempt
 def get_course(request):
+    """ Returns the course corresponding to the given CRN as a JSON object.
+
+    """
     crn = request.POST.get('crn')
 
     if crn:

@@ -8,13 +8,23 @@ from django.db import models
 
 
 class HelpArticle(Sortable):
+    """ A model to represent a help article.
+
+    """
     class Meta(Sortable.Meta):
         pass
 
+    # The title of the article.
     title = models.CharField(max_length=100)
+
+    # The filename of the markdown file containing the article content.
+    # Filenames should be relative to the setting `HELP_DATA_DIR`.
     filename = models.CharField(max_length=255)
 
     def __str__(self):
+        """ Represent the article as its title.
+
+        """
         return self.title
 
     def render_html(self):
@@ -26,29 +36,46 @@ class HelpArticle(Sortable):
 
 
 class Tutorial(models.Model):
+    """ A model to represent a tutorial. A tutorial is a collection of
+    panels used to walk the user through the usage of a certain page.
+
+    """
+    # The name of the tutorial. This should correspond to the URL that the
+    # tutorial will be shown on.
     name = models.CharField(max_length=100, primary_key=True)
 
+    # Whether or not the tutorial should be interactive.
     interactive = models.BooleanField(default=True)
 
+    # The thickness of the arrows.
     arrow_weight = models.PositiveIntegerField(default=1)
 
+    # The color of the arrows.
     arrow_color = models.CharField(max_length=100, default='white')
 
+    # The distance of the arrows.
     arrow_distance = models.PositiveIntegerField(default=80)
 
+    # Whether or not the tutorial should have a dark backdrop behind it.
     backdrop = models.BooleanField(default=True)
 
+    # Whether or not the tutorial is closable.
     closable = models.BooleanField(default=True)
 
+    # The amount padding surrounding each annotation.
     annotation_padding = models.PositiveIntegerField(default=10)
 
+    # Whether or not to show a panel counter.
     counter = models.BooleanField(default=True)
 
     def __str__(self):
+        """ Represent a tutorial as its name.
+
+        """
         return self.name
 
     def json(self):
-        """ Return a json representation of the tutorial.
+        """ Convert the tutorial to a JSON-serializable dictionary.
 
         """
         return {
@@ -67,7 +94,7 @@ class Tutorial(models.Model):
 
     @classmethod
     def from_json(cls, json_obj):
-        """ Create a Tutorial object from a JSON representation.
+        """ Create a Tutorial object from a JSON dictionary.
 
         """
         tutorial = cls()
@@ -99,24 +126,38 @@ class Tutorial(models.Model):
 
 
 class Panel(models.Model):
+    """ A model to represent a panel within a tutorial. Panels are collections
+    of annotations.
+
+    """
+    # The name of the panel.
     name = models.CharField(max_length=100, default='')
 
+    # The tutorial this panel corresponds to.
     tutorial = models.ForeignKey(Tutorial)
 
     def json(self):
-        """ Return a json representation of the panel.
+        """ Convert the panel to a JSON-serializable dictionary.
 
         """
         return [a.json() for a in self.annotation_set.all()]
 
 
 class Annotation(models.Model):
+    """ A model to represent an annotation within a panel. Annotations
+    are used to highlight and describe and element within the HTML DOM.
+
+    """
+    # The HTML selector for the annotation.
     selector = models.CharField(max_length=255)
 
+    # Whether or not to show an arrow for the annotation.
     arrow = models.BooleanField(default=True)
 
+    # The text for the annotation.
     text = models.TextField()
 
+    # The position for the annotation relative to the element.
     position = models.CharField(max_length=6, choices=(
         ('top', 'top'),
         ('bottom', 'bottom'),
@@ -124,12 +165,14 @@ class Annotation(models.Model):
         ('right', 'right')
     ))
 
+    # The padding between the element and the annotation.
     padding = models.FloatField(default=10)
 
+    # The panel this annotation corresponds to.
     panel = models.ForeignKey(Panel)
 
     def json(self):
-        """ Return a json representation of the annotation.
+        """ Convert the annotation to a JSON-serializable dictionary.
 
         """
         return {

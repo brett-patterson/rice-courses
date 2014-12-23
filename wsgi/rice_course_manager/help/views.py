@@ -9,6 +9,9 @@ from help.models import HelpArticle, Tutorial
 
 
 def index(request):
+    """ The index page for the 'Help' tab.
+
+    """
     context = {
         'nav_active': 'help',
         'articles': HelpArticle.objects.all()
@@ -19,6 +22,9 @@ def index(request):
 
 @csrf_exempt
 def tutorial(request):
+    """ Fetch a tutorial from the database.
+
+    """
     tutorial_name = request.POST.get('tutorial')
 
     if tutorial_name:
