@@ -275,6 +275,33 @@ def webid_for_instructor_evaluation(course):
             }
         )
 
+        course_response = session.post(
+            url=COURSE_URL,
+            data={
+                'term': term,
+                'subj': course.subject
+            }
+        )
+
+        course_response_text = course_response.text.encode('utf-8')
+        course_root = ElementTree.fromstring(course_response_text)
+        crn = None
+
+        for course_element in course_root.findall('course'):
+            subject = child_element_text(course_element, 'subject')
+            course_num = child_element_text(course_element, 'course-number')
+            title = child_element_text(course_element, 'title')
+            instructor = child_element_text(course_element, 'instructor')
+            if ((course.subject == subject and
+                    course.course_number == int(course_num))
+                    or (course.title == title and
+                        course.instructor == instructor)):
+                crn = course_element.find('crn').text
+                break
+
+        if crn is None:
+            continue
+
         root = ElementTree.fromstring(instructor_response.text.encode('utf-8'))
         for instructor_element in root.findall('INSTRUCTOR'):
             if instructor_element.get('NAME') == course.instructor:
