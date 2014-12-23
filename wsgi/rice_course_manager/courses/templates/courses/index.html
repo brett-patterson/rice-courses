@@ -18,9 +18,8 @@
         <div class="course-filters">
             <button ng-repeat="filter in allFilters"
                     ng-click="addFilterField(filter.keywords[0])"
-                    class="btn btn-filter" ng-style="filterStyles[filter.id]"
-                    ng-mouseenter="colorFilter(filter, true)"
-                    ng-mouseleave="colorFilter(filter, false)">
+                    class="btn btn-filter"
+                    color-darken-toggle="{$ $index $}">
                     {$ filter.cleanName $}
             </button>
         </div>

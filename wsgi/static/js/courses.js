@@ -30,9 +30,6 @@ coursesApp.controller('CoursesController',
     // An array of all filters.
     $scope.allFilters = [];
 
-    // A mapping of course CRN's to button styles.
-    $scope.filterStyles = {};
-
     // Whether or not the courses are being loaded.
     $scope.loadingCourses = false;
 
@@ -115,40 +112,37 @@ coursesApp.controller('CoursesController',
         }
     ];
 
-    $scope.colorFilter = function(filter, darken) {
-        /* Generate the appropriate color for a filter button.
-
-        Parameters:
-        -----------
-        filter : Filter object
-            The filter whose button should be colored.
-
-        darken : bool
-            Whether or not to darken the color slightly.
-
-        */
-        var h = 360 / $scope.allFilters.length *
-                $scope.allFilters.indexOf(filter);
-        var s = 1;
-        var v = darken === true ? 0.75 : 0.85;
-
-        var color = util.hsvToHex(h, s, v);
-
-        $scope.filterStyles[filter.id] = {
-            'background-color': color
-        };
-    };
-
     // Add the filter objects to the manager.
     filterObjs.forEach(function(filter) {
         filterManager.addFilter(filter);
         $scope.allFilters.push(filter);
     });
 
-    // Color the button for each filter.
-    $scope.allFilters.forEach(function(filter) {
-        $scope.colorFilter(filter, false);
-    });
+    $scope.colorForFilterButton = function(index, total, darken) {
+        /* Generate the appropriate color for a filter button.
+
+        Parameters:
+        -----------
+        index : int
+            The index of the filter.
+
+        total : int
+            The total number of filters.
+
+        darken : bool
+            Whether or not to darken the color slightly.
+
+        Returns:
+        --------
+        A HTML color string.
+
+        */
+        var h = 360 / total * index;
+        var s = 1;
+        var v = darken === true ? 0.75 : 0.85;
+
+        return util.hsvToHex(h, s, v);
+    };
 
     $scope.updateCoursesForFilter = function() {
         /* Update the list of shown courses based on the current filters.
@@ -312,5 +306,31 @@ coursesApp.controller('CoursesController',
 
         */
         courseDetail.open(course);
+    };
+});
+
+coursesApp.directive('colorDarkenToggle', function() {
+    /* A directive that colors filter buttons and binds the appropriate mouse
+    handlers.
+
+    */
+    return {
+        restrict: 'A',
+        link: function($scope, element, attrs) {
+            element = $(element);
+
+            var index = parseInt(attrs.colorDarkenToggle);
+            var total = $scope.allFilters.length;
+
+            var color = $scope.colorForFilterButton(index, total, false);
+            element.css('background-color', color);
+
+            element.hover(function() {
+                var darkened = $scope.colorForFilterButton(index, total, true);
+                element.css('background-color', darkened);
+            }, function() {
+                element.css('background-color', color);
+            });
+        }
     };
 });
