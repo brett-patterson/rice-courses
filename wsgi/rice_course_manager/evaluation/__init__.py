@@ -190,7 +190,7 @@ def crn_for_course_evaluation(course):
 
     Returns:
     --------
-    A CRN string or None.
+    A tuple of (term, crn) or (None, None)
 
     """
     for term in term_codes:
@@ -219,8 +219,8 @@ def crn_for_course_evaluation(course):
                 break
 
         if crn is not None:
-            return crn
-    return None
+            return (term, crn)
+    return (None, None)
 
 
 def get_course_evaluation(course):
@@ -236,14 +236,14 @@ def get_course_evaluation(course):
     An Evaluation object or None.
 
     """
-    crn = crn_for_course_evaluation(course)
+    term, crn = crn_for_course_evaluation(course)
     if crn is None:
         return crn
 
     response = session.post(
         url=EVALS_URL,
         data={
-            'p_term': '201420',
+            'p_term': term,
             'p_type': 'Course',
             'p_crn': crn,
             'p_confirm': '1'
