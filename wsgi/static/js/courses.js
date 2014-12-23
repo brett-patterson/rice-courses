@@ -7,30 +7,106 @@ coursesApp.config(function($interpolateProvider) {
 });
 
 coursesApp.controller('CoursesController',
-    function($scope, filters, courseDetail, userCourses, util) {
+    function($scope, filters, courseDetail, userCourses, requirements, util) {
     $scope.orderProp = 'course_id';
     $scope.courses = [];
 
     $scope.filteredCourses = [];
-    $scope.filters = [];
+    $scope.selectedFilters = [];
+    $scope.allFilters = [];
+    $scope.filterStyles = {};
 
     $scope.loadingCourses = false;
     $scope.userCourses = [];
 
     $scope.updateCoursesForFilter = function() {
-        $scope.filteredCourses = filterManager.filter($scope.filters,
+        $scope.filteredCourses = filterManager.filter($scope.selectedFilters,
                                                       $scope.courses);
-        sessionStorage.setItem('filters', JSON.stringify($scope.filters));
+        sessionStorage.setItem('filters',
+                               JSON.stringify($scope.selectedFilters));
     };
 
-    var filterManager = filters.defaultFilterManager();
+    var filterManager = new filters.FilterManager();
+
+    var filterObjs = [
+        {
+            id: 'crn',
+            cleanName: 'CRN',
+            keywords: ['crn'],
+            factory: filters.containsFactory
+        },
+
+        {
+            id: 'course_id',
+            cleanName: 'Course ID',
+            keywords: ['courseid', 'course_id', 'course id'],
+            factory: filters.containsFactory
+        },
+
+        {
+            id: 'title',
+            cleanName: 'Title',
+            keywords: ['title'],
+            factory: filters.containsFactory
+        },
+
+        {
+            id: 'instructor',
+            cleanName: 'Instructor',
+            keywords: ['instructor'],
+            factory: filters.containsFactory
+        },
+
+        {
+            id: 'meeting',
+            cleanName: 'Meetings',
+            keywords: ['meeting', 'meetings'],
+            factory: filters.containsFactory
+        },
+
+        {
+            id: 'credits',
+            cleanName: 'Credits',
+            keywords: ['credits'],
+            factory: filters.containsFactory
+        },
+
+        {
+            id: 's_distribution',
+            cleanName: 'Distribution',
+            keywords: ['dist', 'distribution'],
+            factory: filters.exactFactory
+        }
+    ];
+
+    $scope.colorFilter = function(filter, darken) {
+        var h = 360 / $scope.allFilters.length *
+                $scope.allFilters.indexOf(filter);
+        var s = 1;
+        var v = darken === true ? 0.75 : 0.85;
+
+        var color = util.hsvToHex(h, s, v);
+
+        $scope.filterStyles[filter.id] = {
+            'background-color': color
+        };
+    };
+
+    filterObjs.forEach(function(filter) {
+        filterManager.addFilter(filter);
+        $scope.allFilters.push(filter);
+    });
+
+    $scope.allFilters.forEach(function(filter) {
+        $scope.colorFilter(filter, false);
+    });
 
     $scope.filterWidget = $('#courseFilterInput').filterWidget({
         filterKeywords: filterManager.keywordMap,
         placeholder: 'Filter',
         filtersChanged: function(filters) {
             $scope.$evalAsync(function() {
-                $scope.filters = filters;
+                $scope.selectedFilters = filters;
                 $scope.updateCoursesForFilter();
             });
         }
@@ -45,7 +121,7 @@ coursesApp.controller('CoursesController',
 
     var filterString = sessionStorage.getItem('filters');
     if (filterString)
-        $scope.filters = JSON.parse(filterString);
+        $scope.selectedFilters = JSON.parse(filterString);
         $scope.updateCoursesForFilter();
 
     function getCourses() {

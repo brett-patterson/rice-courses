@@ -16,17 +16,15 @@
 {% block content %}
     <div class="courseList" ng-app="coursesApp" ng-controller="CoursesController">
         <div class="course-filters">
-            <h4>
-            <button class="btn btn-crn" ng-click="addFilterField('crn')">CRN</button>
-            <button class="btn btn-courseid" ng-click="addFilterField('course_id')">Course ID</button>
-            <button class="btn btn-title" ng-click="addFilterField('title')">Title</button>
-            <button class="btn btn-instructor" ng-click="addFilterField('instructor')">Instructor</button>
-            <button class="btn btn-meetings" ng-click="addFilterField('meeting')">Meetings</button>
-            <button class="btn btn-credits" ng-click="addFilterField('credits')">Credits</button>
-            <button class="btn btn-distribution" ng-click="addFilterField('distribution')">Distribution</button>
-            </h4>
-            <div id="courseFilterInput" />
+            <button ng-repeat="filter in allFilters"
+                    ng-click="addFilterField(filter.keywords[0])"
+                    class="btn btn-filter" ng-style="filterStyles[filter.id]"
+                    ng-mouseenter="colorFilter(filter, true)"
+                    ng-mouseleave="colorFilter(filter, false)">
+                    {$ filter.cleanName $}
+            </button>
         </div>
+        <div id="courseFilterInput"></div>
         <div class="table-responsive">
             <table class="table table-hover">
                 <thead>

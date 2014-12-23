@@ -68,61 +68,6 @@ servicesApp.factory('filters', function() {
                 var needle = value.toLowerCase();
                 return haystack.indexOf(needle) > -1;
             };
-        },
-
-        defaultFilterManager: function() {
-            manager = new this.FilterManager();
-
-            manager.addFilter({
-                id: 'crn',
-                cleanName: 'CRN',
-                keywords: ['crn'],
-                factory: this.containsFactory
-            });
-
-            manager.addFilter({
-                id: 'course_id',
-                cleanName: 'Course ID',
-                keywords: ['courseid', 'course_id', 'course id'],
-                factory: this.containsFactory
-            });
-
-            manager.addFilter({
-                id: 'title',
-                cleanName: 'Title',
-                keywords: ['title'],
-                factory: this.containsFactory
-            });
-
-            manager.addFilter({
-                id: 'instructor',
-                cleanName: 'Instructor',
-                keywords: ['instructor'],
-                factory: this.containsFactory
-            });
-
-            manager.addFilter({
-                id: 'meeting',
-                cleanName: 'Meetings',
-                keywords: ['meeting', 'meetings'],
-                factory: this.containsFactory
-            });
-
-            manager.addFilter({
-                id: 'credits',
-                cleanName: 'Credits',
-                keywords: ['credits'],
-                factory: this.containsFactory
-            });
-
-            manager.addFilter({
-                id: 's_distribution',
-                cleanName: 'Distribution',
-                keywords: ['dist', 'distribution'],
-                factory: this.exactFactory
-            });
-
-            return manager;
         }
     };
 });
@@ -610,6 +555,54 @@ servicesApp.factory('util', function($timeout, $rootElement) {
 
             $rootElement.prepend(dialogDOM);
             dialogDOM.slideDown();
+        },
+
+        hsvToHex: function(h, s, v) {
+            var r = 0, g = 0, b = 0;
+
+            var chroma = s * v;
+            var h_prime = h / 60;
+            var x = chroma * (1 - Math.abs(h_prime % 2 - 1));
+
+            if (h_prime >= 0 && h_prime < 1) {
+                r = chroma;
+                g = x;
+                b = 0;
+            } else if (h_prime >= 1 && h_prime < 2) {
+                r = x;
+                g = chroma;
+                b = 0;
+            } else if (h_prime >= 2 && h_prime < 3) {
+                r = 0;
+                g = chroma;
+                b = x;
+            } else if (h_prime >= 3 && h_prime < 4) {
+                r = 0;
+                g = x;
+                b = chroma;
+            } else if (h_prime >= 4 && h_prime < 5) {
+                r = x;
+                g = 0;
+                b = chroma;
+            } else if (h_prime >= 5 && h_prime < 6) {
+                r = chroma;
+                g = 0;
+                b = x;
+            }
+
+            function rgbToHex(rgbVal) {
+                var hexString = parseInt(rgbVal * 255, 10).toString(16);
+                if (hexString == '0')
+                    hexString += '0';
+
+                return hexString;
+            }
+
+            r = rgbToHex(r);
+            g = rgbToHex(g);
+            b = rgbToHex(b);
+
+            return '#' + r.toString(16) + g.toString(16) + b.toString(16);
         }
     };
 });
