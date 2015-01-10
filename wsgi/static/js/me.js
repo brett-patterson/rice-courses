@@ -8,14 +8,19 @@ function _slugify(text) {
 
     Returns:
     --------
-    A converted version of the text.
+    A 'slugified' string.
 
     */
     return text.toString().toLowerCase()
+                // Convert whitespace to dashes
                .replace(/\s+/g, '-')
+               // Remove any characters that are not a-z, A-Z, 0-9, or -
                .replace(/[^\w\-]+/g, '')
+               // Convert multiple dashes into one dash
                .replace(/\-\-+/g, '-')
+               // Remove dashes from the start of the string
                .replace(/^-+/, '')
+               // Remove dashes from the end of the string
                .replace(/-+$/, '');
 }
 
