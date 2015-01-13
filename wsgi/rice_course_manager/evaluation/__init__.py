@@ -29,12 +29,12 @@ br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
 br.addheaders = [('User-agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.122 Safari/537.36')]  # noqa
 
 
-br.open(LOGIN_URL)
-br.select_form(name="loginform")
-br['sid'] = 'S01199609'
-br['PIN'] = 'is9d9enuf'
-br.submit()
-br.close()
+# br.open(LOGIN_URL)
+# br.select_form(name="loginform")
+# br['sid'] = 'S01199609'
+# br['PIN'] = 'is9d9enuf'
+# br.submit()
+# br.close()
 
 session = Session()
 session.cookies = cookie_jar
