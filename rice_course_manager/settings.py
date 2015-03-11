@@ -17,10 +17,8 @@ SECRET_KEY = os.environ.get('SECRET_KEY', DEFAULT_SECRET_KEY)
 DEBUG = os.environ.get('RCM_REMOTE') is None
 TEMPLATE_DEBUG = DEBUG
 
-if DEBUG:
-    BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-else:
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+print BASE_DIR
 
 if DEBUG:
     ALLOWED_HOSTS = []
