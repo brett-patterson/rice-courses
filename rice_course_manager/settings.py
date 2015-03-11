@@ -17,7 +17,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', DEFAULT_SECRET_KEY)
 DEBUG = os.environ.get('RCM_REMOTE') is None
 TEMPLATE_DEBUG = DEBUG
 
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 if DEBUG:
     ALLOWED_HOSTS = []
@@ -53,7 +53,7 @@ INSTALLED_APPS = (
 )
 
 TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'rice_course_manager/templates'),
+    os.path.join(BASE_DIR, 'templates'),
 )
 
 MIDDLEWARE_CLASSES = (
@@ -110,7 +110,7 @@ USE_TZ = False
 STATIC_URL = '/static/'
 STATIC_ROOT = 'staticfiles'
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(os.path.dirname(BASE_DIR), 'static'),
 )
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()

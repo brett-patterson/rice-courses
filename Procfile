@@ -1,1 +1,1 @@
-web: gunicorn rice_course_manager.wsgi --log-file -
+web: cd rice_course_manager && gunicorn wsgi --log-file -
