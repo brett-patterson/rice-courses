@@ -14,12 +14,13 @@ DEFAULT_SECRET_KEY = '0+u!e@o_m4)t1%2gzzpuxtb5f8qx+3lg^fxf*ix$g5lw98219+'
 SECRET_KEY = os.environ.get('SECRET_KEY', DEFAULT_SECRET_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('RCM_REMOTE') is None
+LOCAL = os.environ.get('RCM_REMOTE') is None
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-if DEBUG:
+if LOCAL:
     ALLOWED_HOSTS = []
 else:
     ALLOWED_HOSTS = ['*']
@@ -82,7 +83,7 @@ WSGI_APPLICATION = 'wsgi.application'
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 DATABASES = {}
 
-if DEBUG:
+if LOCAL:
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'rice_courses.db'),
