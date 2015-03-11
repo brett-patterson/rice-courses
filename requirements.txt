@@ -1,3 +1,11 @@
+Django
+dj-database-url==0.3.0
+dj-static==0.0.6
+django-toolbelt==0.0.1
+gunicorn==19.0.0
+static3==0.5.1
+wsgiref==0.1.2
+
 requests
 markdown
 -e hg+http://bitbucket.org/cpcc/django-cas#egg=django_cas

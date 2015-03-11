@@ -40,13 +40,16 @@ class Scheduler(models.Model):
 
     """
     # The name of the scheduler.
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
 
     # Whether or not this scheduler is currently shown.
     shown = models.BooleanField(default=False)
 
     # The user profile this scheduler corresponds to.
     user_profile = models.ForeignKey(UserProfile)
+
+    class Meta:
+        unique_together = ('name', 'user_profile')
 
     def save(self, *args, **kwargs):
         """ On save, ensure that only one Scheduler object is shown.

@@ -1,6 +1,0 @@
-#!/bin/bash
-
-source $OPENSHIFT_HOMEDIR/python/virtenv/bin/activate
-python $OPENSHIFT_REPO_DIR/wsgi/rice_course_manager/manage.py fetchcourses 201520
-
-date >> $OPENSHIFT_LOG_DIR/fetch_courses.log

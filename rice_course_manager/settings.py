@@ -11,35 +11,18 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
-ON_OPENSHIFT = False
-if 'OPENSHIFT_REPO_DIR' in os.environ:
-    ON_OPENSHIFT = True
-
-
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-default_keys = {
-    'SECRET_KEY': '0+u!e@o_m4)t1%2gzzpuxtb5f8qx+3lg^fxf*ix$g5lw98219+'
-}
-use_keys = default_keys
-if ON_OPENSHIFT:
-    import openshiftlibs
-    use_keys = openshiftlibs.openshift_secure(default_keys)
-
-SECRET_KEY = use_keys['SECRET_KEY']
+DEFAULT_SECRET_KEY = '0+u!e@o_m4)t1%2gzzpuxtb5f8qx+3lg^fxf*ix$g5lw98219+'
+SECRET_KEY = os.environ.get('SECRET_KEY', DEFAULT_SECRET_KEY)
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if ON_OPENSHIFT:
-    DEBUG = True
-else:
-    DEBUG = True
-
-
+DEBUG = os.environ.get('RCM_REMOTE') is None
 TEMPLATE_DEBUG = DEBUG
 
 
@@ -53,10 +36,7 @@ else:
 
 API_ITEMS_PER_PAGE = 50
 EVAL_DATE_FORMAT = '%m/%d/%Y %I:%M %p'
-HELP_DATA_DIR = os.path.abspath(os.path.join(
-    (os.environ.get('OPENSHIFT_DATA_DIR') or '../../data/'),
-    'help'
-))
+HELP_DATA_DIR = os.path.abspath(os.path.join(BASE_DIR, 'data/help'))
 
 
 # Application definition
@@ -80,7 +60,7 @@ INSTALLED_APPS = (
 )
 
 TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'templates'),
+    os.path.join(BASE_DIR, 'rice_course_manager/templates'),
 )
 
 MIDDLEWARE_CLASSES = (
@@ -102,30 +82,21 @@ CAS_SERVER_URL = 'https://netid.rice.edu/cas/'
 
 ROOT_URLCONF = 'rice_courses.urls'
 
-WSGI_APPLICATION = 'rice_courses.wsgi.application'
+WSGI_APPLICATION = 'wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
+DATABASES = {}
 
-if ON_OPENSHIFT:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'ricecoursemanager',
-            'USER': os.environ['OPENSHIFT_MYSQL_DB_USERNAME'],
-            'PASSWORD': os.environ['OPENSHIFT_MYSQL_DB_PASSWORD'],
-            'HOST': os.environ['OPENSHIFT_MYSQL_DB_HOST'],
-            'PORT': os.environ['OPENSHIFT_MYSQL_DB_PORT'],
-        }
+if DEBUG:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'rice_courses.db'),
     }
 else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'rice_courses.db'),
-        }
-    }
+    import dj_database_url
+    DATABASES['default'] = dj_database_url.config()
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
@@ -143,13 +114,11 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
-
 STATIC_URL = '/static/'
+STATIC_ROOT = 'staticfiles'
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
 
-if ON_OPENSHIFT:
-    STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static')
-
-else:
-    STATICFILES_DIRS = (
-        os.path.join(os.path.dirname(BASE_DIR), 'static'),
-    )
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

@@ -1,10 +1,6 @@
-*.DS_Store
+venv
+*.pyc
+staticfiles
+.env
+.DS_Store
 *.db
-*.py[co]
-*.sw[po]
-*.bak
-*.orig
-*~
-.project
-.pydevproject
-*.egg-info
