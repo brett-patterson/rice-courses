@@ -18,7 +18,6 @@ DEBUG = os.environ.get('RCM_REMOTE') is None
 TEMPLATE_DEBUG = DEBUG
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-print BASE_DIR
 
 if DEBUG:
     ALLOWED_HOSTS = []
