@@ -7,24 +7,20 @@ https://docs.djangoproject.com/en/1.7/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 DEFAULT_SECRET_KEY = '0+u!e@o_m4)t1%2gzzpuxtb5f8qx+3lg^fxf*ix$g5lw98219+'
 SECRET_KEY = os.environ.get('SECRET_KEY', DEFAULT_SECRET_KEY)
 
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('RCM_REMOTE') is None
 TEMPLATE_DEBUG = DEBUG
 
+if DEBUG:
+    BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 if DEBUG:
     ALLOWED_HOSTS = []
