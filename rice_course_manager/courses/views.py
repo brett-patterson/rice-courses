@@ -20,7 +20,7 @@ def index(request):
         'nav_active': 'courses'
     }
 
-    return render(request, 'courses/index.html', context)
+    return render(request, 'courses/index.jade', context)
 
 
 @csrf_exempt

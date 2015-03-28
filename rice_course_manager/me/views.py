@@ -18,7 +18,7 @@ def index(request):
     context = {
         'nav_active': 'me'
     }
-    return render(request, 'me/index.html', context)
+    return render(request, 'me/index.jade', context)
 
 
 @login_required(login_url='/login/')

@@ -1,0 +1,125 @@
+extends base
+- load static
+
+block head
+    link(type='text/css' rel='stylesheet'
+         href="{% static 'css/lib/fullcalendar.min.css' %}")
+    link(type='text/css' rel='stylesheet'
+         href="{% static 'css/me.css' %}")
+
+    script(type='text/javascript' src="{% static 'js/lib/angular.min.js' %}")
+    script(type='text/javascript' src="{% static 'js/lib/ui-bootstrap-tpls.min.js' %}")
+    script(type='text/javascript' src="{% static 'js/lib/moment.min.js' %}")
+    script(type='text/javascript' src="{% static 'js/lib/fullcalendar.min.js' %}")
+    script(type='text/javascript' src="{% static 'js/lib/angular-calendar.js' %}")
+    script(type='text/javascript' src="{% static 'js/lib/bootstrap-contextmenu.js' %}")
+    script(type='text/javascript' src="{% static 'js/lib/bootbox.min.js' %}")
+    script(type='text/javascript' src="{% static 'js/lib/ZeroClipboard.min.js' %}")
+    script(type='text/javascript' src="{% static 'js/services.js' %}")
+    script(type='text/javascript' src="{% static 'js/me.js' %}")
+
+block content
+    div(ng-app="meApp" ng-controller="meController")
+        .table-responsive
+            table.table.table-hover
+                thead
+                    tr
+                        th
+                        th CRN
+                            a(href='/me/api/export/{$ currentScheduler.name $}'
+                               target='_blank')
+                                span.glyphicon.glyphicon-export
+                        th Course ID
+                        th Title
+                        th Instructor
+                        th Meetings
+                        th Distribution
+                        th Enrollment
+                        th Credits
+                        th
+                tbody
+                    tr.course-entry(ng-repeat="course in courses | orderBy:'course_id'"
+                                    on-repeat-finish="bindClipboard()")
+                        td(ng-click='toggle(course)',
+                            ng-class="{'toggle-btn-show':currentScheduler.showMap[course.crn], 'toggle-btn-hide':!currentScheduler.showMap[course.crn]}")
+                           span.glyphicon(ng-class="{'glyphicon-eye-open':currentScheduler.showMap[course.crn], 'glyphicon-eye-close':!currentScheduler.showMap[course.crn]}")
+
+                        td {$ course.crn $}
+                            a.copy-btn(data-clipboard-text='{$ course.crn $}')
+                                span.glyphicon.glyphicon-paperclip
+
+                        td(ng-click='courseDetail(course)') {$ course.course_id $}
+                        td(ng-click='courseDetail(course)') {$ course.title $}
+                        td(ng-click='courseDetail(course)') {$ course.instructor $}
+                        td(ng-click='courseDetail(course)') {$ course.meeting $}
+                        td(ng-click='courseDetail(course)') {$ course.s_distribution $}
+                        td(ng-click='courseDetail(course)')
+                            span(ng-class="{'enroll-warning': enrollPercent(course) > 50, 'enroll-full': enrollPercent(course) >= 100}").
+                                {$ course.enrollment $}/{$ course.max_enrollment $}
+
+                        td(ng-click='courseDetail(course)') {$ course.credits $}
+                        td.remove-btn(ng-click='removeCourse(course)')
+                            span.glyphicon.glyphicon-remove
+
+                    tr
+                        td
+                        td
+                        td
+                        td
+                        td
+                        td
+                        td
+                        td.text-right
+                            strong Credits Shown
+                                span(ng-if='totalShownCanVary') (approximate)
+                                |:
+                        td
+                            strong {$ creditsShown | number: 1 $}
+                        td
+
+                    tr
+                        td
+                        td
+                        td
+                        td
+                        td
+                        td
+                        td
+                        td.text-right
+                            strong Credits Shown
+                                span(ng-if='totalCanVary') (approximate)
+                                |:
+                        td
+                            strong {$ totalCredits | number: 1 $}
+                        td
+
+        #event-menu
+            ul.dropdown-menu(role='menu')
+                li
+                    a(href='#', data-val='alternate')
+                        span.glyphicon.glyphicon-search
+                        | Add alternate sections
+
+        #scheduler-menu
+            ul.dropdown-menu(role='menu')
+                li
+                    a(href='#', data-val='rename')
+                        span.glyphicon.glyphicon-edit
+                        | Rename
+                li
+                    a(href='#', data-val='delete')
+                        span.glyphicon.glyphicon-remove
+                        | Delete
+        tabset
+            tab.scheduler-tab(ng-repeat='scheduler in schedulers',
+                heading='{$ scheduler.name $}', id='{$ scheduler.id $}',
+                select='onSchedulerSelect(scheduler)',
+                active='scheduler.shown', scheduler-context-menu)
+                
+                div(ui-calendar='calendarConfig',
+                    ng-model='scheduler.eventSources',
+                    id='scheduler-{$ scheduler.id $}')
+
+            li
+                a(href='#', ng-click='addScheduler()')
+                    span.glyphicon.glyphicon-plus

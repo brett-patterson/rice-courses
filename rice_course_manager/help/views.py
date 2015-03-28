@@ -17,7 +17,7 @@ def index(request):
         'articles': HelpArticle.objects.all()
     }
 
-    return render(request, 'help/index.html', context)
+    return render(request, 'help/index.jade', context)
 
 
 @csrf_exempt

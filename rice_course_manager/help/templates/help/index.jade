@@ -1,0 +1,38 @@
+extends base
+- load static
+
+block head
+
+    link(type='text/css', rel='stylesheet',
+         href="{% static 'css/help.css' %}")
+
+    script(type='text/javascript').
+        $(function() {
+            $('body').attr('data-spy', 'scroll')
+                     .attr('data-target', '#affix-nav');
+
+            $('#affix-sidebar').affix({
+              offset: {
+                top: $('#content').offset().top,
+                bottom: 0
+              }
+            });
+        });
+
+block content
+    .row
+        section.col-md-9#content
+            each article in articles
+                article(id='&#35;{{ article.title | slugify }}')
+                    h2 #{ article.title }
+                    hr
+                    - autoescape off
+                        #{ article.render_html }
+                    hr
+
+        nav.col-md-3.hidden-xs#affix-nav
+            ul.nav#affix-sidebar
+                each article in articles
+                    li
+                        a(href='&#35;{{ article.title | slugify }}').
+                            #{ article.title }

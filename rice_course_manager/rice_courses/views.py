@@ -5,4 +5,4 @@ def index(request):
     """ The main index page.
 
     """
-    return render(request, 'index.html')
+    return render(request, 'index.jade')
