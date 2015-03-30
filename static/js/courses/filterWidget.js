@@ -23,10 +23,10 @@ define(["exports", "module", "react", "courses/filterManager", "courses/filterBu
         getInitialState: function getInitialState() {
             return {
                 outline: "none",
-                placeholder: "Filter",
+                placeholder: "Add Filters...",
                 keywords: {},
                 text: "",
-                filters: [],
+                currentFilters: [],
                 manager: new FilterManager()
             };
         },
@@ -127,15 +127,24 @@ define(["exports", "module", "react", "courses/filterManager", "courses/filterBu
             var filters = this.state.manager.getFilters();
 
             if (event.keyCode === 8 && filters.length > 0 && this.state.text.length === 0) {
-                this.removeFilter(this.state.filters[filters.length - 1]);
+                this.removeFilter(this.state.currentFilters[filters.length - 1]);
             }
         },
 
+        widgetClicked: function widgetClicked() {
+            React.findDOMNode(this.refs.input).focus();
+        },
+
         addFilter: function addFilter(filter, value) {
+            var _this = this;
+
             this.state.manager.addFilter(filter, value);
 
             this.setState({
-                filters: this.state.manager.getFilters()
+                currentFilters: this.state.manager.getFilters()
+            }, function () {
+                var index = _this.state.manager.getFilters().length - 1;
+                React.findDOMNode(_this.refs["filter" + index].refs.input).focus();
             });
         },
 
@@ -143,8 +152,12 @@ define(["exports", "module", "react", "courses/filterManager", "courses/filterBu
             this.state.manager.removeFilter(filter);
 
             this.setState({
-                filters: this.state.manager.getFilters()
+                currentFilters: this.state.manager.getFilters()
             });
+        },
+
+        updateFilter: function updateFilter(filter, value) {
+            this.state.manager.updateFilter(filter, value);
         },
 
         /**
@@ -170,13 +183,13 @@ define(["exports", "module", "react", "courses/filterManager", "courses/filterBu
                     delegate: _this });
             });
 
-            var style = {
+            var widgetStyle = {
                 outline: this.state.outline
             };
 
-            var filterInputs = this.state.filters.map(function (filter, index) {
+            var filterInputs = this.state.currentFilters.map(function (filter, index) {
                 return React.createElement(FilterInput, { filter: filter, key: "filter" + index,
-                    delegate: _this });
+                    delegate: _this, ref: "filter" + index });
             });
 
             return React.createElement(
@@ -189,7 +202,8 @@ define(["exports", "module", "react", "courses/filterManager", "courses/filterBu
                 ),
                 React.createElement(
                     "div",
-                    { className: "filter-widget", style: style },
+                    { className: "filter-widget", style: widgetStyle,
+                        onClick: this.widgetClicked },
                     filterInputs,
                     React.createElement("input", { ref: "input", type: "text", className: "filter-input",
                         placeholder: this.state.placeholder,

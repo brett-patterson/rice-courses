@@ -3,8 +3,11 @@
   font-size: 1em;
 }
 
+.filter-widget:hover {
+  cursor: text;
+}
+
 .filter-input {
-  background: yellow;
   border: 0;
   display: inline-block;
   height: 100%;
@@ -23,8 +26,9 @@
   padding: 3px 5px;
 }
 
-.filter-view a:hover {
-  cursor: pointer;
+.filter-view-name {
+  border-right: 1px solid #ccc;
+  padding-right: 5px;
 }
 
 .filter-view-input {
@@ -33,4 +37,8 @@
 
 .filter-view-input:focus {
   outline: 0;
+}
+
+.filter-view a:hover {
+  cursor: pointer;
 }

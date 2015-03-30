@@ -10,31 +10,63 @@ define(["exports", "module", "react", "jquery"], function (exports, module, _rea
     module.exports = React.createClass({
         displayName: "filterInput",
 
-        removeClicked: function removeClicked() {
+        getInitialState: function getInitialState() {
+            return {
+                value: ""
+            };
+        },
+
+        remove: function remove() {
             this.props.delegate.removeFilter(this.props.filter);
         },
 
         inputKeyDown: function inputKeyDown(event) {
             if (event.keyCode === 13) {
                 React.findDOMNode(this.props.delegate.refs.input).focus();
-            } else if (event.keyCode === 8 && React.findDOMNode(this.refs.input).value === "") {
-                this.props.delegate.removeFilter(this.props.filter);
+            } else if (event.keyCode === 8 && this.state.value === "") {
+                this.remove();
                 React.findDOMNode(this.props.delegate.refs.input).focus();
             }
         },
 
+        inputChanged: function inputChanged(event) {
+            var _this = this;
+
+            this.setState({
+                value: event.target.value
+            }, function () {
+                _this.props.delegate.updateFilter(_this.props.filter, _this.state.value);
+            });
+        },
+
         render: function render() {
+            var virtual = jQuery("<span/>", {
+                text: this.state.value
+            }).hide().appendTo(document.body);
+
             var filter = this.props.filter;
+            var style = {
+                marginLeft: 5,
+                width: virtual.width() + 10
+            };
+
+            virtual.remove();
 
             return React.createElement(
-                "span",
+                "div",
                 { className: "filter-view" },
-                "" + filter.getName() + ": ",
-                React.createElement("input", { ref: "input", className: "filter-view-input",
-                    onKeyDown: this.inputKeyDown }),
+                React.createElement(
+                    "span",
+                    { className: "filter-view-name" },
+                    "" + filter.getName()
+                ),
+                React.createElement("input", { ref: "input", className: "filter-view-input", style: style,
+                    onKeyDown: this.inputKeyDown,
+                    onChange: this.inputChanged,
+                    value: this.state.value }),
                 React.createElement(
                     "a",
-                    { onClick: this.removeClicked },
+                    { onClick: this.remove },
                     React.createElement("span", { className: "glyphicon glyphicon-remove" })
                 )
             );

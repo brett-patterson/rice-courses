@@ -17,7 +17,7 @@ define(["exports", "module"], function (exports, module) {
 
                 /**
                  * Add a filter.
-                 * @param {function} filter - The filter to be added
+                 * @param {CourseFilter} filter - The filter to be added
                  * @param {any} value - The value that `filter` should filter for
                  */
 
@@ -30,7 +30,7 @@ define(["exports", "module"], function (exports, module) {
 
                 /**
                  * Remove a filter.
-                 * @param {function} filter - The filter to be removed
+                 * @param {CourseFilter} filter - The filter to be removed
                  */
 
                 value: function removeFilter(filter) {
@@ -38,6 +38,22 @@ define(["exports", "module"], function (exports, module) {
 
                     if (index > -1) {
                         this.filters.splice(index, 1);
+                    }
+                }
+            },
+            updateFilter: {
+
+                /**
+                 * Update the value of a filter
+                 * @param {CourseFilter} filter - The filter to update
+                 * @param {any} value - The new value for the filter
+                 */
+
+                value: function updateFilter(filter, value) {
+                    var index = this.filters.indexOf(filter);
+
+                    if (index > -1) {
+                        this.filters[index].setValue(value);
                     }
                 }
             },

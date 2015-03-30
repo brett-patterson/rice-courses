@@ -2,32 +2,62 @@ import React from 'react';
 import jQuery from 'jquery';
 
 export default React.createClass({
-    removeClicked() {
+    getInitialState() {
+        return {
+            value: ''
+        };
+    },
+
+    remove() {
         this.props.delegate.removeFilter(this.props.filter);
     },
 
     inputKeyDown(event) {
         if (event.keyCode === 13) {
             React.findDOMNode(this.props.delegate.refs.input).focus();
-        } else if (event.keyCode === 8 &&
-                   React.findDOMNode(this.refs.input).value === '') {
-            this.props.delegate.removeFilter(this.props.filter);
+        } else if (event.keyCode === 8 && this.state.value === '') {
+            this.remove();
             React.findDOMNode(this.props.delegate.refs.input).focus();
         }
     },
 
+    inputChanged(event) {
+        this.setState({
+            value: event.target.value
+        }, () => {
+            this.props.delegate.updateFilter(this.props.filter,
+                this.state.value);
+        });
+    },
+
     render() {
+        let virtual = jQuery('<span/>', {
+            text: this.state.value
+        }).hide().appendTo(document.body);
+
         const filter = this.props.filter;
+        const style = {
+            marginLeft: 5,
+            width: virtual.width() + 10
+        };
+
+        virtual.remove();
 
         return (
-            <span className='filter-view'>
-                {`${filter.getName()}: `}
-                <input ref='input' className='filter-view-input'
-                       onKeyDown={this.inputKeyDown} />
-                <a onClick={this.removeClicked}>
+            <div className='filter-view'>
+                <span className='filter-view-name'>
+                    {`${filter.getName()}`}
+                </span>
+
+                <input ref='input' className='filter-view-input' style={style}
+                       onKeyDown={this.inputKeyDown}
+                       onChange={this.inputChanged}
+                       value={this.state.value} />
+
+                <a onClick={this.remove}>
                     <span className='glyphicon glyphicon-remove' />
                 </a>
-            </span>
+            </div>
         );
     }
 });

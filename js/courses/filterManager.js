@@ -5,7 +5,7 @@ export default class FilterManager {
 
     /**
      * Add a filter.
-     * @param {function} filter - The filter to be added
+     * @param {CourseFilter} filter - The filter to be added
      * @param {any} value - The value that `filter` should filter for
      */
     addFilter(filter, value) {
@@ -15,13 +15,26 @@ export default class FilterManager {
 
     /**
      * Remove a filter.
-     * @param {function} filter - The filter to be removed
+     * @param {CourseFilter} filter - The filter to be removed
      */
     removeFilter(filter) {
         const index = this.filters.indexOf(filter);
 
         if (index > -1) {
             this.filters.splice(index, 1);
+        }
+    }
+
+    /**
+     * Update the value of a filter
+     * @param {CourseFilter} filter - The filter to update
+     * @param {any} value - The new value for the filter
+     */
+    updateFilter(filter, value) {
+        const index = this.filters.indexOf(filter);
+
+        if (index > -1) {
+            this.filters[index].setValue(value);
         }
     }
 

@@ -15,10 +15,10 @@ export default React.createClass({
     getInitialState() {
         return {
             outline: 'none',
-            placeholder: 'Filter',
+            placeholder: 'Add Filters...',
             keywords: {},
             text: '',
-            filters: [],
+            currentFilters: [],
             manager: new FilterManager()
         };
     },
@@ -74,15 +74,22 @@ export default React.createClass({
 
         if (event.keyCode === 8 && filters.length > 0 &&
             this.state.text.length === 0) {
-            this.removeFilter(this.state.filters[filters.length - 1]);
+            this.removeFilter(this.state.currentFilters[filters.length - 1]);
         }
+    },
+
+    widgetClicked() {
+        React.findDOMNode(this.refs.input).focus();
     },
 
     addFilter(filter, value) {
         this.state.manager.addFilter(filter, value);
 
         this.setState({
-            filters: this.state.manager.getFilters()
+            currentFilters: this.state.manager.getFilters()
+        }, () => {
+            const index = this.state.manager.getFilters().length - 1;
+            React.findDOMNode(this.refs[`filter${index}`].refs.input).focus();
         });
     },
 
@@ -90,8 +97,12 @@ export default React.createClass({
         this.state.manager.removeFilter(filter);
 
         this.setState({
-            filters: this.state.manager.getFilters()
+            currentFilters: this.state.manager.getFilters()
         });
+    },
+
+    updateFilter(filter, value) {
+        this.state.manager.updateFilter(filter, value);
     },
 
     /**
@@ -112,13 +123,13 @@ export default React.createClass({
                          delegate={this} />;
         });
 
-        const style = {
+        const widgetStyle = {
             outline: this.state.outline
         };
 
-        let filterInputs = this.state.filters.map((filter, index) => {
+        let filterInputs = this.state.currentFilters.map((filter, index) => {
             return <FilterInput filter={filter} key={`filter${index}`}
-                                delegate={this} />;
+                                delegate={this} ref={`filter${index}`} />;
         });
 
         return (
@@ -126,7 +137,8 @@ export default React.createClass({
                 <div className='course-filters'>
                     {filterButtons}
                 </div>
-                <div className='filter-widget' style={style}>
+                <div className='filter-widget' style={widgetStyle}
+                     onClick={this.widgetClicked}>
                     {filterInputs}
                     <input ref='input' type='text' className='filter-input'
                            placeholder={this.state.placeholder}
