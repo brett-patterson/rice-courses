@@ -1,0 +1,32 @@
+{
+  "name": "requirejs-babel",
+  "authors": [
+    "Michael <mikach27@gmail.com>"
+  ],
+  "description": "An AMD loader plugin for Babel",
+  "main": "es6.js",
+  "moduleType": [
+    "amd"
+  ],
+  "keywords": [
+    "es6",
+    "esnext",
+    "babel"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "demo",
+    "package.json"
+  ],
+  "homepage": "https://github.com/mikach/requirejs-babel",
+  "_release": "f1810ecdde",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "f1810ecddecaefb458f696500d9b337611d13416"
+  },
+  "_source": "git://github.com/mikach/requirejs-babel.git",
+  "_target": "*",
+  "_originalSource": "requirejs-babel",
+  "_direct": true
+}

@@ -3,7 +3,5 @@ Rice Courses
 
 Requirements
 ------------
-* django
-* requests
-* django_cas
-* markdown
+* Python 2.x
+* Sass

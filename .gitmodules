@@ -1,0 +1,3 @@
+[submodule "static/lib/tutorialize"]
+	path = static/lib/tutorialize
+	url = https://github.com/brett-patterson/tutorialize.git

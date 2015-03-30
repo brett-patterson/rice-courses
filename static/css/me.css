@@ -1,31 +1,31 @@
 .remove-btn {
-    color: #F5402C;
+  color: #f5402c;
 }
 
 .remove-btn:hover {
-    color: #DB3927;
+  color: #db3927;
 }
 
 .toggle-btn-show {
-    color: #74C279;
+  color: #74c279;
 }
 
 .toggle-btn-show:hover {
-    color: #63A668;
+  color: #63a668;
 }
 
 .toggle-btn-hide {
-    color: #FFB029;
+  color: #ffb029;
 }
 
 .toggle-btn-hide:hover {
-    color: #E09B24;
+  color: #e09b24;
 }
 
 .course-entry td:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .scheduler-tab {
-    cursor: pointer;
+  cursor: pointer;
 }

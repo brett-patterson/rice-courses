@@ -1,37 +1,32 @@
 .login-container {
-    float: right;
-    padding: 20px;
-    text-align: center;
+  float: right;
+  left: 0;
+  padding: 20px;
+  position: absolute;
+  text-align: center;
+  top: 0;
 }
 
 .header {
-    text-align: center;
-}
-
-.login-container {
-    position: absolute;
-    top: 0;
-    left: 0;
+  text-align: center;
 }
 
 .help-button {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    font-size: 2em;
-    display: none;
+  display: none;
+  font-size: 2em;
+  position: absolute;
+  right: 15px;
+  top: 15px;
 }
 
 .main-nav {
-    text-align: center;
+  text-align: center;
 }
 
 .enroll-warning {
-    background-color: #f7aa36;
-    background-color: rgba(255, 153, 0, 0.4);
+  background-color: rgba(255, 153, 0, .4);
 }
 
 .enroll-full {
-    background-color: #ff6363;
-    background-color: rgba(255, 0, 0, 0.4);
+  background-color: rgba(255, 0, 0, .4);
 }

@@ -1,29 +1,30 @@
 .course-filters {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .btn-filter {
-    color: #fff;
-    margin-right: 5px;
+  color: #fff;
+  margin-right: 5px;
 }
 
 .btn-filter:hover {
-    color: #fff;
+  color: #fff;
 }
 
 .course-entry td:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .course-header th:hover {
-    cursor: pointer;
-    text-decoration: underline;
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 .not-user-course a {
-    color: black;
+  color: #f00;
 }
 
-.user-course a, .not-user-course a:hover {
-    color: red;
+.user-course a,
+.not-user-course a:hover {
+  color: #000;
 }

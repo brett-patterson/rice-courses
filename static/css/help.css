@@ -1,16 +1,16 @@
 .affix {
-    position: fixed;
-    top: 10px;
+  position: fixed;
+  top: 10px;
 }
 
 .affix-top {
-    position: static;
+  position: static;
 }
 
 .affix-bottom {
-    position: absolute;
+  position: absolute;
 }
 
 #affix-sidebar .active {
-    font-weight: bold;
+  font-weight: bold;
 }
