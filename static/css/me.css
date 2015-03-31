@@ -22,10 +22,6 @@
   color: #e09b24;
 }
 
-.course-entry td:hover {
-  cursor: pointer;
-}
-
-.scheduler-tab {
+.course-table td:hover {
   cursor: pointer;
 }

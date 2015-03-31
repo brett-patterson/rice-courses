@@ -13,7 +13,7 @@ define(["exports", "module", "react", "reactable", "jquery", "courses/course", "
 
     var Course = _interopRequire(_coursesCourse);
 
-    var showCourseDetail = _interopRequire(_coursesCourseDetail);
+    var showCourseFactory = _coursesCourseDetail.showCourseFactory;
 
     var UserCourses = _interopRequire(_servicesUserCourses);
 
@@ -85,7 +85,33 @@ define(["exports", "module", "react", "reactable", "jquery", "courses/course", "
         fetchUserCourses: function fetchUserCourses(callback) {
             var _this = this;
 
-            UserCourses.get(function (userCourses) {
+            UserCourses.get(function (courses) {
+                var userCourses = [];
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
+
+                try {
+                    for (var _iterator = courses[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var course = _step.value;
+
+                        userCourses.push(course.getCRN());
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator["return"]) {
+                            _iterator["return"]();
+                        }
+                    } finally {
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+
                 _this.setState({
                     userCourses: userCourses
                 }, callback);
@@ -109,12 +135,6 @@ define(["exports", "module", "react", "reactable", "jquery", "courses/course", "
                         _this.fetchUserCourses(_this.forceUpdate);
                     });
                 }
-            };
-        },
-
-        openCourseFactory: function openCourseFactory(course) {
-            return function (event) {
-                showCourseDetail(course);
             };
         },
 
@@ -166,60 +186,60 @@ define(["exports", "module", "react", "reactable", "jquery", "courses/course", "
                         { key: course.getCRN() },
                         React.createElement(
                             Td,
-                            { column: "userCourse" },
+                            { column: "userCourse",
+                                handleClick: _this.toggleUserCourseFactory(course) },
                             React.createElement(
                                 "a",
-                                { className: userClasses,
-                                    onClick: _this.toggleUserCourseFactory(course) },
+                                { className: userClasses },
                                 React.createElement("span", { className: heartClasses })
                             )
                         ),
                         React.createElement(
                             Td,
                             { column: "crn",
-                                handleClick: _this.openCourseFactory(course) },
+                                handleClick: showCourseFactory(course) },
                             course.getCRN()
                         ),
                         React.createElement(
                             Td,
                             { column: "courseID",
-                                handleClick: _this.openCourseFactory(course) },
+                                handleClick: showCourseFactory(course) },
                             course.getCourseID()
                         ),
                         React.createElement(
                             Td,
                             { column: "title",
-                                handleClick: _this.openCourseFactory(course) },
+                                handleClick: showCourseFactory(course) },
                             course.getTitle()
                         ),
                         React.createElement(
                             Td,
                             { column: "instructor",
-                                handleClick: _this.openCourseFactory(course) },
+                                handleClick: showCourseFactory(course) },
                             course.getInstructor()
                         ),
                         React.createElement(
                             Td,
                             { column: "meetings",
-                                handleClick: _this.openCourseFactory(course) },
+                                handleClick: showCourseFactory(course) },
                             course.getMeetings()
                         ),
                         React.createElement(
                             Td,
                             { column: "distribution",
-                                handleClick: _this.openCourseFactory(course) },
+                                handleClick: showCourseFactory(course) },
                             course.getDistributionString()
                         ),
                         React.createElement(
                             Td,
                             { column: "enrollment",
-                                handleClick: _this.openCourseFactory(course) },
+                                handleClick: showCourseFactory(course) },
                             course.getEnrollmentString()
                         ),
                         React.createElement(
                             Td,
                             { column: "credits",
-                                handleClick: _this.openCourseFactory(course) },
+                                handleClick: showCourseFactory(course) },
                             course.getCredits()
                         )
                     );

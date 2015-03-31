@@ -161,9 +161,10 @@ def schedulers(request):
 
     """
     profile = request.user.userprofile
-    names = [s.name for s in Scheduler.objects.filter(user_profile=profile)]
+    schedulers = [s.json() for s in Scheduler.objects.filter(user_profile=profile)]
 
-    return HttpResponse(json.dumps(names), content_type='application/json')
+    return HttpResponse(json.dumps(schedulers),
+                        content_type='application/json')
 
 
 @csrf_exempt
@@ -202,11 +203,11 @@ def remove_scheduler(request):
 
 @csrf_exempt
 @login_required(login_url='/login/')
-def set_shown(request):
+def set_course_shown(request):
     """ Set a course to be shown or hidden.
 
     """
-    name = request.POST.get('name')
+    name = request.POST.get('scheduler')
     crn = request.POST.get('crn')
     shown = request.POST.get('shown')
 
@@ -216,7 +217,22 @@ def set_shown(request):
                             shown == 'true')
         return HttpResponse(json.dumps({'status': 'success'}),
                             content_type='application/json')
-    elif name and shown:
+
+    else:
+        return HttpResponse(json.dumps({'status': 'error'}),
+                            content_type='application/json')
+
+
+@csrf_exempt
+@login_required(login_url='/login/')
+def set_scheduler_shown(request):
+    """ Set a scheduler to be shown or hidden
+
+    """
+    name = request.POST.get('name')
+    shown = request.POST.get('shown')
+
+    if name and shown:
         scheduler = Scheduler.objects.get(name=name)
         scheduler.shown = shown == 'true'
         scheduler.save()
@@ -230,28 +246,7 @@ def set_shown(request):
 
 @csrf_exempt
 @login_required(login_url='/login/')
-def show_map(request):
-    """ Get the mapping of shown courses for a scheduler.
-
-    """
-    name = request.POST.get('name')
-
-    if name:
-        scheduler = Scheduler.objects.get(name=name)
-        scheduler_map = {
-            'shown': scheduler.shown,
-            'courses': scheduler.show_map()
-        }
-        return HttpResponse(json.dumps(scheduler_map),
-                            content_type='application/json')
-    else:
-        return HttpResponse(json.dumps({'status': 'error'}),
-                            content_type='application/json')
-
-
-@csrf_exempt
-@login_required(login_url='/login/')
-def rename(request):
+def rename_scheduler(request):
     """ Rename a scheduler.
 
     """

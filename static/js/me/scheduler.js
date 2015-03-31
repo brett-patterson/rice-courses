@@ -1,0 +1,48 @@
+define(["exports", "module"], function (exports, module) {
+    "use strict";
+
+    var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+    var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+    var Scheduler = (function () {
+        function Scheduler(name) {
+            var map = arguments[1] === undefined ? {} : arguments[1];
+            var shown = arguments[2] === undefined ? false : arguments[2];
+
+            _classCallCheck(this, Scheduler);
+
+            this.name = name;
+            this.map = map;
+            this.shown = shown;
+        }
+
+        _createClass(Scheduler, {
+            getName: {
+                value: function getName() {
+                    return this.name;
+                }
+            },
+            getMap: {
+                value: function getMap() {
+                    return this.map;
+                }
+            },
+            getShown: {
+                value: function getShown() {
+                    return this.shown;
+                }
+            }
+        }, {
+            fromJSON: {
+                value: function fromJSON(j) {
+                    return new Scheduler(j.name, j.map, j.shown);
+                }
+            }
+        });
+
+        return Scheduler;
+    })();
+
+    module.exports = Scheduler;
+});

@@ -1,9 +1,13 @@
-define(["exports", "module", "react", "reactBootstrap", "bootbox", "jquery", "util"], function (exports, module, _react, _reactBootstrap, _bootbox, _jquery, _util) {
+define(["exports", "react", "reactBootstrap", "bootbox", "jquery", "util"], function (exports, _react, _reactBootstrap, _bootbox, _jquery, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-    module.exports = showCourseDetail;
+    exports.showCourseFactory = showCourseFactory;
+    exports.showCourseDetail = showCourseDetail;
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
 
     var React = _interopRequire(_react);
 
@@ -137,6 +141,12 @@ define(["exports", "module", "react", "reactBootstrap", "bootbox", "jquery", "ut
             );
         }
     });
+
+    function showCourseFactory(course) {
+        return function (event) {
+            showCourseDetail(course);
+        };
+    }
 
     function showCourseDetail(course) {
         var dialog = Bootbox.dialog({

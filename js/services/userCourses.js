@@ -15,7 +15,7 @@ export default class UserCourses {
             dataType: 'json'
         }).done(data => {
             let result = [];
-            for (let courseJSON in data)
+            for (let courseJSON of data)
                 result.push(Course.fromJSON(courseJSON));
             cb(result);
         });

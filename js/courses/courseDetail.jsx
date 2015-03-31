@@ -47,7 +47,13 @@ const CourseDetailBody = React.createClass({
     }
 });
 
-export default function showCourseDetail(course) {
+export function showCourseFactory(course) {
+    return event => {
+        showCourseDetail(course);
+    };
+}
+
+export function showCourseDetail(course) {
     let dialog = Bootbox.dialog({
         title: `${course.getCourseID()} - ${course.getTitle()} <br/><small>${course.getInstructor()}</small>`,
         message: jQuery('<div/>', { id: 'course-modal-content' }),

@@ -86,6 +86,16 @@ class Scheduler(models.Model):
         course_shown.show = show
         course_shown.save()
 
+    def json(self):
+        """ Convert a Scheduler object to a JSON-serializable format.
+
+        """
+        return {
+            'name': self.name,
+            'shown': self.shown,
+            'map': self.show_map()
+        }
+
 
 class CourseShown(models.Model):
     """ A model to represent whether or not a course is shown in a specific

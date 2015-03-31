@@ -3,7 +3,7 @@ import {Table, Tr, Td} from 'reactable';
 import jQuery from 'jquery';
 
 import Course from 'courses/course';
-import showCourseDetail from 'courses/courseDetail';
+import {showCourseFactory} from 'courses/courseDetail';
 import UserCourses from 'services/userCourses';
 import {makeClasses} from 'util';
 
@@ -46,7 +46,11 @@ export default React.createClass({
     },
 
     fetchUserCourses(callback) {
-        UserCourses.get(userCourses => {
+        UserCourses.get(courses => {
+            let userCourses = [];
+            for (let course of courses)
+                userCourses.push(course.getCRN());
+
             this.setState({
                 userCourses
             }, callback);
@@ -68,12 +72,6 @@ export default React.createClass({
                     this.fetchUserCourses(this.forceUpdate);
                 });
             }
-        };
-    },
-
-    openCourseFactory(course) {
-        return event => {
-            showCourseDetail(course);
         };
     },
 
@@ -109,42 +107,42 @@ export default React.createClass({
 
                     return (
                         <Tr key={course.getCRN()}>
-                            <Td column='userCourse'>
-                                <a className={userClasses}
-                                   onClick={this.toggleUserCourseFactory(course)}>
+                            <Td column='userCourse'
+                                handleClick={this.toggleUserCourseFactory(course)}>
+                                <a className={userClasses}>
                                     <span className={heartClasses} />
                                 </a>
                             </Td>
                             <Td column='crn'
-                                handleClick={this.openCourseFactory(course)}>
+                                handleClick={showCourseFactory(course)}>
                                 {course.getCRN()}
                             </Td>
                             <Td column='courseID'
-                                handleClick={this.openCourseFactory(course)}>
+                                handleClick={showCourseFactory(course)}>
                                 {course.getCourseID()}
                             </Td>
                             <Td column='title'
-                                handleClick={this.openCourseFactory(course)}>
+                                handleClick={showCourseFactory(course)}>
                                 {course.getTitle()}
                             </Td>
                             <Td column='instructor'
-                                handleClick={this.openCourseFactory(course)}>
+                                handleClick={showCourseFactory(course)}>
                                 {course.getInstructor()}
                             </Td>
                             <Td column='meetings'
-                                handleClick={this.openCourseFactory(course)}>
+                                handleClick={showCourseFactory(course)}>
                                 {course.getMeetings()}
                             </Td>
                             <Td column='distribution'
-                                handleClick={this.openCourseFactory(course)}>
+                                handleClick={showCourseFactory(course)}>
                                 {course.getDistributionString()}
                             </Td>
                             <Td column='enrollment'
-                                handleClick={this.openCourseFactory(course)}>
+                                handleClick={showCourseFactory(course)}>
                                 {course.getEnrollmentString()}
                             </Td>
                             <Td column='credits'
-                                handleClick={this.openCourseFactory(course)}>
+                                handleClick={showCourseFactory(course)}>
                                 {course.getCredits()}
                             </Td>
                         </Tr>
