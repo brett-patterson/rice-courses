@@ -11,6 +11,7 @@ require.config({
         moment: '../lib/moment/moment',
         react: '../lib/react/react-with-addons',
         reactBootstrap: '../lib/react-bootstrap/react-bootstrap',
+        reactable: '../lib/reactable/build/reactable',
         tutorialize: '../lib/tutorialize/dist/js/tutorialize',
         zeroClipboard: '../lib/zeroclipboard/dist/ZeroClipboard'
     }

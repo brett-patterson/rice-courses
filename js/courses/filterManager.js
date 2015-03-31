@@ -1,6 +1,11 @@
 export default class FilterManager {
-    constructor() {
+    /**
+     * Create a new filter manager.
+     * @param {function} onFiltersChanged - fired when the filters change
+     */
+    constructor(onFiltersChanged = () => {}) {
         this.filters = [];
+        this.onFiltersChanged = onFiltersChanged;
     }
 
     /**
@@ -11,6 +16,7 @@ export default class FilterManager {
     addFilter(filter, value) {
         filter.setValue(value);
         this.filters.push(filter);
+        this.onFiltersChanged();
     }
 
     /**
@@ -22,6 +28,7 @@ export default class FilterManager {
 
         if (index > -1) {
             this.filters.splice(index, 1);
+            this.onFiltersChanged();
         }
     }
 
@@ -35,6 +42,7 @@ export default class FilterManager {
 
         if (index > -1) {
             this.filters[index].setValue(value);
+            this.onFiltersChanged();
         }
     }
 

@@ -6,10 +6,18 @@ define(["exports", "module"], function (exports, module) {
     var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
     var FilterManager = (function () {
+        /**
+         * Create a new filter manager.
+         * @param {function} onFiltersChanged - fired when the filters change
+         */
+
         function FilterManager() {
+            var onFiltersChanged = arguments[0] === undefined ? function () {} : arguments[0];
+
             _classCallCheck(this, FilterManager);
 
             this.filters = [];
+            this.onFiltersChanged = onFiltersChanged;
         }
 
         _createClass(FilterManager, {
@@ -24,6 +32,7 @@ define(["exports", "module"], function (exports, module) {
                 value: function addFilter(filter, value) {
                     filter.setValue(value);
                     this.filters.push(filter);
+                    this.onFiltersChanged();
                 }
             },
             removeFilter: {
@@ -38,6 +47,7 @@ define(["exports", "module"], function (exports, module) {
 
                     if (index > -1) {
                         this.filters.splice(index, 1);
+                        this.onFiltersChanged();
                     }
                 }
             },
@@ -54,6 +64,7 @@ define(["exports", "module"], function (exports, module) {
 
                     if (index > -1) {
                         this.filters[index].setValue(value);
+                        this.onFiltersChanged();
                     }
                 }
             },

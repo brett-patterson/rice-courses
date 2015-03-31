@@ -5,6 +5,26 @@ define(["exports"], function (exports) {
         value: true
     });
     /**
+     * Construct an HTML class string from a mapping of strings to boolean values.
+     * @param {object} classes - The classes to evaluate
+     * @return {string} An HTML class string
+     */
+    var makeClasses = function (classes) {
+        var result = "";
+
+        for (var key in classes) {
+            if (!classes[key]) continue;
+
+            if (result.length > 0) result += " ";
+
+            result += key;
+        }
+
+        return result;
+    };
+
+    exports.makeClasses = makeClasses;
+    /**
      * Convert a decimal number to a hexadecimal number (base 10 -> base 16)
      * @param {number} dec - The decimal value to convert
      * @return {number} A hexadecimal representation of the number

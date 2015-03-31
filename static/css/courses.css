@@ -11,20 +11,80 @@
   color: #fff;
 }
 
-.course-entry td:hover {
+.course-table td:hover {
   cursor: pointer;
 }
 
-.course-header th:hover {
+.course-table th:hover {
   cursor: pointer;
   text-decoration: underline;
 }
 
-.not-user-course a {
-  color: #f00;
+.course-table th {
+  cursor: pointer;
 }
 
-.user-course a,
-.not-user-course a:hover {
+.course-table th.reactable-header-sort-desc:after {
+  content: '\25B2';
+  font-size: 0.8em;
+  padding-left: 5px;
+  padding-bottom: 5px;
+}
+
+.course-table th.reactable-header-sort-asc:after {
+  content: '\25BC';
+  font-size: 0.8em;
+  padding-left: 5px;
+  padding-bottom: 5px;
+}
+
+.reactable-pagination {
+  text-align: center;
+}
+
+.reactable-pagination tr:hover {
+  background-color: transparent !important;
+}
+
+.reactable-page-button {
+  padding: 5px 7px;
+  width: 30px;
+  cursor: pointer;
   color: #000;
+  border-left: 1px solid #aaa;
+  border-top: 1px solid #aaa;
+  border-bottom: 1px solid #aaa;
+  text-align: center;
+}
+
+.reactable-page-button:first-child {
+  border-left: 1px solid #aaa;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.reactable-page-button:last-child {
+  border-right: 1px solid #aaa;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.reactable-page-button:hover {
+  text-decoration: none;
+  color: #333;
+  background-color: #ddd;
+}
+
+.reactable-current-page {
+  background-color: #ddd;
+  cursor: default;
+}
+
+.not-user-course {
+  color: #000;
+}
+
+.user-course,
+.not-user-course:hover {
+  color: #f00;
 }

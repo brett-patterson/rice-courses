@@ -13,9 +13,9 @@ block content
     script(type='text/javascript', src="{% static 'lib/requirejs/require.js' %}")
     script(type='text/javascript', src="{% static 'js/requireConfig.js' %}")
     script(type='text/javascript').
-        require(['react', 'courses/courseList'], function (React, CourseList) {
+        require(['react', 'courses/courses'], function (React, Courses) {
             React.render(
-                React.createElement(CourseList),
+                React.createElement(Courses),
                 document.getElementById('courseList')
             );
         });

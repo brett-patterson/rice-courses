@@ -52,12 +52,12 @@ class CourseFilter {
     }
 
     /**
-     * Test whether an object passes through the filter
-     * @param {object} obj - The object to test
-     * @return {boolean} Whether the object passes the filter
+     * Test whether a Course passes through the filter
+     * @param {Course} course - The course to test
+     * @return {boolean} Whether the course passes the filter
      */
-     test(obj) {
-        return this.compare(obj[this.key], value);
+     test(course) {
+        return this.compare(course.filterValue(this.key), this.value);
      }
 
     /**
@@ -86,14 +86,13 @@ class CourseFilter {
 
 
 export const FILTERS = [
-    new CourseFilter('crn', 'CRN', ['crn']),
-    new CourseFilter('course_id', 'Course ID', ['courseid', 'course_id', 'course id']),
-    new CourseFilter('title', 'Title', ['title']),
-    new CourseFilter('instructor', 'Instructor', ['instructor']),
-    new CourseFilter('meeting', 'Meetings', ['meeting', 'meetings']),
-    new CourseFilter('credits', 'Credits', ['credits']),
-    new CourseFilter('s_distribution', 'Distribution', ['dist', 'distribution'],
-                     '', CourseFilter.exact)
+    new CourseFilter('crn', 'CRN'),
+    new CourseFilter('courseID', 'Course ID', ['course_id', 'course id']),
+    new CourseFilter('title', 'Title'),
+    new CourseFilter('instructor', 'Instructor'),
+    new CourseFilter('meetings', 'Meetings', ['meetings']),
+    new CourseFilter('credits', 'Credits'),
+    new CourseFilter('distribution', 'Distribution', ['dist'], '', CourseFilter.exact)
 ];
 
 //     {

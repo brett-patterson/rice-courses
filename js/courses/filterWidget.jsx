@@ -1,6 +1,5 @@
 import React from 'react';
 
-import FilterManager from 'courses/filterManager';
 import FilterButton from 'courses/filterButton';
 import FilterInput from 'courses/filterInput';
 
@@ -18,8 +17,7 @@ export default React.createClass({
             placeholder: 'Add Filters...',
             keywords: {},
             text: '',
-            currentFilters: [],
-            manager: new FilterManager()
+            currentFilters: []
         };
     },
 
@@ -70,7 +68,7 @@ export default React.createClass({
     },
 
     onKeyDown(event) {
-        const filters = this.state.manager.getFilters();  
+        const filters = this.props.manager.getFilters();  
 
         if (event.keyCode === 8 && filters.length > 0 &&
             this.state.text.length === 0) {
@@ -83,26 +81,26 @@ export default React.createClass({
     },
 
     addFilter(filter, value) {
-        this.state.manager.addFilter(filter, value);
+        this.props.manager.addFilter(filter, value);
 
         this.setState({
-            currentFilters: this.state.manager.getFilters()
+            currentFilters: this.props.manager.getFilters()
         }, () => {
-            const index = this.state.manager.getFilters().length - 1;
+            const index = this.props.manager.getFilters().length - 1;
             React.findDOMNode(this.refs[`filter${index}`].refs.input).focus();
         });
     },
 
     removeFilter(filter) {
-        this.state.manager.removeFilter(filter);
+        this.props.manager.removeFilter(filter);
 
         this.setState({
-            currentFilters: this.state.manager.getFilters()
+            currentFilters: this.props.manager.getFilters()
         });
     },
 
     updateFilter(filter, value) {
-        this.state.manager.updateFilter(filter, value);
+        this.props.manager.updateFilter(filter, value);
     },
 
     /**

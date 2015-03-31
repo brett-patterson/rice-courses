@@ -1,11 +1,9 @@
-define(["exports", "module", "react", "courses/filterManager", "courses/filterButton", "courses/filterInput"], function (exports, module, _react, _coursesFilterManager, _coursesFilterButton, _coursesFilterInput) {
+define(["exports", "module", "react", "courses/filterButton", "courses/filterInput"], function (exports, module, _react, _coursesFilterButton, _coursesFilterInput) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
     var React = _interopRequire(_react);
-
-    var FilterManager = _interopRequire(_coursesFilterManager);
 
     var FilterButton = _interopRequire(_coursesFilterButton);
 
@@ -26,8 +24,7 @@ define(["exports", "module", "react", "courses/filterManager", "courses/filterBu
                 placeholder: "Add Filters...",
                 keywords: {},
                 text: "",
-                currentFilters: [],
-                manager: new FilterManager()
+                currentFilters: []
             };
         },
 
@@ -124,7 +121,7 @@ define(["exports", "module", "react", "courses/filterManager", "courses/filterBu
         },
 
         onKeyDown: function onKeyDown(event) {
-            var filters = this.state.manager.getFilters();
+            var filters = this.props.manager.getFilters();
 
             if (event.keyCode === 8 && filters.length > 0 && this.state.text.length === 0) {
                 this.removeFilter(this.state.currentFilters[filters.length - 1]);
@@ -138,26 +135,26 @@ define(["exports", "module", "react", "courses/filterManager", "courses/filterBu
         addFilter: function addFilter(filter, value) {
             var _this = this;
 
-            this.state.manager.addFilter(filter, value);
+            this.props.manager.addFilter(filter, value);
 
             this.setState({
-                currentFilters: this.state.manager.getFilters()
+                currentFilters: this.props.manager.getFilters()
             }, function () {
-                var index = _this.state.manager.getFilters().length - 1;
+                var index = _this.props.manager.getFilters().length - 1;
                 React.findDOMNode(_this.refs["filter" + index].refs.input).focus();
             });
         },
 
         removeFilter: function removeFilter(filter) {
-            this.state.manager.removeFilter(filter);
+            this.props.manager.removeFilter(filter);
 
             this.setState({
-                currentFilters: this.state.manager.getFilters()
+                currentFilters: this.props.manager.getFilters()
             });
         },
 
         updateFilter: function updateFilter(filter, value) {
-            this.state.manager.updateFilter(filter, value);
+            this.props.manager.updateFilter(filter, value);
         },
 
         /**
