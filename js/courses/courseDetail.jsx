@@ -20,7 +20,6 @@ const CourseDetailBody = React.createClass({
         return (
             <TabbedArea defaultActiveKey={1} animation={false}>
                 <TabPane eventKey={1} tab='Info'>
-                    <h3>{course.getTitle()}<br/><small>{course.getInstructor()}</small></h3>
                     <p><strong>Credits:</strong> {course.getCredits()}</p>
                     <p><strong>Meetings:</strong> {course.getMeetings()} </p>
                     <p><strong>Location:</strong> {course.getLocation()}</p>
@@ -50,10 +49,12 @@ const CourseDetailBody = React.createClass({
 
 export default function showCourseDetail(course) {
     let dialog = Bootbox.dialog({
+        title: `${course.getCourseID()} - ${course.getTitle()} <br/><small>${course.getInstructor()}</small>`,
         message: jQuery('<div/>', { class: 'course-modal-content' }),
         size: 'large',
         onEscape: () => {},
-        show: false
+        show: false,
+        className: 'course-modal-dialog'
     });
 
     dialog.on('show.bs.modal', event => {

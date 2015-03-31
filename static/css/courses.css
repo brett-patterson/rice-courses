@@ -92,17 +92,18 @@
 }
 
 /* COURSE DETAIL */
-.close-btn:hover {
-  cursor: pointer;
+.course-modal-dialog .modal-header, .course-modal-dialog .modal-header small {
+  background-color: #337ab7;
+  color: #fff;
+}
+
+.course-modal-dialog .tab-pane {
+  padding-top: 20px;
 }
 
 .plot-toggle-btns {
   float: right;
   clear: left;
-}
-
-.tab-msg {
-  margin-top: 20px;
 }
 
 .chart {

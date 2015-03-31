@@ -66,17 +66,6 @@ define(["exports", "module", "react", "reactBootstrap", "bootbox", "jquery", "ut
                     TabPane,
                     { eventKey: 1, tab: "Info" },
                     React.createElement(
-                        "h3",
-                        null,
-                        course.getTitle(),
-                        React.createElement("br", null),
-                        React.createElement(
-                            "small",
-                            null,
-                            course.getInstructor()
-                        )
-                    ),
-                    React.createElement(
                         "p",
                         null,
                         React.createElement(
@@ -151,10 +140,12 @@ define(["exports", "module", "react", "reactBootstrap", "bootbox", "jquery", "ut
 
     function showCourseDetail(course) {
         var dialog = Bootbox.dialog({
+            title: "" + course.getCourseID() + " - " + course.getTitle() + " <br/><small>" + course.getInstructor() + "</small>",
             message: jQuery("<div/>", { "class": "course-modal-content" }),
             size: "large",
             onEscape: function () {},
-            show: false
+            show: false,
+            className: "course-modal-dialog"
         });
 
         dialog.on("show.bs.modal", function (event) {
