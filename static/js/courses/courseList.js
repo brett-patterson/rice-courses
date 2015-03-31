@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "reactable", "jquery", "courses/course", "courses/userCourses", "util"], function (exports, module, _react, _reactable, _jquery, _coursesCourse, _coursesUserCourses, _util) {
+define(["exports", "module", "react", "reactable", "jquery", "courses/course", "courses/userCourses", "courses/courseDetail", "util"], function (exports, module, _react, _reactable, _jquery, _coursesCourse, _coursesUserCourses, _coursesCourseDetail, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -6,12 +6,16 @@ define(["exports", "module", "react", "reactable", "jquery", "courses/course", "
     var React = _interopRequire(_react);
 
     var Table = _reactable.Table;
+    var Tr = _reactable.Tr;
+    var Td = _reactable.Td;
 
     var jQuery = _interopRequire(_jquery);
 
     var Course = _interopRequire(_coursesCourse);
 
     var UserCourses = _interopRequire(_coursesUserCourses);
+
+    var showCourseDetail = _interopRequire(_coursesCourseDetail);
 
     var makeClasses = _util.makeClasses;
     module.exports = React.createClass({
@@ -134,6 +138,12 @@ define(["exports", "module", "react", "reactable", "jquery", "courses/course", "
             };
         },
 
+        openCourseFactory: function openCourseFactory(course) {
+            return function (event) {
+                showCourseDetail(course);
+            };
+        },
+
         getFilteredCourses: function getFilteredCourses() {
             if (this.state.courses !== undefined) {
                 return this.props.filterDelegate.filter(this.state.courses);
@@ -144,10 +154,26 @@ define(["exports", "module", "react", "reactable", "jquery", "courses/course", "
             var _this = this;
 
             var courses = undefined;
-            if (this.state.courses === undefined) courses = [{ userCourse: "Loading courses..." }];else {
+            if (this.state.courses === undefined) courses = React.createElement(
+                Tr,
+                null,
+                React.createElement(
+                    Td,
+                    { column: "userCourse" },
+                    "Loading courses..."
+                )
+            );else {
                 var filtered = this.getFilteredCourses();
 
-                if (filtered.length === 0) courses = [{ userCourse: "No courses found" }];else courses = filtered.map(function (course) {
+                if (filtered.length === 0) courses = React.createElement(
+                    Tr,
+                    null,
+                    React.createElement(
+                        Td,
+                        { column: "userCourse" },
+                        "No courses found"
+                    )
+                );else courses = filtered.map(function (course) {
                     var isUserCourse = _this.isUserCourse(course);
 
                     var userClasses = makeClasses({
@@ -161,24 +187,61 @@ define(["exports", "module", "react", "reactable", "jquery", "courses/course", "
                         "glyphicon-heart-empty": !isUserCourse
                     });
 
-                    var userCourseElement = React.createElement(
-                        "a",
-                        { className: userClasses,
-                            onClick: _this.toggleUserCourseFactory(course) },
-                        React.createElement("span", { className: heartClasses })
+                    return React.createElement(
+                        Tr,
+                        { key: course.getCRN(),
+                            onClick: _this.openCourseFactory(course) },
+                        React.createElement(
+                            Td,
+                            { column: "userCourse" },
+                            React.createElement(
+                                "a",
+                                { className: userClasses,
+                                    onClick: _this.toggleUserCourseFactory(course) },
+                                React.createElement("span", { className: heartClasses })
+                            )
+                        ),
+                        React.createElement(
+                            Td,
+                            { column: "crn" },
+                            course.getCRN()
+                        ),
+                        React.createElement(
+                            Td,
+                            { column: "courseID" },
+                            course.getCourseID()
+                        ),
+                        React.createElement(
+                            Td,
+                            { column: "title" },
+                            course.getTitle()
+                        ),
+                        React.createElement(
+                            Td,
+                            { column: "instructor" },
+                            course.getInstructor()
+                        ),
+                        React.createElement(
+                            Td,
+                            { column: "meetings" },
+                            course.getMeetings()
+                        ),
+                        React.createElement(
+                            Td,
+                            { column: "distribution" },
+                            course.getDistributionString()
+                        ),
+                        React.createElement(
+                            Td,
+                            { column: "enrollment" },
+                            course.getEnrollmentString()
+                        ),
+                        React.createElement(
+                            Td,
+                            { column: "credits" },
+                            course.getCredits()
+                        )
                     );
-
-                    return {
-                        userCourse: userCourseElement,
-                        crn: course.getCRN(),
-                        courseID: course.getCourseID(),
-                        title: course.getTitle(),
-                        instructor: course.getInstructor(),
-                        meetings: course.getMeetings(),
-                        distribution: course.getDistributionString(),
-                        enrollment: course.getEnrollmentString(),
-                        credits: course.getCredits()
-                    };
                 });
             }
 
@@ -187,10 +250,13 @@ define(["exports", "module", "react", "reactable", "jquery", "courses/course", "
             return React.createElement(
                 "div",
                 { className: "table-responsive" },
-                React.createElement(Table, { ref: "courseTable", className: "table table-hover course-table",
-                    data: courses,
-                    columns: columns, itemsPerPage: 50,
-                    sortable: true })
+                React.createElement(
+                    Table,
+                    { ref: "courseTable", className: "table table-hover course-table",
+                        columns: columns, itemsPerPage: 50,
+                        sortable: true },
+                    courses
+                )
             );
         }
     });

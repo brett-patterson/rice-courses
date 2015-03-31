@@ -1,9 +1,10 @@
 import React from 'react';
-import {Table} from 'reactable';
+import {Table, Tr, Td} from 'reactable';
 import jQuery from 'jquery';
 
 import Course from 'courses/course';
 import UserCourses from 'courses/userCourses';
+import showCourseDetail from 'courses/courseDetail';
 import {makeClasses} from 'util';
 
 export default React.createClass({
@@ -74,6 +75,12 @@ export default React.createClass({
         };
     },
 
+    openCourseFactory(course) {
+        return event => {
+            showCourseDetail(course);
+        };
+    },
+
     getFilteredCourses() {
         if (this.state.courses !== undefined)
             return this.props.filterDelegate.filter(this.state.courses);
@@ -83,12 +90,12 @@ export default React.createClass({
     render() {
         let courses;
         if (this.state.courses === undefined)
-            courses = [{'userCourse': 'Loading courses...'}];
+            courses = <Tr><Td column='userCourse'>Loading courses...</Td></Tr>;
         else {
             const filtered = this.getFilteredCourses();
 
             if (filtered.length === 0)
-                courses = [{'userCourse': 'No courses found'}];
+                courses = <Tr><Td column='userCourse'>No courses found</Td></Tr>;
             else
                 courses = filtered.map(course => {
                     const isUserCourse = this.isUserCourse(course);
@@ -104,24 +111,25 @@ export default React.createClass({
                         'glyphicon-heart-empty': !isUserCourse
                     });
 
-                    const userCourseElement = (
-                        <a className={userClasses}
-                           onClick={this.toggleUserCourseFactory(course)}>
-                            <span className={heartClasses} />
-                        </a>
+                    return (
+                        <Tr key={course.getCRN()}
+                            onClick={this.openCourseFactory(course)}>
+                            <Td column='userCourse'>
+                                <a className={userClasses}
+                                   onClick={this.toggleUserCourseFactory(course)}>
+                                    <span className={heartClasses} />
+                                </a>
+                            </Td>
+                            <Td column='crn'>{course.getCRN()}</Td>
+                            <Td column='courseID'>{course.getCourseID()}</Td>
+                            <Td column='title'>{course.getTitle()}</Td>
+                            <Td column='instructor'>{course.getInstructor()}</Td>
+                            <Td column='meetings'>{course.getMeetings()}</Td>
+                            <Td column='distribution'>{course.getDistributionString()}</Td>
+                            <Td column='enrollment'>{course.getEnrollmentString()}</Td>
+                            <Td column='credits'>{course.getCredits()}</Td>
+                        </Tr>
                     );
-
-                    return {
-                        'userCourse': userCourseElement,
-                        'crn': course.getCRN(),
-                        'courseID': course.getCourseID(),
-                        'title': course.getTitle(),
-                        'instructor': course.getInstructor(),
-                        'meetings': course.getMeetings(),
-                        'distribution': course.getDistributionString(),
-                        'enrollment': course.getEnrollmentString(),
-                        'credits': course.getCredits()
-                    };
                 });
         }
 
@@ -140,9 +148,10 @@ export default React.createClass({
         return (
             <div className='table-responsive'>
                 <Table ref='courseTable' className='table table-hover course-table'
-                       data={courses}
                        columns={columns} itemsPerPage={50}
-                       sortable={true} />
+                       sortable={true}>
+                    {courses}
+                </Table>
             </div>
         );
     }
