@@ -125,34 +125,17 @@ export default React.createClass({
                 });
         }
 
-        const columns = [{
-            key: 'userCourse',
-            label: ''
-        }, {
-            key: 'crn',
-            label: 'CRN'
-        }, {
-            key: 'courseID',
-            label: 'Course ID'
-        }, {
-            key: 'title',
-            label: 'Title'
-        }, {
-            key: 'instructor',
-            label: 'Instructor'
-        }, {
-            key: 'meetings',
-            label: 'Meetings'
-        }, {
-            key: 'distribution',
-            label: 'Distribution'
-        }, {
-            key: 'enrollment',
-            label: 'Enrollment'
-        }, {
-            key: 'credits',
-            label: 'Credits'
-        }];
+        const columns = [
+            { key: 'userCourse', label: '' },
+            { key: 'crn', label: 'CRN' },
+            { key: 'courseID', label: 'Course ID' },
+            { key: 'title', label: 'Title' },
+            { key: 'instructor', label: 'Instructor' },
+            { key: 'meetings', label: 'Meetings' },
+            { key: 'distribution', label: 'Distribution' },
+            { key: 'enrollment', label: 'Enrollment' },
+            { key: 'credits', label: 'Credits' }
+        ];
 
         return (
             <div className='table-responsive'>
