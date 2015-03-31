@@ -3,8 +3,8 @@ import {Table, Tr, Td} from 'reactable';
 import jQuery from 'jquery';
 
 import Course from 'courses/course';
-import UserCourses from 'courses/userCourses';
 import showCourseDetail from 'courses/courseDetail';
+import UserCourses from 'services/userCourses';
 import {makeClasses} from 'util';
 
 export default React.createClass({
@@ -112,22 +112,46 @@ export default React.createClass({
                     });
 
                     return (
-                        <Tr key={course.getCRN()}
-                            onClick={this.openCourseFactory(course)}>
-                            <Td column='userCourse'>
+                        <Tr key={course.getCRN()}>
+                            <Td column='userCourse'
+                                onClick={this.openCourseFactory(course)}>
                                 <a className={userClasses}
                                    onClick={this.toggleUserCourseFactory(course)}>
                                     <span className={heartClasses} />
                                 </a>
                             </Td>
-                            <Td column='crn'>{course.getCRN()}</Td>
-                            <Td column='courseID'>{course.getCourseID()}</Td>
-                            <Td column='title'>{course.getTitle()}</Td>
-                            <Td column='instructor'>{course.getInstructor()}</Td>
-                            <Td column='meetings'>{course.getMeetings()}</Td>
-                            <Td column='distribution'>{course.getDistributionString()}</Td>
-                            <Td column='enrollment'>{course.getEnrollmentString()}</Td>
-                            <Td column='credits'>{course.getCredits()}</Td>
+                            <Td column='crn'
+                                onClick={this.openCourseFactory(course)}>
+                                {course.getCRN()}
+                            </Td>
+                            <Td column='courseID'
+                                onClick={this.openCourseFactory(course)}>
+                                {course.getCourseID()}
+                            </Td>
+                            <Td column='title'
+                                onClick={this.openCourseFactory(course)}>
+                                {course.getTitle()}
+                            </Td>
+                            <Td column='instructor'
+                                onClick={this.openCourseFactory(course)}>
+                                {course.getInstructor()}
+                            </Td>
+                            <Td column='meetings'
+                                onClick={this.openCourseFactory(course)}>
+                                {course.getMeetings()}
+                            </Td>
+                            <Td column='distribution'
+                                onClick={this.openCourseFactory(course)}>
+                                {course.getDistributionString()}
+                            </Td>
+                            <Td column='enrollment'
+                                onClick={this.openCourseFactory(course)}>
+                                {course.getEnrollmentString()}
+                            </Td>
+                            <Td column='credits'
+                                onClick={this.openCourseFactory(course)}>
+                                {course.getCredits()}
+                            </Td>
                         </Tr>
                     );
                 });
