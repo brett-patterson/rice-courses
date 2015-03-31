@@ -192,8 +192,7 @@ define(["exports", "module", "react", "reactable", "jquery", "courses/course", "
                         { key: course.getCRN() },
                         React.createElement(
                             Td,
-                            { column: "userCourse",
-                                onClick: _this.openCourseFactory(course) },
+                            { column: "userCourse" },
                             React.createElement(
                                 "a",
                                 { className: userClasses,
@@ -204,49 +203,49 @@ define(["exports", "module", "react", "reactable", "jquery", "courses/course", "
                         React.createElement(
                             Td,
                             { column: "crn",
-                                onClick: _this.openCourseFactory(course) },
+                                handleClick: _this.openCourseFactory(course) },
                             course.getCRN()
                         ),
                         React.createElement(
                             Td,
                             { column: "courseID",
-                                onClick: _this.openCourseFactory(course) },
+                                handleClick: _this.openCourseFactory(course) },
                             course.getCourseID()
                         ),
                         React.createElement(
                             Td,
                             { column: "title",
-                                onClick: _this.openCourseFactory(course) },
+                                handleClick: _this.openCourseFactory(course) },
                             course.getTitle()
                         ),
                         React.createElement(
                             Td,
                             { column: "instructor",
-                                onClick: _this.openCourseFactory(course) },
+                                handleClick: _this.openCourseFactory(course) },
                             course.getInstructor()
                         ),
                         React.createElement(
                             Td,
                             { column: "meetings",
-                                onClick: _this.openCourseFactory(course) },
+                                handleClick: _this.openCourseFactory(course) },
                             course.getMeetings()
                         ),
                         React.createElement(
                             Td,
                             { column: "distribution",
-                                onClick: _this.openCourseFactory(course) },
+                                handleClick: _this.openCourseFactory(course) },
                             course.getDistributionString()
                         ),
                         React.createElement(
                             Td,
                             { column: "enrollment",
-                                onClick: _this.openCourseFactory(course) },
+                                handleClick: _this.openCourseFactory(course) },
                             course.getEnrollmentString()
                         ),
                         React.createElement(
                             Td,
                             { column: "credits",
-                                onClick: _this.openCourseFactory(course) },
+                                handleClick: _this.openCourseFactory(course) },
                             course.getCredits()
                         )
                     );
