@@ -36,8 +36,8 @@ export default React.createClass({
             'dataType': 'json'
         }).done(result => {
             let courses = [];
-            for (let course of result)
-                courses.push(Course.fromJSON(course));
+            for (let courseJSON of result)
+                courses.push(Course.fromJSON(courseJSON));
 
             this.setState({
                 courses
@@ -46,11 +46,7 @@ export default React.createClass({
     },
 
     fetchUserCourses(callback) {
-        UserCourses.get(courses => {
-            let userCourses = [];
-            for (let course of courses)
-                userCourses.push(course.crn);
-
+        UserCourses.get(userCourses => {
             this.setState({
                 userCourses
             }, callback);

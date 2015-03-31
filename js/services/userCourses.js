@@ -1,5 +1,8 @@
 import jQuery from 'jquery';
 
+import Course from 'courses/course';
+
+
 export default class UserCourses {
     /**
      * Get all user selected courses.
@@ -11,7 +14,10 @@ export default class UserCourses {
             method: 'POST',
             dataType: 'json'
         }).done(data => {
-            cb(data);
+            let result = [];
+            for (let courseJSON in data)
+                result.push(Course.fromJSON(courseJSON));
+            cb(result);
         });
     }
 

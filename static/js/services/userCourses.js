@@ -1,4 +1,4 @@
-define(["exports", "module", "jquery"], function (exports, module, _jquery) {
+define(["exports", "module", "jquery", "courses/course"], function (exports, module, _jquery, _coursesCourse) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -8,6 +8,8 @@ define(["exports", "module", "jquery"], function (exports, module, _jquery) {
     var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
     var jQuery = _interopRequire(_jquery);
+
+    var Course = _interopRequire(_coursesCourse);
 
     var UserCourses = (function () {
         function UserCourses() {
@@ -27,7 +29,10 @@ define(["exports", "module", "jquery"], function (exports, module, _jquery) {
                         method: "POST",
                         dataType: "json"
                     }).done(function (data) {
-                        cb(data);
+                        var result = [];
+                        for (var courseJSON in data) {
+                            result.push(Course.fromJSON(courseJSON));
+                        }cb(result);
                     });
                 }
             },

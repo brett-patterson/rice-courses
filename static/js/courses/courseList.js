@@ -57,9 +57,9 @@ define(["exports", "module", "react", "reactable", "jquery", "courses/course", "
 
                 try {
                     for (var _iterator = result[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                        var course = _step.value;
+                        var courseJSON = _step.value;
 
-                        courses.push(Course.fromJSON(course));
+                        courses.push(Course.fromJSON(courseJSON));
                     }
                 } catch (err) {
                     _didIteratorError = true;
@@ -85,33 +85,7 @@ define(["exports", "module", "react", "reactable", "jquery", "courses/course", "
         fetchUserCourses: function fetchUserCourses(callback) {
             var _this = this;
 
-            UserCourses.get(function (courses) {
-                var userCourses = [];
-                var _iteratorNormalCompletion = true;
-                var _didIteratorError = false;
-                var _iteratorError = undefined;
-
-                try {
-                    for (var _iterator = courses[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                        var course = _step.value;
-
-                        userCourses.push(course.crn);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally {
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator["return"]) {
-                            _iterator["return"]();
-                        }
-                    } finally {
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-
+            UserCourses.get(function (userCourses) {
                 _this.setState({
                     userCourses: userCourses
                 }, callback);
