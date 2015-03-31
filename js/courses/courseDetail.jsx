@@ -50,7 +50,7 @@ const CourseDetailBody = React.createClass({
 export default function showCourseDetail(course) {
     let dialog = Bootbox.dialog({
         title: `${course.getCourseID()} - ${course.getTitle()} <br/><small>${course.getInstructor()}</small>`,
-        message: jQuery('<div/>', { class: 'course-modal-content' }),
+        message: jQuery('<div/>', { id: 'course-modal-content' }),
         size: 'large',
         onEscape: () => {},
         show: false,
@@ -58,7 +58,13 @@ export default function showCourseDetail(course) {
     });
 
     dialog.on('show.bs.modal', event => {
-        React.render(<CourseDetailBody course={course} />, jQuery('.course-modal-content', event.target)[0]);
+        React.render(<CourseDetailBody course={course} />,
+                     jQuery('#course-modal-content', event.target)[0]);
+
+        jQuery(event.target).click(event => {
+            if (jQuery(event.target).hasClass('modal'))
+                Bootbox.hideAll();
+        });
     });
 
     dialog.modal('show');

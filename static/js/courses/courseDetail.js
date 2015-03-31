@@ -141,7 +141,7 @@ define(["exports", "module", "react", "reactBootstrap", "bootbox", "jquery", "ut
     function showCourseDetail(course) {
         var dialog = Bootbox.dialog({
             title: "" + course.getCourseID() + " - " + course.getTitle() + " <br/><small>" + course.getInstructor() + "</small>",
-            message: jQuery("<div/>", { "class": "course-modal-content" }),
+            message: jQuery("<div/>", { id: "course-modal-content" }),
             size: "large",
             onEscape: function () {},
             show: false,
@@ -149,7 +149,11 @@ define(["exports", "module", "react", "reactBootstrap", "bootbox", "jquery", "ut
         });
 
         dialog.on("show.bs.modal", function (event) {
-            React.render(React.createElement(CourseDetailBody, { course: course }), jQuery(".course-modal-content", event.target)[0]);
+            React.render(React.createElement(CourseDetailBody, { course: course }), jQuery("#course-modal-content", event.target)[0]);
+
+            jQuery(event.target).click(function (event) {
+                if (jQuery(event.target).hasClass("modal")) Bootbox.hideAll();
+            });
         });
 
         dialog.modal("show");
