@@ -90,7 +90,7 @@ export const FILTERS = [
     new CourseFilter('courseID', 'Course ID', ['course_id', 'course id']),
     new CourseFilter('title', 'Title'),
     new CourseFilter('instructor', 'Instructor'),
-    new CourseFilter('meetings', 'Meetings', ['meetings']),
+    new CourseFilter('meetings', 'Meetings', ['meeting']),
     new CourseFilter('credits', 'Credits'),
     new CourseFilter('distribution', 'Distribution', ['dist'], '', CourseFilter.exact)
 ];

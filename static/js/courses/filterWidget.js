@@ -45,7 +45,7 @@ define(["exports", "module", "react", "courses/filterButton", "courses/filterInp
                         for (var _iterator2 = filter.getKeywords()[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                             var keyword = _step2.value;
 
-                            keywords[keyword] = filter;
+                            keywords[keyword.toLowerCase()] = filter;
                         }
                     } catch (err) {
                         _didIteratorError2 = true;

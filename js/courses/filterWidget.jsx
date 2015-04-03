@@ -25,7 +25,7 @@ export default React.createClass({
         let keywords = {};
         for (let filter of this.props.filters) {
             for (let keyword of filter.getKeywords())
-                keywords[keyword] = filter;
+                keywords[keyword.toLowerCase()] = filter;
         }
 
         this.setState({
