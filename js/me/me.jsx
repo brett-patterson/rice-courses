@@ -1,14 +1,19 @@
 import React from 'react';
 import {Table, Tr, Td} from 'reactable';
+import ZeroClipboard from 'zeroClipboard';
+import jQuery from 'jquery';
 
 import {showCourseFactory} from 'courses/courseDetail';
 import Schedulers from 'services/schedulers';
 import UserCourses from 'services/userCourses';
 import SchedulerView from 'me/schedulerView';
+import AlertMixin from 'alertMixin';
 import {makeClasses} from 'util';
 
 
 export default React.createClass({
+    mixins: [AlertMixin],
+
     getInitialState() {
         return {
             schedulers: [],
@@ -55,6 +60,19 @@ export default React.createClass({
         };
     },
 
+    componentDidUpdate(prevProps, prevState) {
+        jQuery('.copy-btn').each((index, button) => {
+            this.clip = new ZeroClipboard(button);
+        });
+    },
+
+    copyButtonClicked(event) {
+        let crn = jQuery(event.target).attr('data-clipboard-text');
+        this.addAlert(`Copied CRN <strong>${crn}</strong> to clipboard.`,
+                              'success');
+        event.stopPropagation();
+    },
+
     render() {
         const courses = this.state.userCourses.map(course => {
             let courseShown;
@@ -80,7 +98,14 @@ export default React.createClass({
                     </Td>
                     <Td column='crn'
                         handleClick={showCourseFactory(course)}>
-                        {course.getCRN()}
+                        <span>
+                            {course.getCRN() + ' '}
+                            <a className='copy-btn'
+                               data-clipboard-text={course.getCRN()}
+                               onClick={this.copyButtonClicked}>
+                               <span className='glyphicon glyphicon-paperclip' />
+                            </a>
+                        </span>
                     </Td>
                     <Td column='courseID'
                         handleClick={showCourseFactory(course)}>
@@ -132,6 +157,7 @@ export default React.createClass({
 
         return (
             <div>
+                {this.getAlerts()}
                 <div className='table-responsive'>
                     <Table ref='courseTable' columns={columns}
                            className='table table-hover course-table'>

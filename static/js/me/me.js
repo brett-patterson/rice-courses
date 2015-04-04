@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "reactable", "courses/courseDetail", "services/schedulers", "services/userCourses", "me/schedulerView", "util"], function (exports, module, _react, _reactable, _coursesCourseDetail, _servicesSchedulers, _servicesUserCourses, _meSchedulerView, _util) {
+define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "courses/courseDetail", "services/schedulers", "services/userCourses", "me/schedulerView", "alertMixin", "util"], function (exports, module, _react, _reactable, _zeroClipboard, _jquery, _coursesCourseDetail, _servicesSchedulers, _servicesUserCourses, _meSchedulerView, _alertMixin, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -8,6 +8,11 @@ define(["exports", "module", "react", "reactable", "courses/courseDetail", "serv
     var Table = _reactable.Table;
     var Tr = _reactable.Tr;
     var Td = _reactable.Td;
+
+    var ZeroClipboard = _interopRequire(_zeroClipboard);
+
+    var jQuery = _interopRequire(_jquery);
+
     var showCourseFactory = _coursesCourseDetail.showCourseFactory;
 
     var Schedulers = _interopRequire(_servicesSchedulers);
@@ -16,9 +21,13 @@ define(["exports", "module", "react", "reactable", "courses/courseDetail", "serv
 
     var SchedulerView = _interopRequire(_meSchedulerView);
 
+    var AlertMixin = _interopRequire(_alertMixin);
+
     var makeClasses = _util.makeClasses;
     module.exports = React.createClass({
         displayName: "me",
+
+        mixins: [AlertMixin],
 
         getInitialState: function getInitialState() {
             return {
@@ -93,6 +102,20 @@ define(["exports", "module", "react", "reactable", "courses/courseDetail", "serv
             };
         },
 
+        componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
+            var _this = this;
+
+            jQuery(".copy-btn").each(function (index, button) {
+                _this.clip = new ZeroClipboard(button);
+            });
+        },
+
+        copyButtonClicked: function copyButtonClicked(event) {
+            var crn = jQuery(event.target).attr("data-clipboard-text");
+            this.addAlert("Copied CRN <strong>" + crn + "</strong> to clipboard.", "success");
+            event.stopPropagation();
+        },
+
         render: function render() {
             var _this = this;
 
@@ -124,7 +147,18 @@ define(["exports", "module", "react", "reactable", "courses/courseDetail", "serv
                         Td,
                         { column: "crn",
                             handleClick: showCourseFactory(course) },
-                        course.getCRN()
+                        React.createElement(
+                            "span",
+                            null,
+                            course.getCRN() + " ",
+                            React.createElement(
+                                "a",
+                                { className: "copy-btn",
+                                    "data-clipboard-text": course.getCRN(),
+                                    onClick: _this.copyButtonClicked },
+                                React.createElement("span", { className: "glyphicon glyphicon-paperclip" })
+                            )
+                        )
                     ),
                     React.createElement(
                         Td,
@@ -181,6 +215,7 @@ define(["exports", "module", "react", "reactable", "courses/courseDetail", "serv
             return React.createElement(
                 "div",
                 null,
+                this.getAlerts(),
                 React.createElement(
                     "div",
                     { className: "table-responsive" },
