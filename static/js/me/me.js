@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "reactable", "courses/courseDetail", "services/schedulers", "services/userCourses"], function (exports, module, _react, _reactable, _coursesCourseDetail, _servicesSchedulers, _servicesUserCourses) {
+define(["exports", "module", "react", "reactable", "courses/courseDetail", "services/schedulers", "services/userCourses", "me/schedulerView", "util"], function (exports, module, _react, _reactable, _coursesCourseDetail, _servicesSchedulers, _servicesUserCourses, _meSchedulerView, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -14,13 +14,17 @@ define(["exports", "module", "react", "reactable", "courses/courseDetail", "serv
 
     var UserCourses = _interopRequire(_servicesUserCourses);
 
+    var SchedulerView = _interopRequire(_meSchedulerView);
+
+    var makeClasses = _util.makeClasses;
     module.exports = React.createClass({
         displayName: "me",
 
         getInitialState: function getInitialState() {
             return {
                 schedulers: [],
-                userCourses: []
+                userCourses: [],
+                currentScheduler: undefined
             };
         },
 
@@ -35,7 +39,34 @@ define(["exports", "module", "react", "reactable", "courses/courseDetail", "serv
             Schedulers.get(function (schedulers) {
                 _this.setState({
                     schedulers: schedulers
-                }, callback);
+                }, function () {
+                    var _iteratorNormalCompletion = true;
+                    var _didIteratorError = false;
+                    var _iteratorError = undefined;
+
+                    try {
+                        for (var _iterator = _this.state.schedulers[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                            var scheduler = _step.value;
+
+                            if (scheduler.getShown()) _this.setState({
+                                currentScheduler: scheduler
+                            });
+                        }
+                    } catch (err) {
+                        _didIteratorError = true;
+                        _iteratorError = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion && _iterator["return"]) {
+                                _iterator["return"]();
+                            }
+                        } finally {
+                            if (_didIteratorError) {
+                                throw _iteratorError;
+                            }
+                        }
+                    }
+                });
             });
         },
 
@@ -49,18 +80,44 @@ define(["exports", "module", "react", "reactable", "courses/courseDetail", "serv
             });
         },
 
+        toggleCourseShownFactory: function toggleCourseShownFactory(course) {
+            var _this = this;
+
+            return function (event) {
+                var scheduler = _this.state.currentScheduler;
+                if (scheduler) {
+                    var shown = scheduler.getMap()[course.getCRN()];
+                    scheduler.setCourseShown(course, !shown);
+                    _this.forceUpdate();
+                }
+            };
+        },
+
         render: function render() {
+            var _this = this;
+
             var courses = this.state.userCourses.map(function (course) {
+                var courseShown = undefined;
+                if (_this.state.currentScheduler === undefined) courseShown = true;else courseShown = _this.state.currentScheduler.getMap()[course.getCRN()];
+
+                var buttonClass = courseShown ? "toggle-btn-show" : "toggle-btn-hide";
+                var eyeClasses = makeClasses({
+                    glyphicon: true,
+                    "glyphicon-eye-open": courseShown,
+                    "glyphicon-eye-close": !courseShown
+                });
+
                 return React.createElement(
                     Tr,
                     { key: course.getCRN() },
                     React.createElement(
                         Td,
-                        { column: "shown" },
+                        { column: "shown",
+                            handleClick: _this.toggleCourseShownFactory(course) },
                         React.createElement(
                             "a",
-                            null,
-                            React.createElement("span", { className: "glyphicon glyphicon-eye-open" })
+                            { className: buttonClass },
+                            React.createElement("span", { className: eyeClasses })
                         )
                     ),
                     React.createElement(
@@ -133,7 +190,10 @@ define(["exports", "module", "react", "reactable", "courses/courseDetail", "serv
                             className: "table table-hover course-table" },
                         courses
                     )
-                )
+                ),
+                React.createElement(SchedulerView, { ref: "schedulerView",
+                    courses: this.state.userCourses,
+                    scheduler: this.state.currentScheduler })
             );
         }
     });

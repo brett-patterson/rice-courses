@@ -1,3 +1,6 @@
+import Schedulers from 'services/schedulers';
+
+
 export default class Scheduler {
     constructor(name, map={}, shown=false) {
         this.name = name;
@@ -19,5 +22,11 @@ export default class Scheduler {
 
     getShown() {
         return this.shown;
+    }
+
+    setCourseShown(course, shown) {
+        this.map[course.getCRN()] = shown;
+        // console.log(Schedulers);
+        // Schedulers.setCourseShown(this, course, shown);
     }
 }

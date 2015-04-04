@@ -4,12 +4,16 @@ import {Table, Tr, Td} from 'reactable';
 import {showCourseFactory} from 'courses/courseDetail';
 import Schedulers from 'services/schedulers';
 import UserCourses from 'services/userCourses';
+import SchedulerView from 'me/schedulerView';
+import {makeClasses} from 'util';
+
 
 export default React.createClass({
     getInitialState() {
         return {
             schedulers: [],
-            userCourses: []
+            userCourses: [],
+            currentScheduler: undefined
         };
     },
 
@@ -22,7 +26,13 @@ export default React.createClass({
         Schedulers.get(schedulers => {
             this.setState({
                 schedulers
-            }, callback);
+            }, () => {
+                for (let scheduler of this.state.schedulers)
+                    if (scheduler.getShown())
+                        this.setState({
+                            currentScheduler: scheduler
+                        });
+            });
         });
     },
 
@@ -34,13 +44,38 @@ export default React.createClass({
         });
     },
 
+    toggleCourseShownFactory(course) {
+        return event => {
+            const scheduler = this.state.currentScheduler;
+            if (scheduler) {
+                const shown = scheduler.getMap()[course.getCRN()];
+                scheduler.setCourseShown(course, !shown);
+                this.forceUpdate();
+            }
+        };
+    },
+
     render() {
         const courses = this.state.userCourses.map(course => {
+            let courseShown;
+            if (this.state.currentScheduler === undefined)
+                courseShown = true;
+            else
+                courseShown = this.state.currentScheduler.getMap()[course.getCRN()];
+
+            const buttonClass = courseShown ? 'toggle-btn-show' : 'toggle-btn-hide';
+            const eyeClasses = makeClasses({
+                'glyphicon': true,
+                'glyphicon-eye-open': courseShown,
+                'glyphicon-eye-close': !courseShown
+            });
+
             return (
                 <Tr key={course.getCRN()}>
-                    <Td column='shown'>
-                        <a>
-                            <span className='glyphicon glyphicon-eye-open' />
+                    <Td column='shown'
+                        handleClick={this.toggleCourseShownFactory(course)}>
+                        <a className={buttonClass}>
+                            <span className={eyeClasses} />
                         </a>
                     </Td>
                     <Td column='crn'
@@ -103,6 +138,9 @@ export default React.createClass({
                         {courses}
                     </Table>
                 </div>
+                <SchedulerView ref='schedulerView'
+                               courses={this.state.userCourses}
+                               scheduler={this.state.currentScheduler} />
             </div>
         );
     }

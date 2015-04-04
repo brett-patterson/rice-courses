@@ -1,9 +1,13 @@
-define(["exports", "module"], function (exports, module) {
+define(["exports", "module", "services/schedulers"], function (exports, module, _servicesSchedulers) {
     "use strict";
+
+    var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
     var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
     var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+    var Schedulers = _interopRequire(_servicesSchedulers);
 
     var Scheduler = (function () {
         function Scheduler(name) {
@@ -31,6 +35,13 @@ define(["exports", "module"], function (exports, module) {
             getShown: {
                 value: function getShown() {
                     return this.shown;
+                }
+            },
+            setCourseShown: {
+                value: function setCourseShown(course, shown) {
+                    this.map[course.getCRN()] = shown;
+                    // console.log(Schedulers);
+                    // Schedulers.setCourseShown(this, course, shown);
                 }
             }
         }, {

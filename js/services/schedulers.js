@@ -15,7 +15,7 @@ export default class Schedulers {
             dataType: 'json'
         }).done(data => {
             let result = [];
-            for (let schedulerJSON in data)
+            for (let schedulerJSON of data)
                 result.push(Scheduler.fromJSON(schedulerJSON));
             cb(result);
         });
