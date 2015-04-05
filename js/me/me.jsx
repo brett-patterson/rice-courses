@@ -83,12 +83,43 @@ export default React.createClass({
         };
     },
 
+    schedulerRemoveFactory(scheduler) {
+        return event => {
+            const index = this.state.schedulers.indexOf(scheduler);
+            scheduler.remove();
+
+            if (index > -1) {
+                this.setState(React.addons.update(this.state, {
+                    schedulers: {
+                        $splice: [[index, 1]]
+                    }
+                }), () => {
+                    if (this.state.currentScheduler === scheduler) {
+                        const schedulers = this.state.schedulers;
+                        let current = schedulers[index];
+                        if (current === undefined)
+                            current = schedulers[schedulers.length - 1];
+
+                        current.setShown(true);
+                        this.setState({
+                            currentScheduler: current
+                        });
+                    }
+                });
+            }
+        };
+    },
+
     addScheduler() {
-        const name = `Schedule ${this.state.schedulers.length}`;
-        Scheduler.addScheduler(name, scheduler => {
+        Scheduler.addScheduler('New Schedule', scheduler => {
+            this.state.currentScheduler.setShown(false);
+            scheduler.setShown(true);
             this.setState(React.addons.update(this.state, {
                 schedulers: {
                     $push: [scheduler]
+                },
+                currentScheduler: {
+                    $set: scheduler
                 }
             }));
         });
@@ -177,11 +208,21 @@ export default React.createClass({
         ];
 
         const schedulerTabs = this.state.schedulers.map(scheduler => {
+            let closeButton;
+            if (this.state.schedulers.length > 1)
+                closeButton = (
+                    <span className='scheduler-close glyphicon glyphicon-remove'
+                          onClick={this.schedulerRemoveFactory(scheduler)} />
+                );
+
             return (
-                <li key={scheduler.getName()}
+                <li key={scheduler.getID()}
                     className={scheduler.getShown() ? 'active' : ''}>
-                    <a onClick={this.schedulerSelectFactory(scheduler)}>
-                        {scheduler.getName()}
+                    <a>
+                        <span onClick={this.schedulerSelectFactory(scheduler)}>
+                            {scheduler.getName()}
+                        </span>
+                        {closeButton}
                     </a>
                 </li>
             );

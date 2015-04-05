@@ -128,14 +128,46 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "c
             };
         },
 
+        schedulerRemoveFactory: function schedulerRemoveFactory(scheduler) {
+            var _this = this;
+
+            return function (event) {
+                var index = _this.state.schedulers.indexOf(scheduler);
+                scheduler.remove();
+
+                if (index > -1) {
+                    _this.setState(React.addons.update(_this.state, {
+                        schedulers: {
+                            $splice: [[index, 1]]
+                        }
+                    }), function () {
+                        if (_this.state.currentScheduler === scheduler) {
+                            var schedulers = _this.state.schedulers;
+                            var current = schedulers[index];
+                            if (current === undefined) current = schedulers[schedulers.length - 1];
+
+                            current.setShown(true);
+                            _this.setState({
+                                currentScheduler: current
+                            });
+                        }
+                    });
+                }
+            };
+        },
+
         addScheduler: function addScheduler() {
             var _this = this;
 
-            var name = "Schedule " + this.state.schedulers.length;
-            Scheduler.addScheduler(name, function (scheduler) {
+            Scheduler.addScheduler("New Schedule", function (scheduler) {
+                _this.state.currentScheduler.setShown(false);
+                scheduler.setShown(true);
                 _this.setState(React.addons.update(_this.state, {
                     schedulers: {
                         $push: [scheduler]
+                    },
+                    currentScheduler: {
+                        $set: scheduler
                     }
                 }));
             });
@@ -238,14 +270,23 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "c
             var columns = [{ key: "shown", label: "" }, { key: "crn", label: "CRN" }, { key: "courseID", label: "Course ID" }, { key: "title", label: "Title" }, { key: "instructor", label: "Instructor" }, { key: "meetings", label: "Meetings" }, { key: "distribution", label: "Distribution" }, { key: "enrollment", label: "Enrollment" }, { key: "credits", label: "Credits" }, { key: "remove", label: "" }];
 
             var schedulerTabs = this.state.schedulers.map(function (scheduler) {
+                var closeButton = undefined;
+                if (_this.state.schedulers.length > 1) closeButton = React.createElement("span", { className: "scheduler-close glyphicon glyphicon-remove",
+                    onClick: _this.schedulerRemoveFactory(scheduler) });
+
                 return React.createElement(
                     "li",
-                    { key: scheduler.getName(),
+                    { key: scheduler.getID(),
                         className: scheduler.getShown() ? "active" : "" },
                     React.createElement(
                         "a",
-                        { onClick: _this.schedulerSelectFactory(scheduler) },
-                        scheduler.getName()
+                        null,
+                        React.createElement(
+                            "span",
+                            { onClick: _this.schedulerSelectFactory(scheduler) },
+                            scheduler.getName()
+                        ),
+                        closeButton
                     )
                 );
             });

@@ -10,18 +10,24 @@ define(["exports", "module", "jquery"], function (exports, module, _jquery) {
     var jQuery = _interopRequire(_jquery);
 
     var Scheduler = (function () {
-        function Scheduler(name) {
-            var map = arguments[1] === undefined ? {} : arguments[1];
-            var shown = arguments[2] === undefined ? false : arguments[2];
+        function Scheduler(id, name) {
+            var map = arguments[2] === undefined ? {} : arguments[2];
+            var shown = arguments[3] === undefined ? false : arguments[3];
 
             _classCallCheck(this, Scheduler);
 
+            this.id = id;
             this.name = name;
             this.map = map;
             this.shown = shown;
         }
 
         _createClass(Scheduler, {
+            getID: {
+                value: function getID() {
+                    return this.id;
+                }
+            },
             getName: {
                 value: function getName() {
                     return this.name;
@@ -35,8 +41,8 @@ define(["exports", "module", "jquery"], function (exports, module, _jquery) {
                         url: "/me/api/scheduler/rename/",
                         method: "POST",
                         data: {
-                            name: this.name,
-                            "new": name
+                            id: this.id,
+                            name: name
                         },
                         dataType: "json"
                     }).done(function (data) {
@@ -57,7 +63,7 @@ define(["exports", "module", "jquery"], function (exports, module, _jquery) {
                         url: "/me/api/scheduler/course/",
                         method: "POST",
                         data: {
-                            scheduler: this.name,
+                            id: this.id,
                             crn: course.getCRN(),
                             shown: shown
                         },
@@ -80,7 +86,7 @@ define(["exports", "module", "jquery"], function (exports, module, _jquery) {
                         url: "/me/api/scheduler/set/",
                         method: "POST",
                         data: {
-                            name: this.name,
+                            id: this.id,
                             shown: shown
                         },
                         dataType: "json"
@@ -94,7 +100,7 @@ define(["exports", "module", "jquery"], function (exports, module, _jquery) {
                     jQuery.ajax({
                         url: "/me/api/scheduler/remove/",
                         method: "POST",
-                        data: { name: this.name },
+                        data: { id: this.id },
                         dataType: "json"
                     }).done(function (data) {
                         if (cb) cb(data);
@@ -104,7 +110,7 @@ define(["exports", "module", "jquery"], function (exports, module, _jquery) {
         }, {
             fromJSON: {
                 value: function fromJSON(j) {
-                    return new Scheduler(j.name, j.map, j.shown);
+                    return new Scheduler(j.id, j.name, j.map, j.shown);
                 }
             },
             fetchAll: {

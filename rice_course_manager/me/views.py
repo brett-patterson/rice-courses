@@ -192,10 +192,10 @@ def remove_scheduler(request):
     """ Remove a scheduler for the user.
 
     """
-    name = request.POST.get('name')
+    s_id = request.POST.get('id')
 
-    if name:
-        Scheduler.objects.get(name=name).delete()
+    if s_id:
+        Scheduler.objects.get(id=s_id).delete()
         return HttpResponse(json.dumps({'status': 'success'}),
                             content_type='application/json')
     else:
@@ -209,14 +209,12 @@ def set_course_shown(request):
     """ Set a course to be shown or hidden.
 
     """
-    name = request.POST.get('scheduler')
+    s_id = request.POST.get('id')
     crn = request.POST.get('crn')
     shown = request.POST.get('shown')
 
-    print name, crn, shown
-
-    if name and crn and shown is not None:
-        scheduler = Scheduler.objects.get(name=name)
+    if s_id and crn and shown is not None:
+        scheduler = Scheduler.objects.get(id=s_id)
         scheduler.set_shown(Course.objects.get(crn=crn),
                             shown == 'true')
         return HttpResponse(json.dumps({'status': 'success'}),
@@ -233,11 +231,11 @@ def set_scheduler_shown(request):
     """ Set a scheduler to be shown or hidden
 
     """
-    name = request.POST.get('name')
+    s_id = request.POST.get('id')
     shown = request.POST.get('shown')
 
-    if name and shown is not None:
-        scheduler = Scheduler.objects.get(name=name)
+    if s_id and shown is not None:
+        scheduler = Scheduler.objects.get(id=s_id)
         scheduler.shown = shown == 'true'
         scheduler.save()
         return HttpResponse(json.dumps({'status': 'success'}),
@@ -254,12 +252,12 @@ def rename_scheduler(request):
     """ Rename a scheduler.
 
     """
+    s_id = request.POST.get('id')
     name = request.POST.get('name')
-    new = request.POST.get('new')
 
-    if name and new:
-        scheduler = Scheduler.objects.get(name=name)
-        scheduler.name = new
+    if s_id and name:
+        scheduler = Scheduler.objects.get(id=s_id)
+        scheduler.name = name
         scheduler.save()
         return HttpResponse(json.dumps({'status': 'success'}),
                             content_type='application/json')

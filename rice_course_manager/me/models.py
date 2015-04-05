@@ -48,9 +48,6 @@ class Scheduler(models.Model):
     # The user profile this scheduler corresponds to.
     user_profile = models.ForeignKey(UserProfile)
 
-    class Meta:
-        unique_together = ('name', 'user_profile')
-
     def save(self, *args, **kwargs):
         """ On save, ensure that only one Scheduler object is shown.
 
@@ -91,6 +88,7 @@ class Scheduler(models.Model):
 
         """
         return {
+            'id': self.id,
             'name': self.name,
             'shown': self.shown,
             'map': self.show_map()

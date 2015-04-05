@@ -2,14 +2,19 @@ import jQuery from 'jquery';
 
 
 export default class Scheduler {
-    constructor(name, map={}, shown=false) {
+    constructor(id, name, map={}, shown=false) {
+        this.id = id;
         this.name = name;
         this.map = map;
         this.shown = shown;
     }
 
     static fromJSON(j) {
-        return new Scheduler(j.name, j.map, j.shown);
+        return new Scheduler(j.id, j.name, j.map, j.shown);
+    }
+
+    getID() {
+        return this.id;
     }
 
     getName() {
@@ -23,8 +28,8 @@ export default class Scheduler {
             url: '/me/api/scheduler/rename/',
             method: 'POST',
             data: {
-                name: this.name,
-                new: name
+                id: this.id,
+                name: name
             },
             dataType: 'json'
         }).done(data => {
@@ -44,7 +49,7 @@ export default class Scheduler {
             url: '/me/api/scheduler/course/',
             method: 'POST',
             data: {
-                scheduler: this.name,
+                id: this.id,
                 crn: course.getCRN(),
                 shown: shown
             },
@@ -66,7 +71,7 @@ export default class Scheduler {
             url: '/me/api/scheduler/set/',
             method: 'POST',
             data: {
-                name: this.name,
+                id: this.id,
                 shown: shown
             },
             dataType: 'json'
@@ -80,7 +85,7 @@ export default class Scheduler {
         jQuery.ajax({
             url: '/me/api/scheduler/remove/',
             method: 'POST',
-            data: {name: this.name},
+            data: {id: this.id},
             dataType: 'json'
         }).done(data => {
             if (cb)
