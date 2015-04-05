@@ -4,8 +4,8 @@ import ZeroClipboard from 'zeroClipboard';
 import jQuery from 'jquery';
 
 import {showCourseFactory} from 'courses/courseDetail';
-import Schedulers from 'services/schedulers';
-import UserCourses from 'services/userCourses';
+import Scheduler from 'me/scheduler';
+import UserCourses from 'courses/userCourses';
 import SchedulerView from 'me/schedulerView';
 import AlertMixin from 'alertMixin';
 import {makeClasses} from 'util';
@@ -28,7 +28,7 @@ export default React.createClass({
     },
 
     fetchSchedulers(callback) {
-        Schedulers.get(schedulers => {
+        Scheduler.fetchAll(schedulers => {
             this.setState({
                 schedulers
             }, () => {

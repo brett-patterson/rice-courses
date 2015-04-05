@@ -211,7 +211,9 @@ def set_course_shown(request):
     crn = request.POST.get('crn')
     shown = request.POST.get('shown')
 
-    if name and crn and shown:
+    print name, crn, shown
+
+    if name and crn and shown is not None:
         scheduler = Scheduler.objects.get(name=name)
         scheduler.set_shown(Course.objects.get(crn=crn),
                             shown == 'true')
@@ -232,7 +234,7 @@ def set_scheduler_shown(request):
     name = request.POST.get('name')
     shown = request.POST.get('shown')
 
-    if name and shown:
+    if name and shown is not None:
         scheduler = Scheduler.objects.get(name=name)
         scheduler.shown = shown == 'true'
         scheduler.save()

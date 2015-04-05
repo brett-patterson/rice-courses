@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "courses/courseDetail", "services/schedulers", "services/userCourses", "me/schedulerView", "alertMixin", "util"], function (exports, module, _react, _reactable, _zeroClipboard, _jquery, _coursesCourseDetail, _servicesSchedulers, _servicesUserCourses, _meSchedulerView, _alertMixin, _util) {
+define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "courses/courseDetail", "me/scheduler", "courses/userCourses", "me/schedulerView", "alertMixin", "util"], function (exports, module, _react, _reactable, _zeroClipboard, _jquery, _coursesCourseDetail, _meScheduler, _coursesUserCourses, _meSchedulerView, _alertMixin, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -15,9 +15,9 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "c
 
     var showCourseFactory = _coursesCourseDetail.showCourseFactory;
 
-    var Schedulers = _interopRequire(_servicesSchedulers);
+    var Scheduler = _interopRequire(_meScheduler);
 
-    var UserCourses = _interopRequire(_servicesUserCourses);
+    var UserCourses = _interopRequire(_coursesUserCourses);
 
     var SchedulerView = _interopRequire(_meSchedulerView);
 
@@ -45,7 +45,7 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "c
         fetchSchedulers: function fetchSchedulers(callback) {
             var _this = this;
 
-            Schedulers.get(function (schedulers) {
+            Scheduler.fetchAll(function (schedulers) {
                 _this.setState({
                     schedulers: schedulers
                 }, function () {

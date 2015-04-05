@@ -1,4 +1,4 @@
-define(["exports", "module", "services/schedulers"], function (exports, module, _servicesSchedulers) {
+define(["exports", "module", "jquery"], function (exports, module, _jquery) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -7,7 +7,7 @@ define(["exports", "module", "services/schedulers"], function (exports, module, 
 
     var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
-    var Schedulers = _interopRequire(_servicesSchedulers);
+    var jQuery = _interopRequire(_jquery);
 
     var Scheduler = (function () {
         function Scheduler(name) {
@@ -28,9 +28,20 @@ define(["exports", "module", "services/schedulers"], function (exports, module, 
                 }
             },
             setName: {
-                value: function setName(name) {
+                value: function setName(name, cb) {
                     this.name = name;
-                    // TODO: ADD SERVER CALL
+
+                    jQuery.ajax({
+                        url: "/me/api/scheduler/rename/",
+                        method: "POST",
+                        data: {
+                            name: this.name,
+                            "new": name
+                        },
+                        dataType: "json"
+                    }).done(function (data) {
+                        if (cb) cb(data);
+                    });
                 }
             },
             getMap: {
@@ -39,10 +50,21 @@ define(["exports", "module", "services/schedulers"], function (exports, module, 
                 }
             },
             setCourseShown: {
-                value: function setCourseShown(course, shown) {
+                value: function setCourseShown(course, shown, cb) {
                     this.map[course.getCRN()] = shown;
-                    // console.log(Schedulers);
-                    // Schedulers.setCourseShown(this, course, shown);
+
+                    jQuery.ajax({
+                        url: "/me/api/scheduler/course/",
+                        method: "POST",
+                        data: {
+                            scheduler: this.name,
+                            crn: course.getCRN(),
+                            shown: shown
+                        },
+                        dataType: "json"
+                    }).done(function (data) {
+                        if (cb) cb(data);
+                    });
                 }
             },
             getShown: {
@@ -51,15 +73,100 @@ define(["exports", "module", "services/schedulers"], function (exports, module, 
                 }
             },
             setShown: {
-                value: function setShown(shown) {
+                value: function setShown(shown, cb) {
                     this.shown = shown;
-                    // TODO: ADD SERVER CALL
+
+                    jQuery.ajax({
+                        url: "/me/api/scheduler/set/",
+                        method: "POST",
+                        data: {
+                            name: this.name,
+                            shown: shown
+                        },
+                        dataType: "json"
+                    }).done(function (data) {
+                        if (cb) cb(data);
+                    });
+                }
+            },
+            remove: {
+                value: function remove(cb) {
+                    jQuery.ajax({
+                        url: "/me/api/scheduler/remove/",
+                        method: "POST",
+                        data: { name: this.name },
+                        dataType: "json"
+                    }).done(function (data) {
+                        if (cb) cb(data);
+                    });
                 }
             }
         }, {
             fromJSON: {
                 value: function fromJSON(j) {
                     return new Scheduler(j.name, j.map, j.shown);
+                }
+            },
+            fetchAll: {
+
+                /**
+                 * Get all schedulers for the user.
+                 * @param {function} cb - A callback invoked with the results of the request
+                 */
+
+                value: function fetchAll(cb) {
+                    jQuery.ajax({
+                        url: "/me/api/scheduler/all/",
+                        method: "POST",
+                        dataType: "json"
+                    }).done(function (data) {
+                        var result = [];
+                        var _iteratorNormalCompletion = true;
+                        var _didIteratorError = false;
+                        var _iteratorError = undefined;
+
+                        try {
+                            for (var _iterator = data[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                                var schedulerJSON = _step.value;
+
+                                result.push(Scheduler.fromJSON(schedulerJSON));
+                            }
+                        } catch (err) {
+                            _didIteratorError = true;
+                            _iteratorError = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion && _iterator["return"]) {
+                                    _iterator["return"]();
+                                }
+                            } finally {
+                                if (_didIteratorError) {
+                                    throw _iteratorError;
+                                }
+                            }
+                        }
+
+                        cb(result);
+                    });
+                }
+            },
+            addScheduler: {
+
+                /**
+                 * Add a new scheduler.
+                 * @param {string} name - The name for the new scheduler.
+                 * @param {function} cb - A callback invoked with the results of the request
+                 */
+
+                value: function addScheduler(name, cb) {
+                    jQuery.ajax({
+                        url: "/me/api/scheduler/add/",
+                        method: "POST",
+                        data: { name: name },
+                        dataType: "json"
+                    }).done(function (data) {
+                        if (cb) cb(data);
+                    });
                 }
             }
         });

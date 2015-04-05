@@ -4,7 +4,7 @@ import jQuery from 'jquery';
 
 import Course from 'courses/course';
 import {showCourseFactory} from 'courses/courseDetail';
-import UserCourses from 'services/userCourses';
+import UserCourses from 'courses/userCourses';
 import {makeClasses} from 'util';
 
 export default React.createClass({
