@@ -16,17 +16,27 @@ export default class Scheduler {
         return this.name;
     }
 
-    getMap() {
-        return this.map;
+    setName(name) {
+        this.name = name;
+        // TODO: ADD SERVER CALL
     }
 
-    getShown() {
-        return this.shown;
+    getMap() {
+        return this.map;
     }
 
     setCourseShown(course, shown) {
         this.map[course.getCRN()] = shown;
         // console.log(Schedulers);
         // Schedulers.setCourseShown(this, course, shown);
+    }
+
+    getShown() {
+        return this.shown;
+    }
+
+    setShown(shown) {
+        this.shown = shown;
+        // TODO: ADD SERVER CALL
     }
 }

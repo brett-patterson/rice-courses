@@ -25,3 +25,7 @@
 .course-table td:hover {
   cursor: pointer;
 }
+
+.scheduler-tabs a:hover {
+  cursor: pointer;
+}

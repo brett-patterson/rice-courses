@@ -116,6 +116,18 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "c
             event.stopPropagation();
         },
 
+        schedulerSelectFactory: function schedulerSelectFactory(scheduler) {
+            var _this = this;
+
+            return function (event) {
+                _this.state.currentScheduler.setShown(false);
+                scheduler.setShown(true);
+                _this.setState({
+                    currentScheduler: scheduler
+                });
+            };
+        },
+
         render: function render() {
             var _this = this;
 
@@ -212,6 +224,19 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "c
 
             var columns = [{ key: "shown", label: "" }, { key: "crn", label: "CRN" }, { key: "courseID", label: "Course ID" }, { key: "title", label: "Title" }, { key: "instructor", label: "Instructor" }, { key: "meetings", label: "Meetings" }, { key: "distribution", label: "Distribution" }, { key: "enrollment", label: "Enrollment" }, { key: "credits", label: "Credits" }, { key: "remove", label: "" }];
 
+            var schedulerTabs = this.state.schedulers.map(function (scheduler) {
+                return React.createElement(
+                    "li",
+                    { key: scheduler.getName(),
+                        className: scheduler.getShown() ? "active" : "" },
+                    React.createElement(
+                        "a",
+                        { onClick: _this.schedulerSelectFactory(scheduler) },
+                        scheduler.getName()
+                    )
+                );
+            });
+
             return React.createElement(
                 "div",
                 null,
@@ -225,6 +250,11 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "c
                             className: "table table-hover course-table" },
                         courses
                     )
+                ),
+                React.createElement(
+                    "ul",
+                    { className: "nav nav-tabs scheduler-tabs" },
+                    schedulerTabs
                 ),
                 React.createElement(SchedulerView, { ref: "schedulerView",
                     courses: this.state.userCourses,

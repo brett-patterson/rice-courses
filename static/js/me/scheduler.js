@@ -27,14 +27,15 @@ define(["exports", "module", "services/schedulers"], function (exports, module, 
                     return this.name;
                 }
             },
+            setName: {
+                value: function setName(name) {
+                    this.name = name;
+                    // TODO: ADD SERVER CALL
+                }
+            },
             getMap: {
                 value: function getMap() {
                     return this.map;
-                }
-            },
-            getShown: {
-                value: function getShown() {
-                    return this.shown;
                 }
             },
             setCourseShown: {
@@ -42,6 +43,17 @@ define(["exports", "module", "services/schedulers"], function (exports, module, 
                     this.map[course.getCRN()] = shown;
                     // console.log(Schedulers);
                     // Schedulers.setCourseShown(this, course, shown);
+                }
+            },
+            getShown: {
+                value: function getShown() {
+                    return this.shown;
+                }
+            },
+            setShown: {
+                value: function setShown(shown) {
+                    this.shown = shown;
+                    // TODO: ADD SERVER CALL
                 }
             }
         }, {

@@ -73,6 +73,16 @@ export default React.createClass({
         event.stopPropagation();
     },
 
+    schedulerSelectFactory(scheduler) {
+        return event => {
+            this.state.currentScheduler.setShown(false);
+            scheduler.setShown(true);
+            this.setState({
+                currentScheduler: scheduler
+            });
+        };
+    },
+
     render() {
         const courses = this.state.userCourses.map(course => {
             let courseShown;
@@ -155,6 +165,17 @@ export default React.createClass({
             { key: 'remove', label: ''}
         ];
 
+        const schedulerTabs = this.state.schedulers.map(scheduler => {
+            return (
+                <li key={scheduler.getName()}
+                    className={scheduler.getShown() ? 'active' : ''}>
+                    <a onClick={this.schedulerSelectFactory(scheduler)}>
+                        {scheduler.getName()}
+                    </a>
+                </li>
+            );
+        });
+
         return (
             <div>
                 {this.getAlerts()}
@@ -164,6 +185,9 @@ export default React.createClass({
                         {courses}
                     </Table>
                 </div>
+                <ul className='nav nav-tabs scheduler-tabs'>
+                    {schedulerTabs}
+                </ul>
                 <SchedulerView ref='schedulerView'
                                courses={this.state.userCourses}
                                scheduler={this.state.currentScheduler} />
