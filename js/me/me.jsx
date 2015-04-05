@@ -69,7 +69,7 @@ export default React.createClass({
     copyButtonClicked(event) {
         let crn = jQuery(event.target).attr('data-clipboard-text');
         this.addAlert(`Copied CRN <strong>${crn}</strong> to clipboard.`,
-                              'success');
+                      'success');
         event.stopPropagation();
     },
 
@@ -81,6 +81,17 @@ export default React.createClass({
                 currentScheduler: scheduler
             });
         };
+    },
+
+    addScheduler() {
+        const name = `Schedule ${this.state.schedulers.length}`;
+        Scheduler.addScheduler(name, scheduler => {
+            this.setState(React.addons.update(this.state, {
+                schedulers: {
+                    $push: [scheduler]
+                }
+            }));
+        });
     },
 
     render() {
@@ -187,6 +198,11 @@ export default React.createClass({
                 </div>
                 <ul className='nav nav-tabs scheduler-tabs'>
                     {schedulerTabs}
+                    <li>
+                        <a href='#' onClick={this.addScheduler}>
+                            <span className='glyphicon glyphicon-plus' />
+                        </a>
+                    </li>
                 </ul>
                 <SchedulerView ref='schedulerView'
                                courses={this.state.userCourses}

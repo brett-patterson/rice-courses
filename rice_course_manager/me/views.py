@@ -176,9 +176,11 @@ def add_scheduler(request):
     name = request.POST.get('name')
 
     if name:
-        request.user.userprofile.create_scheduler(name)
-        return HttpResponse(json.dumps({'status': 'success'}),
-                            content_type='application/json')
+        scheduler = request.user.userprofile.create_scheduler(name)
+        return HttpResponse(json.dumps({
+            'status': 'success',
+            'scheduler': scheduler.json()
+            }), content_type='application/json')
     else:
         return HttpResponse(json.dumps({'status': 'error'}),
                             content_type='application/json')

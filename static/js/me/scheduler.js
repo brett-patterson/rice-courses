@@ -165,7 +165,7 @@ define(["exports", "module", "jquery"], function (exports, module, _jquery) {
                         data: { name: name },
                         dataType: "json"
                     }).done(function (data) {
-                        if (cb) cb(data);
+                        if (cb) cb(Scheduler.fromJSON(data.scheduler));
                     });
                 }
             }

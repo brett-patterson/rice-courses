@@ -128,6 +128,19 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "c
             };
         },
 
+        addScheduler: function addScheduler() {
+            var _this = this;
+
+            var name = "Schedule " + this.state.schedulers.length;
+            Scheduler.addScheduler(name, function (scheduler) {
+                _this.setState(React.addons.update(_this.state, {
+                    schedulers: {
+                        $push: [scheduler]
+                    }
+                }));
+            });
+        },
+
         render: function render() {
             var _this = this;
 
@@ -254,7 +267,16 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "c
                 React.createElement(
                     "ul",
                     { className: "nav nav-tabs scheduler-tabs" },
-                    schedulerTabs
+                    schedulerTabs,
+                    React.createElement(
+                        "li",
+                        null,
+                        React.createElement(
+                            "a",
+                            { href: "#", onClick: this.addScheduler },
+                            React.createElement("span", { className: "glyphicon glyphicon-plus" })
+                        )
+                    )
                 ),
                 React.createElement(SchedulerView, { ref: "schedulerView",
                     courses: this.state.userCourses,

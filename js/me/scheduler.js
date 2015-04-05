@@ -118,7 +118,7 @@ export default class Scheduler {
             dataType: 'json'
         }).done(data => {
             if (cb)
-                cb(data);
+                cb(Scheduler.fromJSON(data.scheduler));
         });
     }
 }
