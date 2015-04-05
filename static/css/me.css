@@ -26,6 +26,10 @@
   cursor: pointer;
 }
 
+.scheduler-tabs {
+    border-bottom: none;
+}
+
 .scheduler-tabs a:hover {
   cursor: pointer;
 }
