@@ -21,23 +21,6 @@ def index(request):
 
 
 @login_required(login_url='/login/')
-def export(request, scheduler_name):
-    """ Export a scheduler's CRNs for all shown courses.
-
-    """
-    if scheduler_name:
-        profile = request.user.userprofile
-        scheduler = Scheduler.objects.get(name=scheduler_name)
-        show_map = scheduler.show_map()
-        crns = [course.crn for course in profile.courses.all()
-                if show_map[course.crn]]
-        return HttpResponse('<br/>'.join(crns))
-    else:
-        return HttpResponse(json.dumps({'status': 'error'}),
-                            content_type='application/json')
-
-
-@login_required(login_url='/login/')
 def courses(request):
     """ Get all of the courses selected by the user.
 
@@ -56,7 +39,12 @@ def add_course(request):
 
     if crn:
         course = Course.objects.get(crn=crn)
-        request.user.userprofile.courses.add(course)
+
+        profile = request.user.userprofile
+        profile.courses.add(course)
+
+        for scheduler in Scheduler.objects.filter(user_profile=profile):
+            scheduler.set_shown(course, True)
 
         return HttpResponse(json.dumps({'status': 'success'}),
                             content_type='application/json')
@@ -159,6 +147,24 @@ def schedulers(request):
 
     return HttpResponse(json.dumps(schedulers),
                         content_type='application/json')
+
+
+@login_required(login_url='/login/')
+def export_scheduler(request):
+    """ Export a scheduler's CRNs for all shown courses.
+
+    """
+    s_id = request.POST.get('id')
+
+    if s_id is not None:
+        scheduler = Scheduler.objects.get(pk=s_id)
+        show_map = scheduler.show_map()
+        crns = [course.crn for course in request.user.userprofile.courses.all()
+                if show_map[course.crn]]
+        return HttpResponse('<br/>'.join(crns))
+    else:
+        return HttpResponse(json.dumps({'status': 'error'}),
+                            content_type='application/json')
 
 
 @login_required(login_url='/login/')

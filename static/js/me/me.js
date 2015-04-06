@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "courses/courseDetail", "me/scheduler", "courses/userCourses", "me/schedulerView", "alertMixin", "util"], function (exports, module, _react, _reactable, _zeroClipboard, _jquery, _coursesCourseDetail, _meScheduler, _coursesUserCourses, _meSchedulerView, _alertMixin, _util) {
+define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipboard", "jquery", "courses/courseDetail", "me/scheduler", "courses/userCourses", "me/schedulerView", "me/export", "alertMixin", "util"], function (exports, module, _react, _reactable, _reactBootstrap, _zeroClipboard, _jquery, _coursesCourseDetail, _meScheduler, _coursesUserCourses, _meSchedulerView, _meExport, _alertMixin, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -8,6 +8,7 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "c
     var Table = _reactable.Table;
     var Tr = _reactable.Tr;
     var Td = _reactable.Td;
+    var Button = _reactBootstrap.Button;
 
     var ZeroClipboard = _interopRequire(_zeroClipboard);
 
@@ -20,6 +21,8 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "c
     var UserCourses = _interopRequire(_coursesUserCourses);
 
     var SchedulerView = _interopRequire(_meSchedulerView);
+
+    var showSchedulerExport = _interopRequire(_meExport);
 
     var AlertMixin = _interopRequire(_alertMixin);
 
@@ -202,6 +205,10 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "c
             });
         },
 
+        exportScheduler: function exportScheduler(event) {
+            if (this.state.currentScheduler !== undefined) showSchedulerExport(this.state.currentScheduler);
+        },
+
         render: function render() {
             var _this = this;
 
@@ -325,6 +332,11 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "c
                 "div",
                 null,
                 this.getAlerts(),
+                React.createElement(
+                    Button,
+                    { bsStyle: "info", onClick: this.exportScheduler },
+                    "Export Current CRNs"
+                ),
                 React.createElement(
                     "div",
                     { className: "table-responsive" },

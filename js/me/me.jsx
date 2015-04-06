@@ -1,5 +1,6 @@
 import React from 'react';
 import {Table, Tr, Td} from 'reactable';
+import {Button} from 'reactBootstrap';
 import ZeroClipboard from 'zeroClipboard';
 import jQuery from 'jquery';
 
@@ -7,6 +8,7 @@ import {showCourseFactory} from 'courses/courseDetail';
 import Scheduler from 'me/scheduler';
 import UserCourses from 'courses/userCourses';
 import SchedulerView from 'me/schedulerView';
+import showSchedulerExport from 'me/export';
 import AlertMixin from 'alertMixin';
 import {makeClasses} from 'util';
 
@@ -153,6 +155,11 @@ export default React.createClass({
         });
     },
 
+    exportScheduler(event) {
+        if (this.state.currentScheduler !== undefined)
+            showSchedulerExport(this.state.currentScheduler);
+    },
+
     render() {
         const courses = this.state.userCourses.map(course => {
             let courseShown;
@@ -260,6 +267,9 @@ export default React.createClass({
         return (
             <div>
                 {this.getAlerts()}
+                <Button bsStyle='info' onClick={this.exportScheduler}>
+                    Export Current CRNs
+                </Button>
                 <div className='table-responsive'>
                     <Table ref='courseTable' columns={columns}
                            className='table table-hover course-table'>
