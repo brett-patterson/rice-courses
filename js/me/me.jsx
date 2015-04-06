@@ -88,6 +88,7 @@ export default React.createClass({
             const index = this.state.schedulers.indexOf(scheduler);
 
             if (index > -1) {
+                event.stopPropagation();
                 scheduler.remove();
                 this.setState(React.addons.update(this.state, {
                     schedulers: {

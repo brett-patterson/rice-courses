@@ -135,6 +135,7 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "c
                 var index = _this.state.schedulers.indexOf(scheduler);
 
                 if (index > -1) {
+                    event.stopPropagation();
                     scheduler.remove();
                     _this.setState(React.addons.update(_this.state, {
                         schedulers: {
