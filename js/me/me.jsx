@@ -34,11 +34,14 @@ export default React.createClass({
             this.setState({
                 schedulers
             }, () => {
-                for (let scheduler of this.state.schedulers)
+                for (let i = 0; i < this.state.schedulers.length; i++) {
+                    const scheduler = this.state.schedulers[i];
+
                     if (scheduler.getShown())
                         this.setState({
                             currentScheduler: scheduler
                         });
+                }
             });
         });
     },
@@ -96,7 +99,9 @@ export default React.createClass({
         if (this.state.currentScheduler !== undefined) {
             const map = this.state.currentScheduler.getMap();
 
-            for (let course of this.state.userCourses) {
+            for (let i = 0; i < this.state.userCourses.length; i++) {
+                const course = this.state.userCourses[i];
+
                 if (map[course.getCRN()]) {
                     const credits = course.getCredits();
                     
@@ -115,8 +120,8 @@ export default React.createClass({
         let vary = false;
         let total = 0;
 
-        for (let course of this.state.userCourses) {
-            const credits = course.getCredits();
+        for (let i = 0; i < this.state.userCourses.length; i++) {
+            const credits = this.state.userCourses[i].getCredits();
             
             if (credits.indexOf('to') > -1)
                 vary = true;

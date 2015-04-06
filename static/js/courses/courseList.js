@@ -51,32 +51,10 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/co
                 dataType: "json"
             }).done(function (result) {
                 var courses = [];
-                var _iteratorNormalCompletion = true;
-                var _didIteratorError = false;
-                var _iteratorError = undefined;
 
-                try {
-                    for (var _iterator = result[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                        var courseJSON = _step.value;
-
-                        courses.push(Course.fromJSON(courseJSON));
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally {
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator["return"]) {
-                            _iterator["return"]();
-                        }
-                    } finally {
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-
-                _this.setState({
+                for (var i = 0; i < result.length; i++) {
+                    courses.push(Course.fromJSON(result[i]));
+                }_this.setState({
                     courses: courses
                 }, _this.updateFilteredCourses);
             });
@@ -87,32 +65,10 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/co
 
             UserCourses.get(function (courses) {
                 var userCourses = [];
-                var _iteratorNormalCompletion = true;
-                var _didIteratorError = false;
-                var _iteratorError = undefined;
 
-                try {
-                    for (var _iterator = courses[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                        var course = _step.value;
-
-                        userCourses.push(course.getCRN());
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally {
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator["return"]) {
-                            _iterator["return"]();
-                        }
-                    } finally {
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-
-                _this.setState({
+                for (var i = 0; i < courses.length; i++) {
+                    userCourses.push(courses[i].getCRN());
+                }_this.setState({
                     userCourses: userCourses
                 }, callback);
             });
@@ -126,14 +82,25 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/co
             var _this = this;
 
             return function (event) {
-                if (_this.isUserCourse(course)) {
-                    UserCourses.remove(course, function () {
-                        _this.fetchUserCourses(_this.forceUpdate);
-                    });
+                var crn = course.getCRN();
+                var index = _this.state.userCourses.indexOf(crn);
+
+                if (index > -1) {
+                    _this.setState(React.addons.update(_this.state, {
+                        userCourses: {
+                            $splice: [[index, 1]]
+                        }
+                    }));
+
+                    UserCourses.remove(course);
                 } else {
-                    UserCourses.add(course, function () {
-                        _this.fetchUserCourses(_this.forceUpdate);
-                    });
+                    _this.setState(React.addons.update(_this.state, {
+                        userCourses: {
+                            $push: [crn]
+                        }
+                    }));
+
+                    UserCourses.add(course);
                 }
             };
         },

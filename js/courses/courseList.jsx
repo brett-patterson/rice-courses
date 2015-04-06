@@ -36,8 +36,9 @@ export default React.createClass({
             'dataType': 'json'
         }).done(result => {
             let courses = [];
-            for (let courseJSON of result)
-                courses.push(Course.fromJSON(courseJSON));
+
+            for (let i = 0; i < result.length; i++)
+                courses.push(Course.fromJSON(result[i]));
 
             this.setState({
                 courses
@@ -48,8 +49,9 @@ export default React.createClass({
     fetchUserCourses(callback) {
         UserCourses.get(courses => {
             let userCourses = [];
-            for (let course of courses)
-                userCourses.push(course.getCRN());
+
+            for (let i = 0; i < courses.length; i++)
+                userCourses.push(courses[i].getCRN());
 
             this.setState({
                 userCourses
@@ -63,14 +65,25 @@ export default React.createClass({
 
     toggleUserCourseFactory(course) {
         return event => {
-            if (this.isUserCourse(course)) {
-                UserCourses.remove(course, () => {
-                    this.fetchUserCourses(this.forceUpdate);
-                });
+            const crn = course.getCRN();
+            const index = this.state.userCourses.indexOf(crn);
+
+            if (index > -1) {
+                this.setState(React.addons.update(this.state, {
+                    userCourses: {
+                        $splice: [[index, 1]]
+                    }
+                }));
+
+                UserCourses.remove(course);
             } else {
-                UserCourses.add(course, () => {
-                    this.fetchUserCourses(this.forceUpdate);
-                });
+                this.setState(React.addons.update(this.state, {
+                    userCourses: {
+                        $push: [crn]
+                    }
+                }));
+
+                UserCourses.add(course);
             }
         };
     },

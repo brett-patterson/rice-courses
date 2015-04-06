@@ -92,7 +92,9 @@ export default React.createClass({
                 else {
                     const map = this.state.scheduler.getMap();
 
-                    for (let course of this.state.courses) {
+                    for (let i = 0; i < this.state.courses.length; i++) {
+                        const course = this.state.courses[i];
+
                         if (map[course.getCRN()])
                             events = events.concat(this.eventsForCourse(course));
                     }

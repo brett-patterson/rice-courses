@@ -23,9 +23,12 @@ export default React.createClass({
 
     componentWillMount() {
         let keywords = {};
-        for (let filter of this.props.filters) {
-            for (let keyword of filter.getKeywords())
-                keywords[keyword.toLowerCase()] = filter;
+        for (let i = 0; i < this.props.filters.length; i++) {
+            const filter = this.props.filters[i];
+            const filterKeywords = filter.getKeywords();
+
+            for (let j = 0; j < filterKeywords; j++)
+                keywords[filterKeywords[j].toLowerCase()] = filter;
         }
 
         this.setState({

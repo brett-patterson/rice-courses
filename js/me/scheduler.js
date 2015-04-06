@@ -113,8 +113,10 @@ export default class Scheduler {
             dataType: 'json'
         }).done(data => {
             let result = [];
-            for (let schedulerJSON of data)
-                result.push(Scheduler.fromJSON(schedulerJSON));
+
+            for (let i = 0;i < data.length; i++)
+                result.push(Scheduler.fromJSON(data[i]));
+
             cb(result);
         });
     }

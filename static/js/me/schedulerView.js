@@ -101,31 +101,11 @@ define(["exports", "module", "react", "jquery", "fullcalendar", "moment", "cours
                     if (_this.state.scheduler === undefined) callback(events);else {
                         var map = _this.state.scheduler.getMap();
 
-                        var _iteratorNormalCompletion = true;
-                        var _didIteratorError = false;
-                        var _iteratorError = undefined;
+                        for (var i = 0; i < _this.state.courses.length; i++) {
+                            var course = _this.state.courses[i];
 
-                        try {
-                            for (var _iterator = _this.state.courses[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                                var course = _step.value;
-
-                                if (map[course.getCRN()]) events = events.concat(_this.eventsForCourse(course));
-                            }
-                        } catch (err) {
-                            _didIteratorError = true;
-                            _iteratorError = err;
-                        } finally {
-                            try {
-                                if (!_iteratorNormalCompletion && _iterator["return"]) {
-                                    _iterator["return"]();
-                                }
-                            } finally {
-                                if (_didIteratorError) {
-                                    throw _iteratorError;
-                                }
-                            }
+                            if (map[course.getCRN()]) events = events.concat(_this.eventsForCourse(course));
                         }
-
                         callback(events);
                     }
                 },

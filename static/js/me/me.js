@@ -54,31 +54,12 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
                 _this.setState({
                     schedulers: schedulers
                 }, function () {
-                    var _iteratorNormalCompletion = true;
-                    var _didIteratorError = false;
-                    var _iteratorError = undefined;
+                    for (var i = 0; i < _this.state.schedulers.length; i++) {
+                        var scheduler = _this.state.schedulers[i];
 
-                    try {
-                        for (var _iterator = _this.state.schedulers[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                            var scheduler = _step.value;
-
-                            if (scheduler.getShown()) _this.setState({
-                                currentScheduler: scheduler
-                            });
-                        }
-                    } catch (err) {
-                        _didIteratorError = true;
-                        _iteratorError = err;
-                    } finally {
-                        try {
-                            if (!_iteratorNormalCompletion && _iterator["return"]) {
-                                _iterator["return"]();
-                            }
-                        } finally {
-                            if (_didIteratorError) {
-                                throw _iteratorError;
-                            }
-                        }
+                        if (scheduler.getShown()) _this.setState({
+                            currentScheduler: scheduler
+                        });
                     }
                 });
             });
@@ -142,34 +123,15 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
             if (this.state.currentScheduler !== undefined) {
                 var map = this.state.currentScheduler.getMap();
 
-                var _iteratorNormalCompletion = true;
-                var _didIteratorError = false;
-                var _iteratorError = undefined;
+                for (var i = 0; i < this.state.userCourses.length; i++) {
+                    var course = this.state.userCourses[i];
 
-                try {
-                    for (var _iterator = this.state.userCourses[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                        var course = _step.value;
+                    if (map[course.getCRN()]) {
+                        var credits = course.getCredits();
 
-                        if (map[course.getCRN()]) {
-                            var credits = course.getCredits();
+                        if (credits.indexOf("to") > -1) vary = true;
 
-                            if (credits.indexOf("to") > -1) vary = true;
-
-                            total += parseFloat(credits);
-                        }
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally {
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator["return"]) {
-                            _iterator["return"]();
-                        }
-                    } finally {
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
+                        total += parseFloat(credits);
                     }
                 }
             }
@@ -181,33 +143,12 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
             var vary = false;
             var total = 0;
 
-            var _iteratorNormalCompletion = true;
-            var _didIteratorError = false;
-            var _iteratorError = undefined;
+            for (var i = 0; i < this.state.userCourses.length; i++) {
+                var credits = this.state.userCourses[i].getCredits();
 
-            try {
-                for (var _iterator = this.state.userCourses[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                    var course = _step.value;
+                if (credits.indexOf("to") > -1) vary = true;
 
-                    var credits = course.getCredits();
-
-                    if (credits.indexOf("to") > -1) vary = true;
-
-                    total += parseFloat(credits);
-                }
-            } catch (err) {
-                _didIteratorError = true;
-                _iteratorError = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion && _iterator["return"]) {
-                        _iterator["return"]();
-                    }
-                } finally {
-                    if (_didIteratorError) {
-                        throw _iteratorError;
-                    }
-                }
+                total += parseFloat(credits);
             }
 
             return [total.toFixed(1), vary];
