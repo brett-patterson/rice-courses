@@ -43,6 +43,17 @@ export default React.createClass({
 
     fetchUserCourses(callback) {
         UserCourses.get(userCourses => {
+            userCourses.sort((a, b) => {
+                const titleA = a.getCourseID(), titleB = b.getCourseID();
+                if (titleA < titleB)
+                    return -1;
+
+                if (titleA > titleB)
+                    return 1;
+
+                return 0;
+            });
+
             this.setState({
                 userCourses
             }, callback);
@@ -56,6 +67,22 @@ export default React.createClass({
                 const shown = scheduler.getMap()[course.getCRN()];
                 scheduler.setCourseShown(course, !shown);
                 this.forceUpdate();
+            }
+        };
+    },
+
+    removeCourseFactory(course) {
+        return event => {
+            const index = this.state.userCourses.indexOf(course);
+
+            if (index > -1) {
+                event.stopPropagation();
+                UserCourses.remove(course);
+                this.setState(React.addons.update(this.state, {
+                    userCourses: {
+                        $splice: [[index, 1]]
+                    }
+                }));                
             }
         };
     },
@@ -188,7 +215,8 @@ export default React.createClass({
                         handleClick={showCourseFactory(course)}>
                         {course.getCredits()}
                     </Td>
-                    <Td column='remove' className='remove-btn'>
+                    <Td column='remove' className='remove-btn'
+                        handleClick={this.removeCourseFactory(course)}>
                         <span className='glyphicon glyphicon-remove' />
                     </Td>
                 </Tr>

@@ -83,6 +83,16 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "c
             var _this = this;
 
             UserCourses.get(function (userCourses) {
+                userCourses.sort(function (a, b) {
+                    var titleA = a.getCourseID(),
+                        titleB = b.getCourseID();
+                    if (titleA < titleB) return -1;
+
+                    if (titleA > titleB) return 1;
+
+                    return 0;
+                });
+
                 _this.setState({
                     userCourses: userCourses
                 }, callback);
@@ -98,6 +108,24 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "c
                     var shown = scheduler.getMap()[course.getCRN()];
                     scheduler.setCourseShown(course, !shown);
                     _this.forceUpdate();
+                }
+            };
+        },
+
+        removeCourseFactory: function removeCourseFactory(course) {
+            var _this = this;
+
+            return function (event) {
+                var index = _this.state.userCourses.indexOf(course);
+
+                if (index > -1) {
+                    event.stopPropagation();
+                    UserCourses.remove(course);
+                    _this.setState(React.addons.update(_this.state, {
+                        userCourses: {
+                            $splice: [[index, 1]]
+                        }
+                    }));
                 }
             };
         },
@@ -262,7 +290,8 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "c
                     ),
                     React.createElement(
                         Td,
-                        { column: "remove", className: "remove-btn" },
+                        { column: "remove", className: "remove-btn",
+                            handleClick: _this.removeCourseFactory(course) },
                         React.createElement("span", { className: "glyphicon glyphicon-remove" })
                     )
                 );
