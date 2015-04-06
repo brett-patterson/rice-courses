@@ -1,11 +1,10 @@
 import React from 'react';
 import {Table, Tr, Td} from 'reactable';
-import jQuery from 'jquery';
 
 import Course from 'courses/course';
 import {showCourseFactory} from 'courses/courseDetail';
 import UserCourses from 'courses/userCourses';
-import {makeClasses} from 'util';
+import {makeClasses, ajaxCSRF} from 'util';
 
 export default React.createClass({
     getInitialState() {
@@ -30,7 +29,7 @@ export default React.createClass({
     },
 
     fetchCourses() {
-        jQuery.ajax({
+        ajaxCSRF({
             'url': '/courses/api/all/',
             'method': 'POST',
             'dataType': 'json'

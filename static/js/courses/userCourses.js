@@ -1,4 +1,4 @@
-define(["exports", "module", "jquery", "courses/course"], function (exports, module, _jquery, _coursesCourse) {
+define(["exports", "module", "courses/course", "util"], function (exports, module, _coursesCourse, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -7,9 +7,9 @@ define(["exports", "module", "jquery", "courses/course"], function (exports, mod
 
     var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
-    var jQuery = _interopRequire(_jquery);
-
     var Course = _interopRequire(_coursesCourse);
+
+    var ajaxCSRF = _util.ajaxCSRF;
 
     var UserCourses = (function () {
         function UserCourses() {
@@ -24,7 +24,7 @@ define(["exports", "module", "jquery", "courses/course"], function (exports, mod
                  */
 
                 value: function get(cb) {
-                    jQuery.ajax({
+                    ajaxCSRF({
                         url: "/me/api/courses/",
                         method: "POST",
                         dataType: "json"
@@ -68,7 +68,7 @@ define(["exports", "module", "jquery", "courses/course"], function (exports, mod
                  */
 
                 value: function add(course, cb) {
-                    jQuery.ajax({
+                    ajaxCSRF({
                         url: "/me/api/courses/add/",
                         method: "POST",
                         data: { crn: course.getCRN() },
@@ -87,7 +87,7 @@ define(["exports", "module", "jquery", "courses/course"], function (exports, mod
                  */
 
                 value: function remove(course, cb) {
-                    jQuery.ajax({
+                    ajaxCSRF({
                         url: "/me/api/courses/remove/",
                         method: "POST",
                         data: { crn: course.getCRN() },

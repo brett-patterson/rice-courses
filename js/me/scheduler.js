@@ -1,4 +1,4 @@
-import jQuery from 'jquery';
+import {ajaxCSRF} from 'util';
 
 
 export default class Scheduler {
@@ -24,7 +24,7 @@ export default class Scheduler {
     setName(name, cb) {
         this.name = name;
 
-        jQuery.ajax({
+        ajaxCSRF({
             url: '/me/api/scheduler/rename/',
             method: 'POST',
             data: {
@@ -45,7 +45,7 @@ export default class Scheduler {
     setCourseShown(course, shown, cb) {
         this.map[course.getCRN()] = shown;
 
-        jQuery.ajax({
+        ajaxCSRF({
             url: '/me/api/scheduler/course/',
             method: 'POST',
             data: {
@@ -67,7 +67,7 @@ export default class Scheduler {
     setShown(shown, cb) {
         this.shown = shown;
 
-        jQuery.ajax({
+        ajaxCSRF({
             url: '/me/api/scheduler/set/',
             method: 'POST',
             data: {
@@ -82,7 +82,7 @@ export default class Scheduler {
     }
 
     remove(cb) {
-        jQuery.ajax({
+        ajaxCSRF({
             url: '/me/api/scheduler/remove/',
             method: 'POST',
             data: {id: this.id},
@@ -98,7 +98,7 @@ export default class Scheduler {
      * @param {function} cb - A callback invoked with the results of the request
      */
     static fetchAll(cb) {
-        jQuery.ajax({
+        ajaxCSRF({
             url: '/me/api/scheduler/all/',
             method: 'POST',
             dataType: 'json'
@@ -116,7 +116,7 @@ export default class Scheduler {
      * @param {function} cb - A callback invoked with the results of the request
      */
     static addScheduler(name, cb) {
-        jQuery.ajax({
+        ajaxCSRF({
             url: '/me/api/scheduler/add/',
             method: 'POST',
             data: {name: name},

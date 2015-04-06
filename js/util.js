@@ -1,3 +1,5 @@
+import jQuery from 'jquery';
+
 /**
  * Construct an HTML class string from a mapping of strings to boolean values.
  * @param {object} classes - The classes to evaluate
@@ -81,4 +83,42 @@ export const hsvToHex = (h, s, v) => {
     b = b * 255 + m;
 
     return `#${decToHex(r)}${decToHex(g)}${decToHex(b)}`;
+};
+
+/**
+ * Get the value of a cookie
+ * @param {string} name - The name of the cookie
+ * @return {string} The value of the cookie or undefined
+ */
+export const getCookie = name => {
+    let cookieValue = null;
+
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = jQuery.trim(cookies[i]);
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+
+    return cookieValue;
+};
+
+
+/**
+ * Make an AJAX request with the proper CSRF authentication.
+ * @param {object} config - The config object for the jQuery AJAX request.
+ * @return {Promise} A jQuery promise object for the request
+ */
+export const ajaxCSRF = config => {
+    const requestConfig = jQuery.extend(config, {
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    });
+
+    return jQuery.ajax(requestConfig);
 };

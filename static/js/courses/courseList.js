@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "reactable", "jquery", "courses/course", "courses/courseDetail", "courses/userCourses", "util"], function (exports, module, _react, _reactable, _jquery, _coursesCourse, _coursesCourseDetail, _coursesUserCourses, _util) {
+define(["exports", "module", "react", "reactable", "courses/course", "courses/courseDetail", "courses/userCourses", "util"], function (exports, module, _react, _reactable, _coursesCourse, _coursesCourseDetail, _coursesUserCourses, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -9,8 +9,6 @@ define(["exports", "module", "react", "reactable", "jquery", "courses/course", "
     var Tr = _reactable.Tr;
     var Td = _reactable.Td;
 
-    var jQuery = _interopRequire(_jquery);
-
     var Course = _interopRequire(_coursesCourse);
 
     var showCourseFactory = _coursesCourseDetail.showCourseFactory;
@@ -18,6 +16,7 @@ define(["exports", "module", "react", "reactable", "jquery", "courses/course", "
     var UserCourses = _interopRequire(_coursesUserCourses);
 
     var makeClasses = _util.makeClasses;
+    var ajaxCSRF = _util.ajaxCSRF;
     module.exports = React.createClass({
         displayName: "courseList",
 
@@ -45,7 +44,7 @@ define(["exports", "module", "react", "reactable", "jquery", "courses/course", "
         fetchCourses: function fetchCourses() {
             var _this = this;
 
-            jQuery.ajax({
+            ajaxCSRF({
                 url: "/courses/api/all/",
                 method: "POST",
                 dataType: "json"

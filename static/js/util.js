@@ -1,9 +1,14 @@
-define(["exports"], function (exports) {
+define(["exports", "jquery"], function (exports, _jquery) {
     "use strict";
+
+    var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
     Object.defineProperty(exports, "__esModule", {
         value: true
     });
+
+    var jQuery = _interopRequire(_jquery);
+
     /**
      * Construct an HTML class string from a mapping of strings to boolean values.
      * @param {object} classes - The classes to evaluate
@@ -89,5 +94,44 @@ define(["exports"], function (exports) {
 
         return "#" + decToHex(r) + "" + decToHex(g) + "" + decToHex(b);
     };
+
     exports.hsvToHex = hsvToHex;
+    /**
+     * Get the value of a cookie
+     * @param {string} name - The name of the cookie
+     * @return {string} The value of the cookie or undefined
+     */
+    var getCookie = function (name) {
+        var cookieValue = null;
+
+        if (document.cookie && document.cookie !== "") {
+            var cookies = document.cookie.split(";");
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                if (cookie.substring(0, name.length + 1) === name + "=") {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+
+        return cookieValue;
+    };
+
+    exports.getCookie = getCookie;
+    /**
+     * Make an AJAX request with the proper CSRF authentication.
+     * @param {object} config - The config object for the jQuery AJAX request.
+     * @return {Promise} A jQuery promise object for the request
+     */
+    var ajaxCSRF = function (config) {
+        var requestConfig = jQuery.extend(config, {
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken")
+            }
+        });
+
+        return jQuery.ajax(requestConfig);
+    };
+    exports.ajaxCSRF = ajaxCSRF;
 });

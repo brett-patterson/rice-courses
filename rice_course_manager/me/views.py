@@ -2,7 +2,6 @@ import json
 
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
 
 from django_cas.decorators import login_required
 
@@ -38,7 +37,6 @@ def export(request, scheduler_name):
                             content_type='application/json')
 
 
-@csrf_exempt
 @login_required(login_url='/login/')
 def courses(request):
     """ Get all of the courses selected by the user.
@@ -49,7 +47,6 @@ def courses(request):
                         content_type='application/json')
 
 
-@csrf_exempt
 @login_required(login_url='/login/')
 def add_course(request):
     """ Select a course for the user.
@@ -68,7 +65,6 @@ def add_course(request):
                             content_type='application/json')
 
 
-@csrf_exempt
 @login_required(login_url='/login/')
 def remove_course(request):
     """ Deselect a course for the user.
@@ -123,7 +119,6 @@ def overlap(course_one, course_two):
     return False
 
 
-@csrf_exempt
 @login_required(login_url='/login/')
 def suggest_alternate(request):
     """ Suggest alternate sections for a given course.
@@ -154,7 +149,6 @@ def suggest_alternate(request):
                             content_type='application/json')
 
 
-@csrf_exempt
 @login_required(login_url='/login/')
 def schedulers(request):
     """ Get all the schedulers for the user.
@@ -167,7 +161,6 @@ def schedulers(request):
                         content_type='application/json')
 
 
-@csrf_exempt
 @login_required(login_url='/login/')
 def add_scheduler(request):
     """ Add a scheduler for the user.
@@ -186,7 +179,6 @@ def add_scheduler(request):
                             content_type='application/json')
 
 
-@csrf_exempt
 @login_required(login_url='/login/')
 def remove_scheduler(request):
     """ Remove a scheduler for the user.
@@ -194,8 +186,8 @@ def remove_scheduler(request):
     """
     s_id = request.POST.get('id')
 
-    if s_id:
-        Scheduler.objects.get(id=s_id).delete()
+    if s_id is not None:
+        Scheduler.objects.get(pk=s_id).delete()
         return HttpResponse(json.dumps({'status': 'success'}),
                             content_type='application/json')
     else:
@@ -203,7 +195,6 @@ def remove_scheduler(request):
                             content_type='application/json')
 
 
-@csrf_exempt
 @login_required(login_url='/login/')
 def set_course_shown(request):
     """ Set a course to be shown or hidden.
@@ -213,8 +204,8 @@ def set_course_shown(request):
     crn = request.POST.get('crn')
     shown = request.POST.get('shown')
 
-    if s_id and crn and shown is not None:
-        scheduler = Scheduler.objects.get(id=s_id)
+    if s_id is not None and crn and shown is not None:
+        scheduler = Scheduler.objects.get(pk=s_id)
         scheduler.set_shown(Course.objects.get(crn=crn),
                             shown == 'true')
         return HttpResponse(json.dumps({'status': 'success'}),
@@ -225,7 +216,6 @@ def set_course_shown(request):
                             content_type='application/json')
 
 
-@csrf_exempt
 @login_required(login_url='/login/')
 def set_scheduler_shown(request):
     """ Set a scheduler to be shown or hidden
@@ -234,8 +224,8 @@ def set_scheduler_shown(request):
     s_id = request.POST.get('id')
     shown = request.POST.get('shown')
 
-    if s_id and shown is not None:
-        scheduler = Scheduler.objects.get(id=s_id)
+    if s_id is not None and shown is not None:
+        scheduler = Scheduler.objects.get(pk=s_id)
         scheduler.shown = shown == 'true'
         scheduler.save()
         return HttpResponse(json.dumps({'status': 'success'}),
@@ -246,7 +236,6 @@ def set_scheduler_shown(request):
                             content_type='application/json')
 
 
-@csrf_exempt
 @login_required(login_url='/login/')
 def rename_scheduler(request):
     """ Rename a scheduler.
@@ -255,8 +244,8 @@ def rename_scheduler(request):
     s_id = request.POST.get('id')
     name = request.POST.get('name')
 
-    if s_id and name:
-        scheduler = Scheduler.objects.get(id=s_id)
+    if s_id is not None and name:
+        scheduler = Scheduler.objects.get(pk=s_id)
         scheduler.name = name
         scheduler.save()
         return HttpResponse(json.dumps({'status': 'success'}),

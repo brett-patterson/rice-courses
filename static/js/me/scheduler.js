@@ -1,13 +1,11 @@
-define(["exports", "module", "jquery"], function (exports, module, _jquery) {
+define(["exports", "module", "util"], function (exports, module, _util) {
     "use strict";
-
-    var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
     var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
     var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
-    var jQuery = _interopRequire(_jquery);
+    var ajaxCSRF = _util.ajaxCSRF;
 
     var Scheduler = (function () {
         function Scheduler(id, name) {
@@ -37,7 +35,7 @@ define(["exports", "module", "jquery"], function (exports, module, _jquery) {
                 value: function setName(name, cb) {
                     this.name = name;
 
-                    jQuery.ajax({
+                    ajaxCSRF({
                         url: "/me/api/scheduler/rename/",
                         method: "POST",
                         data: {
@@ -59,7 +57,7 @@ define(["exports", "module", "jquery"], function (exports, module, _jquery) {
                 value: function setCourseShown(course, shown, cb) {
                     this.map[course.getCRN()] = shown;
 
-                    jQuery.ajax({
+                    ajaxCSRF({
                         url: "/me/api/scheduler/course/",
                         method: "POST",
                         data: {
@@ -82,7 +80,7 @@ define(["exports", "module", "jquery"], function (exports, module, _jquery) {
                 value: function setShown(shown, cb) {
                     this.shown = shown;
 
-                    jQuery.ajax({
+                    ajaxCSRF({
                         url: "/me/api/scheduler/set/",
                         method: "POST",
                         data: {
@@ -97,12 +95,13 @@ define(["exports", "module", "jquery"], function (exports, module, _jquery) {
             },
             remove: {
                 value: function remove(cb) {
-                    jQuery.ajax({
+                    ajaxCSRF({
                         url: "/me/api/scheduler/remove/",
                         method: "POST",
                         data: { id: this.id },
                         dataType: "json"
                     }).done(function (data) {
+                        console.log(data.status);
                         if (cb) cb(data);
                     });
                 }
@@ -121,7 +120,7 @@ define(["exports", "module", "jquery"], function (exports, module, _jquery) {
                  */
 
                 value: function fetchAll(cb) {
-                    jQuery.ajax({
+                    ajaxCSRF({
                         url: "/me/api/scheduler/all/",
                         method: "POST",
                         dataType: "json"
@@ -165,7 +164,7 @@ define(["exports", "module", "jquery"], function (exports, module, _jquery) {
                  */
 
                 value: function addScheduler(name, cb) {
-                    jQuery.ajax({
+                    ajaxCSRF({
                         url: "/me/api/scheduler/add/",
                         method: "POST",
                         data: { name: name },

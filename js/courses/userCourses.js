@@ -1,6 +1,5 @@
-import jQuery from 'jquery';
-
 import Course from 'courses/course';
+import {ajaxCSRF} from 'util';
 
 
 export default class UserCourses {
@@ -9,7 +8,7 @@ export default class UserCourses {
      * @param {function} cb - A callback invoked with the results of the request
      */
     static get(cb) {
-        jQuery.ajax({
+        ajaxCSRF({
             url: '/me/api/courses/',
             method: 'POST',
             dataType: 'json'
@@ -27,7 +26,7 @@ export default class UserCourses {
      * @param {function} cb - A callback invoked with the results of the request
      */
     static add(course, cb) {
-        jQuery.ajax({
+        ajaxCSRF({
             url: '/me/api/courses/add/',
             method: 'POST',
             data: {crn: course.getCRN()},
@@ -44,7 +43,7 @@ export default class UserCourses {
      * @param {function} cb - A callback invoked with the results of the request
      */
     static remove(course, cb) {
-        jQuery.ajax({
+        ajaxCSRF({
             url: '/me/api/courses/remove/',
             method: 'POST',
             data: {crn: course.getCRN()},

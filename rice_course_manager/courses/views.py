@@ -3,7 +3,6 @@ import json
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
 
 from django_cas.decorators import login_required
 
@@ -23,7 +22,6 @@ def index(request):
     return render(request, 'courses/index.jade', context)
 
 
-@csrf_exempt
 def all(request):
     """ Returns a list of all courses as JSON objects.
 
@@ -32,7 +30,6 @@ def all(request):
                         content_type='application/json')
 
 
-@csrf_exempt
 def page(request):
     """ Returns a page of courses. The number of courses in a page is defined
     in the setting `API_ITEMS_PER_PAGE`. Courses are represented as JSON
@@ -70,7 +67,6 @@ def page(request):
     return HttpResponse(json.dumps(response), content_type='application/json')
 
 
-@csrf_exempt
 def get_course(request):
     """ Returns the course corresponding to the given CRN as a JSON object.
 
