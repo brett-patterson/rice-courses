@@ -112,6 +112,30 @@ export default React.createClass({
         };
     },
 
+    schedulerEditStartFactory(scheduler) {
+        return event => {
+            scheduler.setEditing(true);
+            this.forceUpdate(() => {
+                jQuery('input', event.target).select();
+            });
+        };
+    },
+
+    schedulerEditKeyFactory(scheduler) {
+        return event => {
+            if (event.keyCode === 13)
+                this.schedulerEditFinishFactory(scheduler)(event);
+        };
+    },
+
+    schedulerEditFinishFactory(scheduler) {
+        return event => {
+            scheduler.setEditing(false);
+            scheduler.setName(event.target.value);
+            this.forceUpdate();
+        };
+    },
+
     schedulerRemoveFactory(scheduler) {
         return event => {
             const index = this.state.schedulers.indexOf(scheduler);
@@ -251,13 +275,22 @@ export default React.createClass({
                           onClick={this.schedulerRemoveFactory(scheduler)} />
                 );
 
+            let schedulerName;
+            if (scheduler.getEditing())
+                schedulerName = (
+                    <input type='text' defaultValue={scheduler.getName()}
+                           onBlur={this.schedulerEditFinishFactory(scheduler)}
+                           onKeyDown={this.schedulerEditKeyFactory(scheduler)} />
+                );
+            else
+                schedulerName = <span>{scheduler.getName()}</span>;
+
             return (
                 <li key={scheduler.getID()}
                     className={scheduler.getShown() ? 'active' : ''}>
-                    <a onClick={this.schedulerSelectFactory(scheduler)}>
-                        <span>
-                            {scheduler.getName()}
-                        </span>
+                    <a onClick={this.schedulerSelectFactory(scheduler)}
+                       onDoubleClick={this.schedulerEditStartFactory(scheduler)}>
+                        {schedulerName}
                         {closeButton}
                     </a>
                 </li>

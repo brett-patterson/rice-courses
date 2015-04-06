@@ -159,6 +159,35 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
             };
         },
 
+        schedulerEditStartFactory: function schedulerEditStartFactory(scheduler) {
+            var _this = this;
+
+            return function (event) {
+                scheduler.setEditing(true);
+                _this.forceUpdate(function () {
+                    jQuery("input", event.target).select();
+                });
+            };
+        },
+
+        schedulerEditKeyFactory: function schedulerEditKeyFactory(scheduler) {
+            var _this = this;
+
+            return function (event) {
+                if (event.keyCode === 13) _this.schedulerEditFinishFactory(scheduler)(event);
+            };
+        },
+
+        schedulerEditFinishFactory: function schedulerEditFinishFactory(scheduler) {
+            var _this = this;
+
+            return function (event) {
+                scheduler.setEditing(false);
+                scheduler.setName(event.target.value);
+                _this.forceUpdate();
+            };
+        },
+
         schedulerRemoveFactory: function schedulerRemoveFactory(scheduler) {
             var _this = this;
 
@@ -311,18 +340,24 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
                 if (_this.state.schedulers.length > 1) closeButton = React.createElement("span", { className: "scheduler-close glyphicon glyphicon-remove",
                     onClick: _this.schedulerRemoveFactory(scheduler) });
 
+                var schedulerName = undefined;
+                if (scheduler.getEditing()) schedulerName = React.createElement("input", { type: "text", defaultValue: scheduler.getName(),
+                    onBlur: _this.schedulerEditFinishFactory(scheduler),
+                    onKeyDown: _this.schedulerEditKeyFactory(scheduler) });else schedulerName = React.createElement(
+                    "span",
+                    null,
+                    scheduler.getName()
+                );
+
                 return React.createElement(
                     "li",
                     { key: scheduler.getID(),
                         className: scheduler.getShown() ? "active" : "" },
                     React.createElement(
                         "a",
-                        { onClick: _this.schedulerSelectFactory(scheduler) },
-                        React.createElement(
-                            "span",
-                            null,
-                            scheduler.getName()
-                        ),
+                        { onClick: _this.schedulerSelectFactory(scheduler),
+                            onDoubleClick: _this.schedulerEditStartFactory(scheduler) },
+                        schedulerName,
                         closeButton
                     )
                 );

@@ -11,6 +11,7 @@ define(["exports", "module", "util"], function (exports, module, _util) {
         function Scheduler(id, name) {
             var map = arguments[2] === undefined ? {} : arguments[2];
             var shown = arguments[3] === undefined ? false : arguments[3];
+            var editing = arguments[4] === undefined ? false : arguments[4];
 
             _classCallCheck(this, Scheduler);
 
@@ -18,6 +19,7 @@ define(["exports", "module", "util"], function (exports, module, _util) {
             this.name = name;
             this.map = map;
             this.shown = shown;
+            this.editing = editing;
         }
 
         _createClass(Scheduler, {
@@ -91,6 +93,16 @@ define(["exports", "module", "util"], function (exports, module, _util) {
                     }).done(function (data) {
                         if (cb) cb(data);
                     });
+                }
+            },
+            getEditing: {
+                value: function getEditing() {
+                    return this.editing;
+                }
+            },
+            setEditing: {
+                value: function setEditing(editing) {
+                    this.editing = editing;
                 }
             },
             remove: {

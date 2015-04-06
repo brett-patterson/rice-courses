@@ -2,11 +2,12 @@ import {ajaxCSRF} from 'util';
 
 
 export default class Scheduler {
-    constructor(id, name, map={}, shown=false) {
+    constructor(id, name, map={}, shown=false, editing=false) {
         this.id = id;
         this.name = name;
         this.map = map;
         this.shown = shown;
+        this.editing = editing;
     }
 
     static fromJSON(j) {
@@ -79,6 +80,14 @@ export default class Scheduler {
             if (cb)
                 cb(data);
         });
+    }
+
+    getEditing() {
+        return this.editing;
+    }
+
+    setEditing(editing) {
+        this.editing = editing;
     }
 
     remove(cb) {
