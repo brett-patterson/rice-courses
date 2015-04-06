@@ -10,7 +10,8 @@ export default React.createClass({
     getInitialState() {
         return {
             courses: undefined,
-            userCourses: []
+            userCourses: [],
+            filtered: undefined
         };
     },
 
@@ -40,7 +41,7 @@ export default React.createClass({
 
             this.setState({
                 courses
-            });
+            }, this.updateFilteredCourses);
         });
     },
 
@@ -74,23 +75,24 @@ export default React.createClass({
         };
     },
 
-    getFilteredCourses() {
+    updateFilteredCourses() {
         if (this.state.courses !== undefined)
-            return this.props.filterDelegate.filter(this.state.courses);
-        return [];
+            setTimeout(() => {
+                this.setState({
+                    filtered: this.props.filterDelegate.filter(this.state.courses)
+                });
+            }, 0);
     },
 
     render() {
         let courses;
-        if (this.state.courses === undefined)
+        if (this.state.filtered === undefined)
             courses = <Tr><Td column='userCourse'>Loading courses...</Td></Tr>;
         else {
-            const filtered = this.getFilteredCourses();
-
-            if (filtered.length === 0)
+            if (this.state.filtered.length === 0)
                 courses = <Tr><Td column='userCourse'>No courses found</Td></Tr>;
             else
-                courses = filtered.map(course => {
+                courses = this.state.filtered.map(course => {
                     const isUserCourse = this.isUserCourse(course);
 
                     const userClasses = makeClasses({

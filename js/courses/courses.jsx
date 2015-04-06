@@ -17,7 +17,7 @@ export default React.createClass({
     },
 
     onFiltersChanged() {
-        this.refs.courseList.forceUpdate();
+        this.refs.courseList.updateFilteredCourses();
     },
 
     render() {

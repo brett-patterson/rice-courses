@@ -88,19 +88,19 @@ define(["exports", "module"], function (exports, module) {
                  */
 
                 value: function filter(objects) {
-                    var _this = this;
-
                     var result = [];
 
-                    objects.forEach(function (obj) {
+                    for (var i = 0; i < objects.length; i++) {
+                        var obj = objects[i];
                         var ok = true;
 
-                        _this.filters.forEach(function (filter) {
-                            ok = ok && filter.test(obj);
-                        });
+                        for (var j = 0; j < this.filters.length; j++) {
+                            ok = ok && this.filters[j].test(obj);
+                            if (!ok) break;
+                        }
 
                         if (ok) result.push(obj);
-                    });
+                    }
 
                     return result;
                 }

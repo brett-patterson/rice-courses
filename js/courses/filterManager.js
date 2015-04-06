@@ -62,16 +62,19 @@ export default class FilterManager {
     filter(objects) {
         let result = [];
 
-        objects.forEach(obj => {
+        for (let i = 0; i < objects.length; i++) {
+            const obj = objects[i];
             let ok = true;
 
-            this.filters.forEach(filter => {
-                ok = ok && filter.test(obj);
-            });
+            for (let j = 0; j < this.filters.length; j++) {
+                ok = ok && this.filters[j].test(obj);
+                if (!ok)
+                    break;
+            }
 
             if (ok)
                 result.push(obj);
-        });
+        }
 
         return result;
     }

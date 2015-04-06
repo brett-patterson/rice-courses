@@ -27,7 +27,7 @@ define(["exports", "module", "react", "courses/filters", "courses/filterManager"
         },
 
         onFiltersChanged: function onFiltersChanged() {
-            this.refs.courseList.forceUpdate();
+            this.refs.courseList.updateFilteredCourses();
         },
 
         render: function render() {

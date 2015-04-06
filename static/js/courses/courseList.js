@@ -23,7 +23,8 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/co
         getInitialState: function getInitialState() {
             return {
                 courses: undefined,
-                userCourses: []
+                userCourses: [],
+                filtered: undefined
             };
         },
 
@@ -77,7 +78,7 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/co
 
                 _this.setState({
                     courses: courses
-                });
+                }, _this.updateFilteredCourses);
             });
         },
 
@@ -137,17 +138,21 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/co
             };
         },
 
-        getFilteredCourses: function getFilteredCourses() {
-            if (this.state.courses !== undefined) {
-                return this.props.filterDelegate.filter(this.state.courses);
-            }return [];
+        updateFilteredCourses: function updateFilteredCourses() {
+            var _this = this;
+
+            if (this.state.courses !== undefined) setTimeout(function () {
+                _this.setState({
+                    filtered: _this.props.filterDelegate.filter(_this.state.courses)
+                });
+            }, 0);
         },
 
         render: function render() {
             var _this = this;
 
             var courses = undefined;
-            if (this.state.courses === undefined) courses = React.createElement(
+            if (this.state.filtered === undefined) courses = React.createElement(
                 Tr,
                 null,
                 React.createElement(
@@ -156,9 +161,7 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/co
                     "Loading courses..."
                 )
             );else {
-                var filtered = this.getFilteredCourses();
-
-                if (filtered.length === 0) courses = React.createElement(
+                if (this.state.filtered.length === 0) courses = React.createElement(
                     Tr,
                     null,
                     React.createElement(
@@ -166,7 +169,7 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/co
                         { column: "userCourse" },
                         "No courses found"
                     )
-                );else courses = filtered.map(function (course) {
+                );else courses = this.state.filtered.map(function (course) {
                     var isUserCourse = _this.isUserCourse(course);
 
                     var userClasses = makeClasses({
