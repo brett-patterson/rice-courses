@@ -89,10 +89,42 @@ export default React.createClass({
         };
     },
 
-    componentDidUpdate(prevProps, prevState) {
-        jQuery('.copy-btn').each((index, button) => {
-            this.clip = new ZeroClipboard(button);
-        });
+    getCreditsShown() {
+        let vary = false;
+        let total = 0;
+
+        if (this.state.currentScheduler !== undefined) {
+            const map = this.state.currentScheduler.getMap();
+
+            for (let course of this.state.userCourses) {
+                if (map[course.getCRN()]) {
+                    const credits = course.getCredits();
+                    
+                    if (credits.indexOf('to') > -1)
+                        vary = true;
+
+                    total += parseFloat(credits);
+                }
+            }
+        }
+
+        return [total.toFixed(1), vary];
+    },
+
+    getTotalCredits() {
+        let vary = false;
+        let total = 0;
+
+        for (let course of this.state.userCourses) {
+            const credits = course.getCredits();
+            
+            if (credits.indexOf('to') > -1)
+                vary = true;
+
+            total += parseFloat(credits);
+        }
+
+        return [total.toFixed(1), vary];
     },
 
     copyButtonClicked(event) {
@@ -184,8 +216,14 @@ export default React.createClass({
             showSchedulerExport(this.state.currentScheduler);
     },
 
+    componentDidUpdate(prevProps, prevState) {
+        jQuery('.copy-btn').each((index, button) => {
+            this.clip = new ZeroClipboard(button);
+        });
+    },
+
     render() {
-        const courses = this.state.userCourses.map(course => {
+        let courses = this.state.userCourses.map(course => {
             let courseShown;
             if (this.state.currentScheduler === undefined)
                 courseShown = true;
@@ -253,6 +291,35 @@ export default React.createClass({
                 </Tr>
             );
         });
+
+        const [creditsShown, shownVary] = this.getCreditsShown();
+        let shownLabel;
+        if (shownVary)
+            shownLabel = 'Credits shown (approximate):';
+        else
+            shownLabel = 'Credits shown:';
+
+        const [totalCredits, totalVary] = this.getTotalCredits();
+        let totalLabel;
+        if (totalVary)
+            totalLabel = 'Total credits (approximate):';
+        else
+            totalLabel = 'Total credits:';
+
+        courses = courses.concat(
+            <Tr key='creditsShown'>
+                <Td className='text-right' column='enrollment'>
+                    <strong>{shownLabel}</strong>
+                </Td>
+                <Td column='credits'><strong>{creditsShown}</strong></Td>
+            </Tr>,
+            <Tr key='totalCredits'>
+                <Td className='text-right' column='enrollment'>
+                    <strong>{totalLabel}</strong>
+                </Td>
+                <Td column='credits'><strong>{totalCredits}</strong></Td>
+            </Tr>
+        );
 
         const columns = [
             { key: 'shown', label: '' },

@@ -3,6 +3,8 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
+    var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
+
     var React = _interopRequire(_react);
 
     var Table = _reactable.Table;
@@ -133,12 +135,82 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
             };
         },
 
-        componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-            var _this = this;
+        getCreditsShown: function getCreditsShown() {
+            var vary = false;
+            var total = 0;
 
-            jQuery(".copy-btn").each(function (index, button) {
-                _this.clip = new ZeroClipboard(button);
-            });
+            if (this.state.currentScheduler !== undefined) {
+                var map = this.state.currentScheduler.getMap();
+
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
+
+                try {
+                    for (var _iterator = this.state.userCourses[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var course = _step.value;
+
+                        if (map[course.getCRN()]) {
+                            var credits = course.getCredits();
+
+                            if (credits.indexOf("to") > -1) vary = true;
+
+                            total += parseFloat(credits);
+                        }
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator["return"]) {
+                            _iterator["return"]();
+                        }
+                    } finally {
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+            }
+
+            return [total.toFixed(1), vary];
+        },
+
+        getTotalCredits: function getTotalCredits() {
+            var vary = false;
+            var total = 0;
+
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = this.state.userCourses[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var course = _step.value;
+
+                    var credits = course.getCredits();
+
+                    if (credits.indexOf("to") > -1) vary = true;
+
+                    total += parseFloat(credits);
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator["return"]) {
+                        _iterator["return"]();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+
+            return [total.toFixed(1), vary];
         },
 
         copyButtonClicked: function copyButtonClicked(event) {
@@ -238,6 +310,14 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
             if (this.state.currentScheduler !== undefined) showSchedulerExport(this.state.currentScheduler);
         },
 
+        componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
+            var _this = this;
+
+            jQuery(".copy-btn").each(function (index, button) {
+                _this.clip = new ZeroClipboard(button);
+            });
+        },
+
         render: function render() {
             var _this = this;
 
@@ -332,6 +412,70 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
                     )
                 );
             });
+
+            var _getCreditsShown = this.getCreditsShown();
+
+            var _getCreditsShown2 = _slicedToArray(_getCreditsShown, 2);
+
+            var creditsShown = _getCreditsShown2[0];
+            var shownVary = _getCreditsShown2[1];
+
+            var shownLabel = undefined;
+            if (shownVary) shownLabel = "Credits shown (approximate):";else shownLabel = "Credits shown:";
+
+            var _getTotalCredits = this.getTotalCredits();
+
+            var _getTotalCredits2 = _slicedToArray(_getTotalCredits, 2);
+
+            var totalCredits = _getTotalCredits2[0];
+            var totalVary = _getTotalCredits2[1];
+
+            var totalLabel = undefined;
+            if (totalVary) totalLabel = "Total credits (approximate):";else totalLabel = "Total credits:";
+
+            courses = courses.concat(React.createElement(
+                Tr,
+                { key: "creditsShown" },
+                React.createElement(
+                    Td,
+                    { className: "text-right", column: "enrollment" },
+                    React.createElement(
+                        "strong",
+                        null,
+                        shownLabel
+                    )
+                ),
+                React.createElement(
+                    Td,
+                    { column: "credits" },
+                    React.createElement(
+                        "strong",
+                        null,
+                        creditsShown
+                    )
+                )
+            ), React.createElement(
+                Tr,
+                { key: "totalCredits" },
+                React.createElement(
+                    Td,
+                    { className: "text-right", column: "enrollment" },
+                    React.createElement(
+                        "strong",
+                        null,
+                        totalLabel
+                    )
+                ),
+                React.createElement(
+                    Td,
+                    { column: "credits" },
+                    React.createElement(
+                        "strong",
+                        null,
+                        totalCredits
+                    )
+                )
+            ));
 
             var columns = [{ key: "shown", label: "" }, { key: "crn", label: "CRN" }, { key: "courseID", label: "Course ID" }, { key: "title", label: "Title" }, { key: "instructor", label: "Instructor" }, { key: "meetings", label: "Meetings" }, { key: "distribution", label: "Distribution" }, { key: "enrollment", label: "Enrollment" }, { key: "credits", label: "Credits" }, { key: "remove", label: "" }];
 
