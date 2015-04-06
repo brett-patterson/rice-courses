@@ -101,7 +101,6 @@ define(["exports", "module", "util"], function (exports, module, _util) {
                         data: { id: this.id },
                         dataType: "json"
                     }).done(function (data) {
-                        console.log(data.status);
                         if (cb) cb(data);
                     });
                 }
