@@ -86,9 +86,9 @@ export default React.createClass({
     schedulerRemoveFactory(scheduler) {
         return event => {
             const index = this.state.schedulers.indexOf(scheduler);
-            scheduler.remove();
 
             if (index > -1) {
+                scheduler.remove();
                 this.setState(React.addons.update(this.state, {
                     schedulers: {
                         $splice: [[index, 1]]
@@ -218,8 +218,8 @@ export default React.createClass({
             return (
                 <li key={scheduler.getID()}
                     className={scheduler.getShown() ? 'active' : ''}>
-                    <a>
-                        <span onClick={this.schedulerSelectFactory(scheduler)}>
+                    <a onClick={this.schedulerSelectFactory(scheduler)}>
+                        <span>
                             {scheduler.getName()}
                         </span>
                         {closeButton}
@@ -240,7 +240,7 @@ export default React.createClass({
                 <ul className='nav nav-tabs scheduler-tabs'>
                     {schedulerTabs}
                     <li>
-                        <a href='#' onClick={this.addScheduler}>
+                        <a onClick={this.addScheduler}>
                             <span className='glyphicon glyphicon-plus' />
                         </a>
                     </li>

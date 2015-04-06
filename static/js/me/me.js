@@ -133,9 +133,9 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "c
 
             return function (event) {
                 var index = _this.state.schedulers.indexOf(scheduler);
-                scheduler.remove();
 
                 if (index > -1) {
+                    scheduler.remove();
                     _this.setState(React.addons.update(_this.state, {
                         schedulers: {
                             $splice: [[index, 1]]
@@ -280,10 +280,10 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "c
                         className: scheduler.getShown() ? "active" : "" },
                     React.createElement(
                         "a",
-                        null,
+                        { onClick: _this.schedulerSelectFactory(scheduler) },
                         React.createElement(
                             "span",
-                            { onClick: _this.schedulerSelectFactory(scheduler) },
+                            null,
                             scheduler.getName()
                         ),
                         closeButton
@@ -314,7 +314,7 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "jquery", "c
                         null,
                         React.createElement(
                             "a",
-                            { href: "#", onClick: this.addScheduler },
+                            { onClick: this.addScheduler },
                             React.createElement("span", { className: "glyphicon glyphicon-plus" })
                         )
                     )
