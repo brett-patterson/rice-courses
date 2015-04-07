@@ -17,30 +17,33 @@ html(lang='en')
 
         script(type='text/javascript', src="{% static 'lib/jquery/dist/jquery.min.js' %}")
         script(type='text/javascript', src="{% static 'lib/bootstrap/dist/js/bootstrap.min.js' %}")
-        script(type='text/javascript', src="{% static 'lib/tutorialize/dist/js/tutorialize.min.js' %}")
 
+        script(type='text/javascript', src="{% static 'lib/requirejs/require.js' %}")
+        script(type='text/javascript', src="{% static 'js/requireConfig.js' %}")
         script(type='text/javascript').
             $(function() {
-                var tutorial;
-                $.ajax({
-                    url: "{% url 'tutorial' %}",
-                    method: 'POST',
-                    data: {
-                        tutorial: location.pathname
-                    },
-                    dataType: 'json'
-                }).done(function(data) {
-                    if (!data.error) {
-                        tutorial = $.tutorialize(data);
+                require(['tutorialize'], function (Tutorialize) {
+                    var tutorial;
+                    $.ajax({
+                        url: "{% url 'tutorial' %}",
+                        method: 'POST',
+                        data: {
+                            tutorial: location.pathname
+                        },
+                        dataType: 'json'
+                    }).done(function(data) {
+                        if (!data.error) {
+                            tutorial = new Tutorialize(data.tutorial, data);
 
-                        window.startTutorial = function() {
-                            if (tutorial && tutorial.tutorial &&
-                                tutorial.tutorial.length > 0)
-                                tutorial.start();
-                        };
+                            window.startTutorial = function() {
+                                if (tutorial && tutorial.tutorial &&
+                                    tutorial.tutorial.length > 0)
+                                    tutorial.start();
+                            };
 
-                        $('.help-button').show();
-                    }
+                            $('.help-button').show();
+                        }
+                    });
                 });
             });
 

@@ -454,7 +454,8 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
                 this.getAlerts(),
                 React.createElement(
                     Button,
-                    { bsStyle: "info", onClick: this.exportScheduler },
+                    { id: "exportCRNButton",
+                        bsStyle: "info", onClick: this.exportScheduler },
                     "Export Current CRNs"
                 ),
                 React.createElement(

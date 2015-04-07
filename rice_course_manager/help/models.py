@@ -119,6 +119,7 @@ class Tutorial(models.Model):
                     text=annotation['text'],
                     position=annotation['position'],
                     padding=annotation['padding'],
+                    no_background=annotation['noBackground']
                 )
 
         tutorial.save()
@@ -168,6 +169,9 @@ class Annotation(models.Model):
     # The padding between the element and the annotation.
     padding = models.FloatField(default=10)
 
+    # Whether or not to hide the annotation's background.
+    no_background = models.BooleanField(default=False)
+
     # The panel this annotation corresponds to.
     panel = models.ForeignKey(Panel)
 
@@ -180,5 +184,6 @@ class Annotation(models.Model):
             'arrow': self.arrow,
             'text': self.text,
             'position': self.position,
-            'padding': self.padding
+            'padding': self.padding,
+            'noBackground': self.no_background
         }

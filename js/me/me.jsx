@@ -372,7 +372,8 @@ export default React.createClass({
         return (
             <div>
                 {this.getAlerts()}
-                <Button bsStyle='info' onClick={this.exportScheduler}>
+                <Button id='exportCRNButton'
+                        bsStyle='info' onClick={this.exportScheduler}>
                     Export Current CRNs
                 </Button>
                 <div className='table-responsive'>
