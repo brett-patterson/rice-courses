@@ -107,6 +107,7 @@ class Tutorial(models.Model):
         tutorial.arrow_weight = json_obj['arrows']['weight']
         tutorial.arrow_color = json_obj['arrows']['color']
         tutorial.arrow_distance = json_obj['arrows']['distance']
+        tutorial.save()
 
         for index, panel in enumerate(json_obj['tutorial']):
             name = 'Panel ' + str(index + 1)
@@ -122,7 +123,6 @@ class Tutorial(models.Model):
                     no_background=annotation['noBackground']
                 )
 
-        tutorial.save()
         return tutorial
 
 
