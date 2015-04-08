@@ -16,6 +16,7 @@ block content
     script(type='text/javascript', src="{% static 'js/requireConfig.js' %}")
     script(type='text/javascript').
         require(['react', 'courses/courses'], function (React, Courses) {
+            React.initializeTouchEvents(true);
             React.render(
                 React.createElement(Courses),
                 document.getElementById('courseList')

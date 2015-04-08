@@ -16,6 +16,7 @@ block content
     script(type='text/javascript', src="{% static 'js/requireConfig.js' %}")
     script(type='text/javascript').
         require(['react', 'me/me'], function (React, Me) {
+            React.initializeTouchEvents(true);
             React.render(
                 React.createElement(Me),
                 document.getElementById('meContent')
