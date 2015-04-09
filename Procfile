@@ -1,1 +1,1 @@
-web: cd rice_course_manager && gunicorn wsgi --log-file -
+web: cd rice_course_manager && ./manage.py syncdb && gunicorn wsgi --log-file -
