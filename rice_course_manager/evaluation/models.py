@@ -14,6 +14,15 @@ class Evaluation(models.Model):
     # The CRN for the course being evaluated.
     crn = models.CharField(max_length=6)
 
+    def json(self):
+        """ Convert the Evaluation object to a JSON-serializable dictionary.
+
+        """
+        return {
+            'questions': [q.json() for q in self.question_set.all()],
+            'comments': [c.json() for c in self.comment_set.all()]
+        }
+
 
 class Question(models.Model):
     """ A model to represent a question within an evaluation.
@@ -21,12 +30,6 @@ class Question(models.Model):
     """
     # The text of the question.
     text = models.TextField()
-
-    # The mean response value in the class for this question.
-    class_mean = models.FloatField()
-
-    # The mean response value in the university for this question.
-    rice_mean = models.FloatField()
 
     # The evaluation this question corresponds to.
     evaluation = models.ForeignKey(Evaluation, null=True)
@@ -37,8 +40,7 @@ class Question(models.Model):
         """
         return {
             'text': self.text,
-            'class_mean': self.class_mean,
-            'rice_mean': self.rice_mean,
+            'choices': [c.json() for c in self.choice_set.all()]
         }
 
 

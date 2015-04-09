@@ -3,9 +3,51 @@ import {TabbedArea, TabPane} from 'reactBootstrap';
 import Bootbox from 'bootbox';
 import jQuery from 'jquery';
 
-import {makeClasses} from 'util';
+import EvaluationChart from 'courses/evaluationChart';
+import {makeClasses, ajaxCSRF} from 'util';
+
 
 const CourseDetailBody = React.createClass({
+    getInitialState() {
+        return {
+            courseQuestions: undefined,
+            courseComments: undefined,
+            instructorQuestions: undefined,
+            instructorComments: undefined,
+            chartType: 'pie'
+        };
+    },
+
+    componentWillMount() {
+        ajaxCSRF({
+            url: '/evaluation/api/course/',
+            method: 'POST',
+            data: {
+                crn: this.props.course.crn
+            },
+            responseType: 'json'
+        }).done(result => {
+            this.setState({
+                courseQuestions: result.questions,
+                courseComments: result.comments
+            });
+        });
+
+        ajaxCSRF({
+            url: '/evaluation/api/instructor/',
+            method: 'POST',
+            data: {
+                crn: this.props.course.crn
+            },
+            responseType: 'json'
+        }).done(result => {
+            this.setState({
+                instructorQuestions: result.questions,
+                instructorComments: result.comments
+            });
+        }).fail(result => { console.log(result); });
+    },
+
     render() {
         const course = this.props.course;
 
@@ -16,6 +58,66 @@ const CourseDetailBody = React.createClass({
             corequisites = <p><strong>Corequisites:</strong> {course.getCorequisites()}</p>;
         if (course.getRestrictions().length > 0)
             restrictions = <p><strong>Restrictions:</strong> {course.getRestrictions()}</p>;
+
+        let courseCharts;
+        if (this.state.courseQuestions === undefined) {
+            courseCharts = 'Loading...';
+        } else if (this.state.courseQuestions.length === 0) {
+            courseCharts = 'No evaluations found';
+        } else {
+            courseCharts = this.state.courseQuestions.map((question, i) => {
+                return <EvaluationChart key={`courseEvalChart${i}`}
+                                        title={question.text}
+                                        data={question.choices}
+                                        type={this.state.chartType} />;
+            });
+        }
+
+        let courseComments;
+        if (this.state.courseComments === undefined) {
+            courseComments = 'Loading...';
+        } else if (this.state.courseComments.length === 0) {
+            courseComments = 'No comments found';
+        } else {
+            courseComments = this.state.courseComments.map((comment, i) => {
+                return (
+                    <div className='comment' key={`courseComment${i}`}>
+                        <p>{comment.text}</p>
+                        <p className='comment-date'>{comment.date}</p>
+                    </div>
+                );
+            })
+        }
+
+        let instructorCharts;
+        if (this.state.instructorQuestions === undefined) {
+            instructorCharts = 'Loading...';
+        } else if (this.state.instructorQuestions.length === 0) {
+            instructorCharts = 'No evaluations found';
+        } else {
+            instructorCharts = this.state.instructorQuestions.map((question, i) => {
+                return <EvaluationChart key={`instructorEvalChart${i}`}
+                                        title={question.text}
+                                        data={question.choices}
+                                        type={this.state.chartType} />;
+            });
+        }
+
+        let instructorComments;
+        if (this.state.instructorComments === undefined) {
+            instructorComments = 'Loading...';
+        } else if (this.state.instructorComments.length === 0) {
+            instructorComments = 'No comments found';
+        } else {
+            instructorComments = this.state.instructorComments.map((comment, i) => {
+                return (
+                    <div className='comment' key={`instructorComment${i}`}>
+                        <p>{comment.text}</p>
+                        <p className='comment-date'>{comment.date}</p>
+                    </div>
+                );
+            })
+        }
 
         return (
             <TabbedArea defaultActiveKey={1} animation={false}>
@@ -33,15 +135,19 @@ const CourseDetailBody = React.createClass({
                 </TabPane>
 
                 <TabPane eventKey={2} tab='Course Evaluations'>
+                    {courseCharts}
                 </TabPane>
 
                 <TabPane eventKey={3} tab='Course Comments'>
+                    {courseComments}
                 </TabPane>
 
                 <TabPane eventKey={4} tab='Instructor Evaluations'>
+                    {instructorCharts}
                 </TabPane>
 
                 <TabPane eventKey={5} tab='Instructor Comments'>
+                    {instructorComments}
                 </TabPane>
             </TabbedArea>
         );

@@ -1,4 +1,4 @@
-define(["exports", "react", "reactBootstrap", "bootbox", "jquery", "util"], function (exports, _react, _reactBootstrap, _bootbox, _jquery, _util) {
+define(["exports", "react", "reactBootstrap", "bootbox", "jquery", "courses/evaluationChart", "util"], function (exports, _react, _reactBootstrap, _bootbox, _jquery, _coursesEvaluationChart, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -18,12 +18,61 @@ define(["exports", "react", "reactBootstrap", "bootbox", "jquery", "util"], func
 
     var jQuery = _interopRequire(_jquery);
 
+    var EvaluationChart = _interopRequire(_coursesEvaluationChart);
+
     var makeClasses = _util.makeClasses;
+    var ajaxCSRF = _util.ajaxCSRF;
 
     var CourseDetailBody = React.createClass({
         displayName: "CourseDetailBody",
 
+        getInitialState: function getInitialState() {
+            return {
+                courseQuestions: undefined,
+                courseComments: undefined,
+                instructorQuestions: undefined,
+                instructorComments: undefined,
+                chartType: "pie"
+            };
+        },
+
+        componentWillMount: function componentWillMount() {
+            var _this = this;
+
+            ajaxCSRF({
+                url: "/evaluation/api/course/",
+                method: "POST",
+                data: {
+                    crn: this.props.course.crn
+                },
+                responseType: "json"
+            }).done(function (result) {
+                _this.setState({
+                    courseQuestions: result.questions,
+                    courseComments: result.comments
+                });
+            });
+
+            ajaxCSRF({
+                url: "/evaluation/api/instructor/",
+                method: "POST",
+                data: {
+                    crn: this.props.course.crn
+                },
+                responseType: "json"
+            }).done(function (result) {
+                _this.setState({
+                    instructorQuestions: result.questions,
+                    instructorComments: result.comments
+                });
+            }).fail(function (result) {
+                console.log(result);
+            });
+        },
+
         render: function render() {
+            var _this = this;
+
             var course = this.props.course;
 
             var prerequisites = undefined,
@@ -62,6 +111,82 @@ define(["exports", "react", "reactBootstrap", "bootbox", "jquery", "util"], func
                 " ",
                 course.getRestrictions()
             );
+
+            var courseCharts = undefined;
+            if (this.state.courseQuestions === undefined) {
+                courseCharts = "Loading...";
+            } else if (this.state.courseQuestions.length === 0) {
+                courseCharts = "No evaluations found";
+            } else {
+                courseCharts = this.state.courseQuestions.map(function (question, i) {
+                    return React.createElement(EvaluationChart, { key: "courseEvalChart" + i,
+                        title: question.text,
+                        data: question.choices,
+                        type: _this.state.chartType });
+                });
+            }
+
+            var courseComments = undefined;
+            if (this.state.courseComments === undefined) {
+                courseComments = "Loading...";
+            } else if (this.state.courseComments.length === 0) {
+                courseComments = "No comments found";
+            } else {
+                courseComments = this.state.courseComments.map(function (comment, i) {
+                    return React.createElement(
+                        "div",
+                        { className: "comment", key: "courseComment" + i },
+                        React.createElement(
+                            "p",
+                            null,
+                            comment.text
+                        ),
+                        React.createElement(
+                            "p",
+                            { className: "comment-date" },
+                            comment.date
+                        )
+                    );
+                });
+            }
+
+            var instructorCharts = undefined;
+            if (this.state.instructorQuestions === undefined) {
+                instructorCharts = "Loading...";
+            } else if (this.state.instructorQuestions.length === 0) {
+                instructorCharts = "No evaluations found";
+            } else {
+                instructorCharts = this.state.instructorQuestions.map(function (question, i) {
+                    return React.createElement(EvaluationChart, { key: "instructorEvalChart" + i,
+                        title: question.text,
+                        data: question.choices,
+                        type: _this.state.chartType });
+                });
+            }
+
+            var instructorComments = undefined;
+            if (this.state.instructorComments === undefined) {
+                instructorComments = "Loading...";
+            } else if (this.state.instructorComments.length === 0) {
+                instructorComments = "No comments found";
+            } else {
+                instructorComments = this.state.instructorComments.map(function (comment, i) {
+                    return React.createElement(
+                        "div",
+                        { className: "comment", key: "instructorComment" + i },
+                        React.createElement(
+                            "p",
+                            null,
+                            comment.text
+                        ),
+                        React.createElement(
+                            "p",
+                            { className: "comment-date" },
+                            comment.date
+                        )
+                    );
+                });
+            }
 
             return React.createElement(
                 TabbedArea,
@@ -144,10 +269,26 @@ define(["exports", "react", "reactBootstrap", "bootbox", "jquery", "util"], func
                         course.getDescription()
                     )
                 ),
-                React.createElement(TabPane, { eventKey: 2, tab: "Course Evaluations" }),
-                React.createElement(TabPane, { eventKey: 3, tab: "Course Comments" }),
-                React.createElement(TabPane, { eventKey: 4, tab: "Instructor Evaluations" }),
-                React.createElement(TabPane, { eventKey: 5, tab: "Instructor Comments" })
+                React.createElement(
+                    TabPane,
+                    { eventKey: 2, tab: "Course Evaluations" },
+                    courseCharts
+                ),
+                React.createElement(
+                    TabPane,
+                    { eventKey: 3, tab: "Course Comments" },
+                    courseComments
+                ),
+                React.createElement(
+                    TabPane,
+                    { eventKey: 4, tab: "Instructor Evaluations" },
+                    instructorCharts
+                ),
+                React.createElement(
+                    TabPane,
+                    { eventKey: 5, tab: "Instructor Comments" },
+                    instructorComments
+                )
             );
         }
     });

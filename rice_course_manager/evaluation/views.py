@@ -37,27 +37,13 @@ def evaluation_to_json(evaluation_type, crn):
         elif evaluation_type == 'i':
             evaluation = get_instructor_evaluation(course)
 
-    eval_json = {
-        'questions': [],
-        'comments': []
-    }
-
     if evaluation is None:
-        return eval_json
+        return {
+            'questions': [],
+            'comments': []
+        }
 
-    questions = evaluation.question_set.all()
-    comments = evaluation.comment_set.all()
-
-    for question in questions:
-        q_json = question.json()
-        choices = question.choice_set.all()
-        q_json['choices'] = [c.json() for c in choices]
-        eval_json['questions'].append(q_json)
-
-    for comment in comments:
-        eval_json['comments'].append(comment.json())
-
-    return eval_json
+    return evaluation.json()
 
 
 @csrf_exempt

@@ -1,13 +1,19 @@
+import base64
 import cookielib
+import re
 from datetime import datetime
 from xml.etree import ElementTree
 
 import mechanize
 from bs4 import BeautifulSoup
 from requests import Session
-from django.conf import settings
 
 from models import Evaluation
+
+
+# TODO: This is an ugly, fragile hack and should be replaced by a robust
+# implementation as soon as evaluation data can be accessed correctly
+# from Rice's servers
 
 
 EVALS_URL = 'https://esther.rice.edu/selfserve/swkscmt.main'
@@ -15,29 +21,29 @@ DATA_URL = 'https://esther.rice.edu/selfserve/!swkscmp.ajax'
 COURSE_URL = 'https://courses.rice.edu/admweb/!SWKSECX.main'
 LOGIN_URL = 'https://esther.rice.edu/selfserve/twbkwbis.P_ValLogin/'
 
-# Log into Esther using a simulated browser to store the necessary login
-# cookies for future requests.
-br = mechanize.Browser()
+
 cookie_jar = cookielib.CookieJar()
-br.set_cookiejar(cookie_jar)
-
-br.set_handle_equiv(True)
-br.set_handle_redirect(True)
-br.set_handle_referer(True)
-br.set_handle_robots(False)
-br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
-br.addheaders = [('User-agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.122 Safari/537.36')]  # noqa
-
-
-# br.open(LOGIN_URL)
-# br.select_form(name="loginform")
-# br['sid'] = 'S01199609'
-# br['PIN'] = 'is9d9enuf'
-# br.submit()
-# br.close()
-
 session = Session()
-session.cookies = cookie_jar
+
+
+def esther_login():
+    """ Log into Esther using a simulated browser to store the necessary login
+        cookies for future requests.
+
+    """
+    if 'SESSID' not in [c.name for c in cookie_jar]:
+        br = mechanize.Browser()
+        br.set_cookiejar(cookie_jar)
+        br.open(LOGIN_URL)
+        br.select_form(name="loginform")
+
+        # Encode credentials in base64 so that although not any more secure,
+        # we don't store credentials as plain text
+        br['sid'] = base64.b64decode('UzAxMTk5NjA5')
+        br['PIN'] = base64.b64decode('aXRpbjRjdXI=')
+
+        br.submit()
+        session.cookies = cookie_jar
 
 
 def clean_text(text):
@@ -56,22 +62,58 @@ def clean_text(text):
     return text.strip().replace('\\n', '')
 
 
-def convert_date(text):
-    """ Convert a date string to a Python date object. Dates are parsed using
-    the format defined in the setting `EVAL_DATE_FORMAT`.
+def parse_question_src(src):
+    """ Parse the src attribute of an <img/> tag representing the data
+    of an evaluation question chart.
 
-    Parameters:
-    -----------
-    text : str
-        The date string to be converted.
+    Paramters:
+    ----------
+    src : string
+        The src attribute of the <img/> tag
 
     Returns:
     --------
-    A Python date object.
+    A 2-tuple of the question title, list of data in format (label, value)
 
     """
-    date_text = clean_text(text).replace('.', '')
-    return datetime.strptime(date_text, settings.EVAL_DATE_FORMAT)
+    cleaned = src[src.index('?') + 1:]
+
+    queries = {}
+    for query in cleaned.split('&'):
+        key, val = query.split('=')
+        queries[key] = val
+
+    title = clean_text(queries['chartTitle'])
+    labels = [clean_text(l[l.index('\\n') + 2:])
+              for l in queries['sampleLabels'].split(',')]
+    values = [int(v) for v in queries['sampleValues'].split(',')]
+
+    return title, zip(labels, values)
+
+
+def parse_comment(comment_text):
+    """ Parse the text of a comment into its content and date.
+
+    Parameters:
+    -----------
+    comment_text : string
+        The text of the comment
+
+    Returns:
+    --------
+    A 2-tuple of comment, datetime object
+
+    """
+    comment = comment_text.replace('Report a Concern', '')
+
+    stamp_pattern = r'([0-9]{2}/[0-9]{2}/[0-9]{4} [0-9]{2}:[0-9]{2} [AP].M.)'
+    match = re.search(stamp_pattern, comment)
+
+    comment = comment[:match.start()]
+    stamp = datetime.strptime(match.group(0).replace('.', ''),
+                              '%m/%d/%Y %I:%M %p')
+
+    return comment, stamp
 
 
 def parse_evaluation(text, course, evaluation_type):
@@ -95,42 +137,34 @@ def parse_evaluation(text, course, evaluation_type):
 
     """
     soup = BeautifulSoup(text)
-    headers = soup.find_all('header')
 
-    data = None
-    for header in headers:
-        course_element = header.find('course')
-        instr_element = header.find('instructor')
-        if ((course_element.get('subj_code') == course.subject and
-                course_element.get('crse_numb') == str(course.course_number))
-                or (course_element.get('title') == course.title and
-                    instr_element.get('name') == course.instructor)):
-            data = header
+    if evaluation_type == 'c':
+        course_div = soup.find('div', attrs={'data-crn': course.crn})
+    else:
+        course_div = soup.find('div', id='results-%s' % course.crn)
 
-    if not data:
+    if course_div is None:
         return None
 
     evaluation = Evaluation.objects.create(evaluation_type=evaluation_type,
                                            crn=course.crn)
 
-    for question in data.find_all('question'):
-        q = evaluation.question_set.create(
-            text=clean_text(question.find('text').get_text()),
-            class_mean=float(question.get('class_mean')),
-            rice_mean=float(question.get('rice_mean'))
-        )
+    for question_img in course_div.find_all('img'):
+        title, data = parse_question_src(question_img['src'])
+        question = evaluation.question_set.create(text=title)
 
-        for choice in question.find_all('choice'):
-            q.choice_set.create(
-                value=int(choice.get('choice')),
-                percent=int(choice.get('perc')),
-                prompt=clean_text(choice.find('prompt').get_text())
+        for i, (label, value) in enumerate(data):
+            question.choice_set.create(
+                value=i+1,
+                percent=value,
+                prompt=label
             )
 
-    for comment in data.find_all('student-comment'):
+    for comment_div in course_div.find_all(class_='cmt'):
+        comment, stamp = parse_comment(comment_div.text)
         evaluation.comment_set.create(
-            text=clean_text(comment.find('response').get_text()),
-            date=convert_date(comment.get('activity_date'))
+            text=comment,
+            date=stamp
         )
 
     return evaluation
@@ -236,7 +270,10 @@ def get_course_evaluation(course):
     An Evaluation object or None.
 
     """
+    esther_login()
+
     term, crn = crn_for_course_evaluation(course)
+
     if crn is None:
         return crn
 
@@ -322,6 +359,8 @@ def get_instructor_evaluation(course):
     An Evaluation object or None.
 
     """
+    esther_login()
+
     term, webid = webid_for_instructor_evaluation(course)
     if webid is None:
         return webid
@@ -335,5 +374,7 @@ def get_instructor_evaluation(course):
             'p_confirm': '1'
         }
     )
+
+    print response.text
 
     return parse_evaluation(response.text.encode('utf-8'), course, 'i')
