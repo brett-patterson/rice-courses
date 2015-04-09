@@ -375,6 +375,4 @@ def get_instructor_evaluation(course):
         }
     )
 
-    print response.text
-
     return parse_evaluation(response.text.encode('utf-8'), course, 'i')
