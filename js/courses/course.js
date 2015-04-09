@@ -44,7 +44,8 @@ export default class Course {
         this.restrictions = restrictions;
 
         this.filterMapping = {
-            distribution: this.getDistributionString()
+            distribution: this.getDistributionString(),
+            courseID: this.getCourseID()
         };
     }
 
