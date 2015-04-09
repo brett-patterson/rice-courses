@@ -275,7 +275,7 @@ export default React.createClass({
                     </Td>
                     <Td column='meetings'
                         handleClick={showCourseFactory(course)}>
-                        {course.getMeetings()}
+                        {course.getMeetingsString()}
                     </Td>
                     <Td column='distribution'
                         handleClick={showCourseFactory(course)}>

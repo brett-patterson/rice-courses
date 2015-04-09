@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "jquery", "fullcalendar", "moment", "courses/courseDetail"], function (exports, module, _react, _jquery, _fullcalendar, _moment, _coursesCourseDetail) {
+define(["exports", "module", "react", "jquery", "fullcalendar", "courses/course", "courses/userCourses", "courses/courseDetail"], function (exports, module, _react, _jquery, _fullcalendar, _coursesCourse, _coursesUserCourses, _coursesCourseDetail) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -9,25 +9,19 @@ define(["exports", "module", "react", "jquery", "fullcalendar", "moment", "cours
 
     var FullCalendar = _interopRequire(_fullcalendar);
 
-    var Moment = _interopRequire(_moment);
+    var Course = _interopRequire(_coursesCourse);
+
+    var UserCourses = _interopRequire(_coursesUserCourses);
 
     var showCourseDetail = _coursesCourseDetail.showCourseDetail;
-
-    var DAY_MAP = {
-        M: "01",
-        T: "02",
-        W: "03",
-        R: "04",
-        F: "05"
-    };
-
     module.exports = React.createClass({
         displayName: "schedulerView",
 
         getInitialState: function getInitialState() {
             return {
                 scheduler: this.props.scheduler,
-                courses: this.props.courses || []
+                courses: this.props.courses || [],
+                alternates: []
             };
         },
 
@@ -38,37 +32,8 @@ define(["exports", "module", "react", "jquery", "fullcalendar", "moment", "cours
             });
         },
 
-        datesForCourse: function datesForCourse(course) {
-            var dates = [];
-
-            var meetingsPattern = /([A-Z,\s]+)([0-9,\s]+)-([0-9,\s]+)/;
-            var matches = meetingsPattern.exec(course.getMeetings());
-
-            var days = jQuery.trim(matches[1]).split(", ");
-            var starts = jQuery.trim(matches[2]).split(", ");
-            var ends = jQuery.trim(matches[3]).split(", ");
-
-            for (var i = 0; i < days.length; i++) {
-                var dayString = days[i],
-                    start = starts[i],
-                    end = ends[i];
-
-                for (var j = 0; j < dayString.length; j++) {
-                    var day = DAY_MAP[dayString[j]];
-                    var format = "YYYY-MM-DD HHmm";
-
-                    dates.push({
-                        start: Moment("2007-01-" + day + " " + starts[i], format),
-                        end: Moment("2007-01-" + day + " " + ends[i], format)
-                    });
-                }
-            }
-
-            return dates;
-        },
-
         eventsForCourse: function eventsForCourse(course) {
-            return this.datesForCourse(course).map(function (date) {
+            return course.meetings.map(function (date) {
                 return {
                     id: course.getCRN(),
                     title: course.getCourseID(),
@@ -94,6 +59,7 @@ define(["exports", "module", "react", "jquery", "fullcalendar", "moment", "cours
                 minTime: "08:00:00",
                 maxTime: "21:00:00",
                 timeFormat: "hh:mm A",
+                eventStartEditable: true,
 
                 events: function (start, end, timezone, callback) {
                     var events = [];
@@ -106,14 +72,67 @@ define(["exports", "module", "react", "jquery", "fullcalendar", "moment", "cours
 
                             if (map[course.getCRN()]) events = events.concat(_this.eventsForCourse(course));
                         }
+
+                        for (var j = 0; j < _this.state.alternates.length; j++) {
+                            var alt = _this.state.alternates[j];
+                            var altEvents = _this.eventsForCourse(alt);
+                            for (var k = 0; k < altEvents.length; k++) {
+                                altEvents[k].color = "green";
+                            }
+                            events = events.concat(altEvents);
+                        }
+
                         callback(events);
                     }
                 },
 
-                eventRender: function (event, element) {},
-
                 eventClick: function (event, jsEvent, view) {
                     showCourseDetail(event.course);
+                },
+
+                eventDragStart: function (event) {
+                    event.course.getOtherSections(function (courses) {
+                        _this.setState({
+                            alternates: courses
+                        });
+                    });
+                },
+
+                eventDrop: function (event, delta, revert) {
+                    var start = event.start.add(delta._milliseconds, "ms");
+                    var end = event.end.add(delta._milliseconds, "ms");
+                    var newCourse = undefined;
+
+                    alternateLoop: for (var i = 0; i < _this.state.alternates.length; i++) {
+                        var altMeetings = _this.state.alternates[i].getMeetings();
+
+                        for (var j = 0; j < altMeetings.length; j++) {
+                            var meeting = altMeetings[j];
+
+                            if (start.isBetween(meeting.start, meeting.end) || end.isBetween(meeting.start, meeting.end)) {
+                                newCourse = _this.state.alternates[i];
+                                break alternateLoop;
+                            }
+                        }
+                    }
+
+                    if (newCourse !== undefined) {
+                        var index = _this.state.courses.indexOf(event.course);
+                        UserCourses.remove(event.course);
+                        UserCourses.add(newCourse);
+                        _this.setState(React.addons.update(_this.state, {
+                            alternates: {
+                                $set: []
+                            },
+                            courses: {
+                                $splice: [[index, 1, newCourse]]
+                            }
+                        }));
+                    } else {
+                        _this.setState({
+                            alternates: []
+                        });
+                    }
                 }
 
             }).fullCalendar("refetchEvents");
@@ -128,5 +147,3 @@ define(["exports", "module", "react", "jquery", "fullcalendar", "moment", "cours
         }
     });
 });
-
-// attachContextMenu(event.id, element);

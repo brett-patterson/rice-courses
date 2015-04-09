@@ -28,7 +28,6 @@ else:
 
 # Website specific settings
 
-API_ITEMS_PER_PAGE = 50
 EVAL_DATE_FORMAT = '%m/%d/%Y %I:%M %p'
 HELP_DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(BASE_DIR), 'data/help'))
 

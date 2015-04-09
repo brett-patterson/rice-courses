@@ -45,16 +45,8 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/co
         fetchCourses: function fetchCourses() {
             var _this = this;
 
-            ajaxCSRF({
-                url: "/courses/api/all/",
-                method: "POST",
-                dataType: "json"
-            }).done(function (result) {
-                var courses = [];
-
-                for (var i = 0; i < result.length; i++) {
-                    courses.push(Course.fromJSON(result[i]));
-                }_this.setState({
+            Course.all(function (courses) {
+                _this.setState({
                     courses: courses
                 }, _this.updateFilteredCourses);
             });
@@ -191,7 +183,7 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/co
                             Td,
                             { column: "meetings",
                                 handleClick: showCourseFactory(course) },
-                            course.getMeetings()
+                            course.getMeetingsString()
                         ),
                         React.createElement(
                             Td,

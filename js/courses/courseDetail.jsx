@@ -21,7 +21,7 @@ const CourseDetailBody = React.createClass({
             <TabbedArea defaultActiveKey={1} animation={false}>
                 <TabPane eventKey={1} tab='Info'>
                     <p><strong>Credits:</strong> {course.getCredits()}</p>
-                    <p><strong>Meetings:</strong> {course.getMeetings()} </p>
+                    <p><strong>Meetings:</strong> {course.getMeetingsString()}</p>
                     <p><strong>Location:</strong> {course.getLocation()}</p>
                     <p><strong>Enrollment:</strong> {course.getEnrollmentString()}</p>
                     <p><strong>Waitlist:</strong> {course.getWaitlistString()}</p>

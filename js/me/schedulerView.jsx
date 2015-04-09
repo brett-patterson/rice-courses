@@ -1,25 +1,18 @@
 import React from 'react';
 import jQuery from 'jquery';
 import FullCalendar from 'fullcalendar';
-import Moment from 'moment';
 
+import Course from 'courses/course';
+import UserCourses from 'courses/userCourses';
 import {showCourseDetail} from 'courses/courseDetail';
-
-
-const DAY_MAP = {
-    'M': '01',
-    'T': '02',
-    'W': '03',
-    'R': '04',
-    'F': '05'
-};
 
 
 export default React.createClass({
     getInitialState() {
         return {
             scheduler: this.props.scheduler,
-            courses: this.props.courses || []
+            courses: this.props.courses || [],
+            alternates: []
         };
     },
 
@@ -30,35 +23,8 @@ export default React.createClass({
         });
     },
 
-    datesForCourse(course) {
-        let dates = [];
-
-        const meetingsPattern = /([A-Z,\s]+)([0-9,\s]+)-([0-9,\s]+)/;
-        const matches = meetingsPattern.exec(course.getMeetings());
-
-        const days = jQuery.trim(matches[1]).split(', ');
-        const starts = jQuery.trim(matches[2]).split(', ');
-        const ends = jQuery.trim(matches[3]).split(', ');
-
-        for (let i = 0; i < days.length; i++) {
-            const dayString = days[i], start = starts[i], end = ends[i];
-
-            for (let j = 0; j < dayString.length; j++) {
-                const day = DAY_MAP[dayString[j]];
-                const format = 'YYYY-MM-DD HHmm';
-
-                dates.push({
-                    start: Moment(`2007-01-${day} ${starts[i]}`, format),
-                    end: Moment(`2007-01-${day} ${ends[i]}`, format)
-                });
-            }
-        }
-
-        return dates;
-    },
-
     eventsForCourse(course) {
-        return this.datesForCourse(course).map(date => {
+        return course.meetings.map(date => {
             return {
                 id: course.getCRN(),
                 title: course.getCourseID(),
@@ -82,6 +48,7 @@ export default React.createClass({
             minTime: '08:00:00',
             maxTime: '21:00:00',
             timeFormat: 'hh:mm A',
+            eventStartEditable: true,
 
             events: (start, end, timezone, callback) => {
                 let events = [];
@@ -98,16 +65,69 @@ export default React.createClass({
                         if (map[course.getCRN()])
                             events = events.concat(this.eventsForCourse(course));
                     }
+
+                    for (let j = 0; j < this.state.alternates.length; j++) {
+                        const alt = this.state.alternates[j];
+                        const altEvents = this.eventsForCourse(alt);
+                        for (let k = 0; k < altEvents.length; k++) {
+                            altEvents[k].color = 'green';
+                        }
+                        events = events.concat(altEvents);
+                    }
+
                     callback(events);
                 }
             },
 
-            eventRender: (event, element) => {
-                // attachContextMenu(event.id, element);
-            },
-
             eventClick: (event, jsEvent, view) => {
                 showCourseDetail(event.course);
+            },
+
+            eventDragStart: event => {
+                event.course.getOtherSections(courses => {
+                    this.setState({
+                        alternates: courses
+                    });
+                });
+            },
+
+            eventDrop: (event, delta, revert) => {
+                const start = event.start.add(delta._milliseconds, 'ms');
+                const end = event.end.add(delta._milliseconds, 'ms');
+                let newCourse;
+
+                alternateLoop:
+                for (let i = 0; i < this.state.alternates.length; i++) {
+                    const altMeetings = this.state.alternates[i].getMeetings();
+
+                    for (let j = 0; j < altMeetings.length; j++) {
+                        const meeting = altMeetings[j];
+
+                        if (start.isBetween(meeting.start, meeting.end) ||
+                            end.isBetween(meeting.start, meeting.end)) {
+                            newCourse = this.state.alternates[i];
+                            break alternateLoop;
+                        }
+                    }
+                }
+
+                if (newCourse !== undefined) {
+                    const index = this.state.courses.indexOf(event.course);
+                    UserCourses.remove(event.course);
+                    UserCourses.add(newCourse);
+                    this.setState(React.addons.update(this.state, {
+                        alternates: {
+                            $set: []
+                        },
+                        courses: {
+                            $splice: [[index, 1, newCourse]]
+                        }
+                    }));
+                } else {
+                    this.setState({
+                        alternates: []
+                    });
+                }
             }
 
         }).fullCalendar('refetchEvents');

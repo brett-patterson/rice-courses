@@ -30,16 +30,7 @@ export default React.createClass({
     },
 
     fetchCourses() {
-        ajaxCSRF({
-            'url': '/courses/api/all/',
-            'method': 'POST',
-            'dataType': 'json'
-        }).done(result => {
-            let courses = [];
-
-            for (let i = 0; i < result.length; i++)
-                courses.push(Course.fromJSON(result[i]));
-
+        Course.all(courses => {
             this.setState({
                 courses
             }, this.updateFilteredCourses);
@@ -145,7 +136,7 @@ export default React.createClass({
                             </Td>
                             <Td column='meetings'
                                 handleClick={showCourseFactory(course)}>
-                                {course.getMeetings()}
+                                {course.getMeetingsString()}
                             </Td>
                             <Td column='distribution'
                                 handleClick={showCourseFactory(course)}>

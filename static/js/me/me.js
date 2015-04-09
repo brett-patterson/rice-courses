@@ -325,7 +325,7 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
                         Td,
                         { column: "meetings",
                             handleClick: showCourseFactory(course) },
-                        course.getMeetings()
+                        course.getMeetingsString()
                     ),
                     React.createElement(
                         Td,

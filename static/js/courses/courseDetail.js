@@ -89,8 +89,7 @@ define(["exports", "react", "reactBootstrap", "bootbox", "jquery", "util"], func
                             "Meetings:"
                         ),
                         " ",
-                        course.getMeetings(),
-                        " "
+                        course.getMeetingsString()
                     ),
                     React.createElement(
                         "p",
