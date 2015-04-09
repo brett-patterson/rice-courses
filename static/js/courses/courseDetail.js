@@ -86,6 +86,17 @@ define(["exports", "react", "reactBootstrap", "bootbox", "jquery", "util"], func
                         React.createElement(
                             "strong",
                             null,
+                            "Distribution:"
+                        ),
+                        " ",
+                        course.getDistributionString()
+                    ),
+                    React.createElement(
+                        "p",
+                        null,
+                        React.createElement(
+                            "strong",
+                            null,
                             "Meetings:"
                         ),
                         " ",
