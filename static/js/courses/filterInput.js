@@ -41,6 +41,8 @@ define(["exports", "module", "react", "jquery"], function (exports, module, _rea
         },
 
         onInputClick: function onInputClick(event) {
+            // Prevent the event from bubbling down to the FilterWidget, which
+            // takes focus on click
             event.stopPropagation();
         },
 
