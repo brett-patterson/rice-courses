@@ -34,7 +34,7 @@ define(["exports", "module", "react", "courses/filterButton", "courses/filterInp
                 var filter = this.props.filters[i];
                 var filterKeywords = filter.getKeywords();
 
-                for (var j = 0; j < filterKeywords; j++) {
+                for (var j = 0; j < filterKeywords.length; j++) {
                     keywords[filterKeywords[j].toLowerCase()] = filter;
                 }
             }
