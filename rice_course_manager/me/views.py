@@ -223,6 +223,26 @@ def set_course_shown(request):
 
 
 @login_required(login_url='/login/')
+def remove_scheduler_course(request):
+    """ Remove a course from a scheduler's show map.
+
+    """
+    s_id = request.POST.get('id')
+    crn = request.POST.get('crn')
+
+    if s_id is not None and crn is not None:
+        scheduler = Scheduler.objects.get(pk=s_id)
+        scheduler.remove_course(Course.objects.get(crn=crn))
+
+        return HttpResponse(json.dumps({'status': 'success'}),
+                            content_type='application/json')
+
+    else:
+        return HttpResponse(json.dumps({'status': 'error'}),
+                            content_type='application/json')
+
+
+@login_required(login_url='/login/')
 def set_scheduler_shown(request):
     """ Set a scheduler to be shown or hidden
 

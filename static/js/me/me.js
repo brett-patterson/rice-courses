@@ -28,6 +28,7 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
 
     var AlertMixin = _interopRequire(_alertMixin);
 
+    var indexOf = _util.indexOf;
     var makeClasses = _util.makeClasses;
     module.exports = React.createClass({
         displayName: "me",
@@ -85,6 +86,18 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
             });
         },
 
+        addUserCourse: function addUserCourse(course) {
+            if (indexOf(this.state.userCourses, course.getCRN(), function (course) {
+                return course.getCRN();
+            }) < 0) {
+                this.setState(React.addons.update(this.state, {
+                    userCourses: {
+                        $push: [course]
+                    }
+                }));
+            }
+        },
+
         toggleCourseShownFactory: function toggleCourseShownFactory(course) {
             var _this = this;
 
@@ -107,6 +120,11 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
                 if (index > -1) {
                     event.stopPropagation();
                     UserCourses.remove(course);
+
+                    for (var i = 0; i < _this.state.schedulers.length; i++) {
+                        _this.state.schedulers[i].removeCourse(course);
+                    }
+
                     _this.setState(React.addons.update(_this.state, {
                         userCourses: {
                             $splice: [[index, 1]]
@@ -484,7 +502,8 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
                 ),
                 React.createElement(SchedulerView, { ref: "schedulerView",
                     courses: this.state.userCourses,
-                    scheduler: this.state.currentScheduler })
+                    scheduler: this.state.currentScheduler,
+                    courseDelegate: this })
             );
         }
     });

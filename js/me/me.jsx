@@ -10,7 +10,7 @@ import UserCourses from 'courses/userCourses';
 import SchedulerView from 'me/schedulerView';
 import showSchedulerExport from 'me/export';
 import AlertMixin from 'alertMixin';
-import {makeClasses} from 'util';
+import {indexOf, makeClasses} from 'util';
 
 
 export default React.createClass({
@@ -65,6 +65,17 @@ export default React.createClass({
         });
     },
 
+    addUserCourse(course) {
+        if (indexOf(this.state.userCourses, course.getCRN(),
+                (course) => { return course.getCRN(); }) < 0) {
+            this.setState(React.addons.update(this.state, {
+                userCourses: {
+                    $push: [course]
+                }
+            }));
+        }
+    },
+
     toggleCourseShownFactory(course) {
         return event => {
             const scheduler = this.state.currentScheduler;
@@ -83,6 +94,11 @@ export default React.createClass({
             if (index > -1) {
                 event.stopPropagation();
                 UserCourses.remove(course);
+
+                for (let i = 0; i < this.state.schedulers.length; i++) {
+                    this.state.schedulers[i].removeCourse(course);
+                }
+
                 this.setState(React.addons.update(this.state, {
                     userCourses: {
                         $splice: [[index, 1]]
@@ -392,7 +408,8 @@ export default React.createClass({
                 </ul>
                 <SchedulerView ref='schedulerView'
                                courses={this.state.userCourses}
-                               scheduler={this.state.currentScheduler} />
+                               scheduler={this.state.currentScheduler}
+                               courseDelegate={this} />
             </div>
         );
     }

@@ -109,32 +109,26 @@ define(["exports", "module", "react", "jquery", "fullcalendar", "courses/course"
                         for (var j = 0; j < altMeetings.length; j++) {
                             var meeting = altMeetings[j];
 
-                            if (start.isBetween(meeting.start, meeting.end) || end.isBetween(meeting.start, meeting.end)) {
+                            if (start.isBetween(meeting.start, meeting.end) || end.isBetween(meeting.start, meeting.end) || start.isSame(meeting.start) || start.isSame(meeting.end) || end.isSame(meeting.start) || end.isSame(meeting.end)) {
                                 newCourse = _this.state.alternates[i];
                                 break alternateLoop;
                             }
                         }
                     }
 
+                    _this.setState({
+                        alternates: []
+                    });
+
                     if (newCourse !== undefined) {
-                        var index = _this.state.courses.indexOf(event.course);
-                        UserCourses.remove(event.course);
+                        _this.props.courseDelegate.addUserCourse(newCourse);
+                        _this.props.scheduler.setCourseShown(event.course, false);
+                        _this.props.scheduler.setCourseShown(newCourse, true);
+                        _this.props.courseDelegate.forceUpdate();
+
                         UserCourses.add(newCourse);
-                        _this.setState(React.addons.update(_this.state, {
-                            alternates: {
-                                $set: []
-                            },
-                            courses: {
-                                $splice: [[index, 1, newCourse]]
-                            }
-                        }));
-                    } else {
-                        _this.setState({
-                            alternates: []
-                        });
                     }
                 }
-
             }).fullCalendar("refetchEvents");
         },
 

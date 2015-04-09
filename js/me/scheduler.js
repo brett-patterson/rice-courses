@@ -61,6 +61,25 @@ export default class Scheduler {
         });
     }
 
+    removeCourse(course, cb) {
+        if (this.map[course] !== undefined) {
+            delete this.map[course];
+        }
+
+        ajaxCSRF({
+            url: '/me/api/scheduler/remove-course/',
+            method: 'POST',
+            data: {
+                id: this.id,
+                crn: course.getCRN()
+            },
+            dataType: 'json'
+        }).done(data => {
+            if (cb)
+                cb(data);
+        });
+    }
+
     getShown() {
         return this.shown;
     }

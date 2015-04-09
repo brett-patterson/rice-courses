@@ -67,6 +67,17 @@ class Scheduler(models.Model):
 
         return result
 
+    def remove_course(self, course):
+        """ Remove a course from the show map.
+
+        Parameters:
+        -----------
+        course : Course
+            The course to remove.
+
+        """
+        self.courseshown_set.get(course__crn=course.crn).delete()
+
     def set_shown(self, course, show):
         """ Set whether a course should be shown in the scheduler.
 

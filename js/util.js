@@ -1,6 +1,26 @@
 import jQuery from 'jquery';
 
 /**
+ * A modified indexOf function with an optional key function.
+ * @param {array} array - The array to search through
+ * @param {any} value - The value to search for
+ * @param {function} key - An optional key function for each object
+ * @return {int} The index in the array, or -1
+ */
+export const indexOf = (array, value, key) => {
+    if (key === undefined) {
+        return array.indexOf(value);
+    } else {
+        for (let i = 0; i < array.length; i++) {
+            if (key(array[i]) === value)
+                return i;
+        }
+
+        return -1;
+    }
+};
+
+/**
  * Construct an HTML class string from a mapping of strings to boolean values.
  * @param {object} classes - The classes to evaluate
  * @return {string} An HTML class string

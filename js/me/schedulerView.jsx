@@ -96,6 +96,7 @@ export default React.createClass({
                 const end = event.end.add(delta._milliseconds, 'ms');
                 let newCourse;
 
+
                 alternateLoop:
                 for (let i = 0; i < this.state.alternates.length; i++) {
                     const altMeetings = this.state.alternates[i].getMeetings();
@@ -104,32 +105,30 @@ export default React.createClass({
                         const meeting = altMeetings[j];
 
                         if (start.isBetween(meeting.start, meeting.end) ||
-                            end.isBetween(meeting.start, meeting.end)) {
+                            end.isBetween(meeting.start, meeting.end) ||
+                            start.isSame(meeting.start) ||
+                            start.isSame(meeting.end) ||
+                            end.isSame(meeting.start) ||
+                            end.isSame(meeting.end)) {
                             newCourse = this.state.alternates[i];
                             break alternateLoop;
                         }
                     }
                 }
 
+                this.setState({
+                    alternates: []
+                });
+
                 if (newCourse !== undefined) {
-                    const index = this.state.courses.indexOf(event.course);
-                    UserCourses.remove(event.course);
+                    this.props.courseDelegate.addUserCourse(newCourse);
+                    this.props.scheduler.setCourseShown(event.course, false);
+                    this.props.scheduler.setCourseShown(newCourse, true);
+                    this.props.courseDelegate.forceUpdate();
+
                     UserCourses.add(newCourse);
-                    this.setState(React.addons.update(this.state, {
-                        alternates: {
-                            $set: []
-                        },
-                        courses: {
-                            $splice: [[index, 1, newCourse]]
-                        }
-                    }));
-                } else {
-                    this.setState({
-                        alternates: []
-                    });
                 }
             }
-
         }).fullCalendar('refetchEvents');
     },
 

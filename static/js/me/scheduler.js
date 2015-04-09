@@ -73,6 +73,25 @@ define(["exports", "module", "util"], function (exports, module, _util) {
                     });
                 }
             },
+            removeCourse: {
+                value: function removeCourse(course, cb) {
+                    if (this.map[course] !== undefined) {
+                        delete this.map[course];
+                    }
+
+                    ajaxCSRF({
+                        url: "/me/api/scheduler/remove-course/",
+                        method: "POST",
+                        data: {
+                            id: this.id,
+                            crn: course.getCRN()
+                        },
+                        dataType: "json"
+                    }).done(function (data) {
+                        if (cb) cb(data);
+                    });
+                }
+            },
             getShown: {
                 value: function getShown() {
                     return this.shown;
