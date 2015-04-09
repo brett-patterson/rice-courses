@@ -13,6 +13,7 @@ export default React.createClass({
     },
 
     inputKeyDown(event) {
+        console.log(event);
         if (event.keyCode === 13) {
             React.findDOMNode(this.props.delegate.refs.input).focus();
         } else if (event.keyCode === 8 && this.state.value === '') {
@@ -28,6 +29,12 @@ export default React.createClass({
             this.props.delegate.updateFilter(this.props.filter,
                 this.state.value);
         });
+    },
+
+    onInputClick(event) {
+        // Prevent the event from bubbling down to the FilterWidget, which
+        // takes focus on click
+        event.stopPropagation();
     },
 
     render() {
@@ -52,7 +59,8 @@ export default React.createClass({
                 <input ref='input' className='filter-view-input' style={style}
                        onKeyDown={this.inputKeyDown}
                        onChange={this.inputChanged}
-                       value={this.state.value} />
+                       value={this.state.value}
+                       onClick={this.onInputClick} />
 
                 <a onClick={this.remove}>
                     <span className='glyphicon glyphicon-remove' />

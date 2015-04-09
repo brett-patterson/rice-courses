@@ -21,6 +21,7 @@ define(["exports", "module", "react", "jquery"], function (exports, module, _rea
         },
 
         inputKeyDown: function inputKeyDown(event) {
+            console.log(event);
             if (event.keyCode === 13) {
                 React.findDOMNode(this.props.delegate.refs.input).focus();
             } else if (event.keyCode === 8 && this.state.value === "") {
@@ -37,6 +38,10 @@ define(["exports", "module", "react", "jquery"], function (exports, module, _rea
             }, function () {
                 _this.props.delegate.updateFilter(_this.props.filter, _this.state.value);
             });
+        },
+
+        onInputClick: function onInputClick(event) {
+            event.stopPropagation();
         },
 
         render: function render() {
@@ -63,7 +68,8 @@ define(["exports", "module", "react", "jquery"], function (exports, module, _rea
                 React.createElement("input", { ref: "input", className: "filter-view-input", style: style,
                     onKeyDown: this.inputKeyDown,
                     onChange: this.inputChanged,
-                    value: this.state.value }),
+                    value: this.state.value,
+                    onClick: this.onInputClick }),
                 React.createElement(
                     "a",
                     { onClick: this.remove },
