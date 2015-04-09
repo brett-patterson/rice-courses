@@ -21,7 +21,6 @@ define(["exports", "module", "react", "jquery"], function (exports, module, _rea
         },
 
         inputKeyDown: function inputKeyDown(event) {
-            console.log(event);
             if (event.keyCode === 13) {
                 React.findDOMNode(this.props.delegate.refs.input).focus();
             } else if (event.keyCode === 8 && this.state.value === "") {
