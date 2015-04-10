@@ -65,8 +65,6 @@ define(["exports", "react", "reactBootstrap", "bootbox", "jquery", "courses/eval
                     instructorQuestions: result.questions,
                     instructorComments: result.comments
                 });
-            }).fail(function (result) {
-                console.log(result);
             });
         },
 

@@ -45,7 +45,7 @@ const CourseDetailBody = React.createClass({
                 instructorQuestions: result.questions,
                 instructorComments: result.comments
             });
-        }).fail(result => { console.log(result); });
+        });
     },
 
     render() {
