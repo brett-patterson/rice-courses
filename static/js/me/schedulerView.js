@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "jquery", "fullcalendar", "courses/course", "courses/userCourses", "courses/courseDetail"], function (exports, module, _react, _jquery, _fullcalendar, _coursesCourse, _coursesUserCourses, _coursesCourseDetail) {
+define(["exports", "module", "react", "jquery", "fullcalendar", "courses/course", "courses/userCourses", "courses/courseDetail", "util"], function (exports, module, _react, _jquery, _fullcalendar, _coursesCourse, _coursesUserCourses, _coursesCourseDetail, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -14,6 +14,7 @@ define(["exports", "module", "react", "jquery", "fullcalendar", "courses/course"
     var UserCourses = _interopRequire(_coursesUserCourses);
 
     var showCourseDetail = _coursesCourseDetail.showCourseDetail;
+    var eventOverlap = _util.eventOverlap;
     module.exports = React.createClass({
         displayName: "schedulerView",
 
@@ -86,7 +87,7 @@ define(["exports", "module", "react", "jquery", "fullcalendar", "courses/course"
                     }
                 },
 
-                eventClick: function (event, jsEvent, view) {
+                eventClick: function (event) {
                     showCourseDetail(event.course);
                 },
 
@@ -99,9 +100,12 @@ define(["exports", "module", "react", "jquery", "fullcalendar", "courses/course"
                 },
 
                 eventDrop: function (event, delta, revert) {
-                    var start = event.start.add(delta._milliseconds, "ms");
-                    var end = event.end.add(delta._milliseconds, "ms");
                     var newCourse = undefined;
+
+                    var offsetEvent = {
+                        start: event.start.add(delta._milliseconds, "ms"),
+                        end: event.end.add(delta._milliseconds, "ms")
+                    };
 
                     alternateLoop: for (var i = 0; i < _this.state.alternates.length; i++) {
                         var altMeetings = _this.state.alternates[i].getMeetings();
@@ -109,7 +113,7 @@ define(["exports", "module", "react", "jquery", "fullcalendar", "courses/course"
                         for (var j = 0; j < altMeetings.length; j++) {
                             var meeting = altMeetings[j];
 
-                            if (start.isBetween(meeting.start, meeting.end) || end.isBetween(meeting.start, meeting.end) || start.isSame(meeting.start) || start.isSame(meeting.end) || end.isSame(meeting.start) || end.isSame(meeting.end)) {
+                            if (eventOverlap(offsetEvent, meeting)) {
                                 newCourse = _this.state.alternates[i];
                                 break alternateLoop;
                             }
@@ -127,6 +131,8 @@ define(["exports", "module", "react", "jquery", "fullcalendar", "courses/course"
                         _this.props.courseDelegate.forceUpdate();
 
                         UserCourses.add(newCourse);
+                    } else {
+                        revert();
                     }
                 }
             }).fullCalendar("refetchEvents");

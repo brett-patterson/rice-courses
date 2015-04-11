@@ -119,18 +119,28 @@ def suggest_alternate(request):
 
         alternates = Course.objects.filter(subject=course.subject,
                                            course_number=course.course_number)
+        alternates = alternates.exclude(section=course.section)
 
-        user_courses = [c.crn for c in request.user.userprofile.courses.all()]
+        scheduler = Scheduler.objects.get(shown=True)
+        user_courses = [Course.objects.get(crn=c.crn)
+                        for c in request.user.userprofile.courses.all()
+                        if c.crn != crn and scheduler.show_map()[c.crn]]
 
         result = []
         for alternate in alternates:
-            if (not overlap(course, alternate) and
-                    not overlap(alternate, course) and
-                    alternate.crn not in user_courses):
-                result.append(alternate.json())
+            ok = True
 
-        return HttpResponse(json.dumps(result),
-                            content_type='application/json')
+            for user_course in user_courses:
+                if overlap(alternate, user_course):
+                    ok = False
+                    break
+
+            result.append(alternate.json())
+
+        return HttpResponse(json.dumps({
+            'course': course.json(),
+            'alternates': result
+            }), content_type='application/json')
 
     else:
         return HttpResponse(json.dumps({'error': 'Must specify crn'}),

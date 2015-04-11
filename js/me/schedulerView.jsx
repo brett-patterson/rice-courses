@@ -5,6 +5,7 @@ import FullCalendar from 'fullcalendar';
 import Course from 'courses/course';
 import UserCourses from 'courses/userCourses';
 import {showCourseDetail} from 'courses/courseDetail';
+import {eventOverlap} from 'util';
 
 
 export default React.createClass({
@@ -79,7 +80,7 @@ export default React.createClass({
                 }
             },
 
-            eventClick: (event, jsEvent, view) => {
+            eventClick: (event) => {
                 showCourseDetail(event.course);
             },
 
@@ -92,10 +93,12 @@ export default React.createClass({
             },
 
             eventDrop: (event, delta, revert) => {
-                const start = event.start.add(delta._milliseconds, 'ms');
-                const end = event.end.add(delta._milliseconds, 'ms');
                 let newCourse;
 
+                let offsetEvent = {
+                    start: event.start.add(delta._milliseconds, 'ms'),
+                    end: event.end.add(delta._milliseconds, 'ms')
+                };
 
                 alternateLoop:
                 for (let i = 0; i < this.state.alternates.length; i++) {
@@ -104,12 +107,7 @@ export default React.createClass({
                     for (let j = 0; j < altMeetings.length; j++) {
                         const meeting = altMeetings[j];
 
-                        if (start.isBetween(meeting.start, meeting.end) ||
-                            end.isBetween(meeting.start, meeting.end) ||
-                            start.isSame(meeting.start) ||
-                            start.isSame(meeting.end) ||
-                            end.isSame(meeting.start) ||
-                            end.isSame(meeting.end)) {
+                        if (eventOverlap(offsetEvent, meeting)) {
                             newCourse = this.state.alternates[i];
                             break alternateLoop;
                         }
@@ -127,6 +125,8 @@ export default React.createClass({
                     this.props.courseDelegate.forceUpdate();
 
                     UserCourses.add(newCourse);
+                } else {
+                    revert();
                 }
             }
         }).fullCalendar('refetchEvents');

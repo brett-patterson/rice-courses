@@ -1,6 +1,6 @@
 import React from 'react';
 import {Table, Tr, Td} from 'reactable';
-import {Button} from 'reactBootstrap';
+import {Button, ButtonGroup} from 'reactBootstrap';
 import ZeroClipboard from 'zeroClipboard';
 import jQuery from 'jquery';
 
@@ -9,8 +9,9 @@ import Scheduler from 'me/scheduler';
 import UserCourses from 'courses/userCourses';
 import SchedulerView from 'me/schedulerView';
 import showSchedulerExport from 'me/export';
+import showConflicts from 'me/showConflicts';
 import AlertMixin from 'alertMixin';
-import {indexOf, makeClasses} from 'util';
+import {indexOf, courseOverlap, makeClasses} from 'util';
 
 
 export default React.createClass({
@@ -237,6 +238,57 @@ export default React.createClass({
             showSchedulerExport(this.state.currentScheduler);
     },
 
+    fixMySchedule(event) {
+        let courses = this.state.userCourses.filter(course => {
+            return this.state.currentScheduler.getMap()[course.getCRN()];
+        });
+
+        let conflicts = [];
+
+        for (let i = 0; i < courses.length; i++) {
+            let courseOne = courses[i];
+            for (let j = i; j < courses.length; j++) {
+                let courseTwo = courses[j];
+                if (courseOne !== courseTwo &&
+                    courseOverlap(courseOne, courseTwo)) {
+                    conflicts.push([courseOne, courseTwo]);
+                }
+            }
+        }
+
+        if (conflicts.length > 0) {
+            showConflicts(conflicts, this.addConflictAlternates);
+        } else {
+            this.addAlert('No conflicts found in your schedule!', 'success');
+        }
+    },
+
+    addConflictAlternates(course, alternates) {
+        if (alternates.length === 0) {
+            this.addAlert(`No alternate courses found for ${course.getCourseID()}`);
+        } else {
+            this.state.currentScheduler.setCourseShown(course, false);
+
+            for (let i = 0; i < alternates.length; i++) {
+                const alternate = alternates[i];
+
+                if (indexOf(this.state.userCourses, alternate.getCRN(), course => {
+                    return course.getCRN();
+                }) < 0) {
+                    UserCourses.add(alternate);
+                    this.setState(React.addons.update(this.state, {
+                        userCourses: {
+                            $push: [alternate]
+                        }
+                    }));
+                }
+
+                this.state.currentScheduler.setCourseShown(alternate, true);
+                this.forceUpdate();
+            }
+        }
+    },
+
     componentDidUpdate(prevProps, prevState) {
         jQuery('.copy-btn').each((index, button) => {
             this.clip = new ZeroClipboard(button);
@@ -388,16 +440,23 @@ export default React.createClass({
         return (
             <div>
                 {this.getAlerts()}
+
                 <Button id='exportCRNButton'
                         bsStyle='info' onClick={this.exportScheduler}>
                     Export Current CRNs
                 </Button>
+                &nbsp;
+                <Button bsStyle='success' onClick={this.fixMySchedule}>
+                    Fix My Schedule!
+                </Button>
+
                 <div className='table-responsive'>
                     <Table ref='courseTable' columns={columns}
                            className='table table-hover course-table'>
                         {courses}
                     </Table>
                 </div>
+
                 <ul className='nav nav-tabs scheduler-tabs'>
                     {schedulerTabs}
                     <li>

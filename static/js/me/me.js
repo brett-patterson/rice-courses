@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipboard", "jquery", "courses/courseDetail", "me/scheduler", "courses/userCourses", "me/schedulerView", "me/export", "alertMixin", "util"], function (exports, module, _react, _reactable, _reactBootstrap, _zeroClipboard, _jquery, _coursesCourseDetail, _meScheduler, _coursesUserCourses, _meSchedulerView, _meExport, _alertMixin, _util) {
+define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipboard", "jquery", "courses/courseDetail", "me/scheduler", "courses/userCourses", "me/schedulerView", "me/export", "me/showConflicts", "alertMixin", "util"], function (exports, module, _react, _reactable, _reactBootstrap, _zeroClipboard, _jquery, _coursesCourseDetail, _meScheduler, _coursesUserCourses, _meSchedulerView, _meExport, _meShowConflicts, _alertMixin, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -11,6 +11,7 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
     var Tr = _reactable.Tr;
     var Td = _reactable.Td;
     var Button = _reactBootstrap.Button;
+    var ButtonGroup = _reactBootstrap.ButtonGroup;
 
     var ZeroClipboard = _interopRequire(_zeroClipboard);
 
@@ -26,9 +27,12 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
 
     var showSchedulerExport = _interopRequire(_meExport);
 
+    var showConflicts = _interopRequire(_meShowConflicts);
+
     var AlertMixin = _interopRequire(_alertMixin);
 
     var indexOf = _util.indexOf;
+    var courseOverlap = _util.courseOverlap;
     var makeClasses = _util.makeClasses;
     module.exports = React.createClass({
         displayName: "me",
@@ -269,6 +273,58 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
             if (this.state.currentScheduler !== undefined) showSchedulerExport(this.state.currentScheduler);
         },
 
+        fixMySchedule: function fixMySchedule(event) {
+            var _this = this;
+
+            var courses = this.state.userCourses.filter(function (course) {
+                return _this.state.currentScheduler.getMap()[course.getCRN()];
+            });
+
+            var conflicts = [];
+
+            for (var i = 0; i < courses.length; i++) {
+                var courseOne = courses[i];
+                for (var j = i; j < courses.length; j++) {
+                    var courseTwo = courses[j];
+                    if (courseOne !== courseTwo && courseOverlap(courseOne, courseTwo)) {
+                        conflicts.push([courseOne, courseTwo]);
+                    }
+                }
+            }
+
+            if (conflicts.length > 0) {
+                showConflicts(conflicts, this.addConflictAlternates);
+            } else {
+                this.addAlert("No conflicts found in your schedule!", "success");
+            }
+        },
+
+        addConflictAlternates: function addConflictAlternates(course, alternates) {
+            if (alternates.length === 0) {
+                this.addAlert("No alternate courses found for " + course.getCourseID());
+            } else {
+                this.state.currentScheduler.setCourseShown(course, false);
+
+                for (var i = 0; i < alternates.length; i++) {
+                    var alternate = alternates[i];
+
+                    if (indexOf(this.state.userCourses, alternate.getCRN(), function (course) {
+                        return course.getCRN();
+                    }) < 0) {
+                        UserCourses.add(alternate);
+                        this.setState(React.addons.update(this.state, {
+                            userCourses: {
+                                $push: [alternate]
+                            }
+                        }));
+                    }
+
+                    this.state.currentScheduler.setCourseShown(alternate, true);
+                    this.forceUpdate();
+                }
+            }
+        },
+
         componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
             var _this = this;
 
@@ -475,6 +531,12 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
                     { id: "exportCRNButton",
                         bsStyle: "info", onClick: this.exportScheduler },
                     "Export Current CRNs"
+                ),
+                " ",
+                React.createElement(
+                    Button,
+                    { bsStyle: "success", onClick: this.fixMySchedule },
+                    "Fix My Schedule!"
                 ),
                 React.createElement(
                     "div",

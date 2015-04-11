@@ -21,6 +21,46 @@ export const indexOf = (array, value, key) => {
 };
 
 /**
+ * Check if two events overlap in time.
+ * @param {object} eventOne
+ * @param {object} eventTwo
+ * @param {boolean} Whether or not the two events' times overlap
+ */
+ export const eventOverlap = (eventOne, eventTwo) => {
+    return (eventOne.start.isBetween(eventTwo.start, eventTwo.end) ||
+            eventOne.end.isBetween(eventTwo.start, eventTwo.end) ||
+            eventOne.start.isSame(eventTwo.start) ||
+            eventOne.start.isSame(eventTwo.end) ||
+            eventOne.end.isSame(eventTwo.start) ||
+            eventOne.end.isSame(eventTwo.end));
+ };
+
+/**
+ * Check if two courses overlap in time.
+ * @param {Course} courseOne
+ * @param {Course} courseTwo
+ * @param {boolean} Whether or not the two courses' times overlap
+ */
+export const courseOverlap = (courseOne, courseTwo) => {
+    const oneMeetings = courseOne.getMeetings();
+    const twoMeetings = courseTwo.getMeetings();
+
+    for (let i = 0; i < oneMeetings.length; i++) {
+        let one = oneMeetings[i];
+
+        for (let j = 0; j < twoMeetings.length; j++) {
+            let two = twoMeetings[j];
+
+            if (eventOverlap(one, two)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+};
+
+/**
  * Construct an HTML class string from a mapping of strings to boolean values.
  * @param {object} classes - The classes to evaluate
  * @return {string} An HTML class string
