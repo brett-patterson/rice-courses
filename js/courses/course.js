@@ -10,15 +10,6 @@ const DAY_ABBR_MAP = {
     'Friday': 'F'
 };
 
-const DAY_NUMBER_MAP = {
-    'M': '01',
-    'T': '02',
-    'W': '03',
-    'R': '04',
-    'F': '05'
-};
-
-
 export default class Course {
     constructor(crn, subject, number, section, title, instructor, description,
                 meetings, location, credits, distribution, enrollment,
@@ -45,12 +36,13 @@ export default class Course {
 
         this.filterMapping = {
             distribution: this.getDistributionString(),
-            courseID: this.getCourseID()
+            courseID: this.getCourseID(),
+            meetings: this.getMeetingsString()
         };
     }
 
     static fromJSON(j) {
-        const meetings = `${j.meeting_days} ${j.start_time}-${j.end_time}`;
+        const meetings = JSON.parse(j.meetings);
         return new Course(j.crn, j.subject, j.course_number, j.section,
                           j.title, j.instructor, j.description, meetings,
                           j.location, j.credits, j.distribution,
@@ -94,28 +86,13 @@ export default class Course {
     _convertMeetingsToDates(meetings) {
         let dates = [];
 
-        const meetingsPattern = /([A-Z,\s]+)([0-9,\s]+)-([0-9,\s]+)/;
-        const matches = meetingsPattern.exec(meetings);
+        for (let i = 0; i < meetings.length; i++) {
+            const [start_string, end_string] = meetings[i].split(',');
 
-        if (!matches)
-            return dates;
-
-        const days = jQuery.trim(matches[1]).split(', ');
-        const starts = jQuery.trim(matches[2]).split(', ');
-        const ends = jQuery.trim(matches[3]).split(', ');
-
-        for (let i = 0; i < days.length; i++) {
-            const dayString = days[i], start = starts[i], end = ends[i];
-
-            for (let j = 0; j < dayString.length; j++) {
-                const day = DAY_NUMBER_MAP[dayString[j]];
-                const format = 'YYYY-MM-DD HHmm';
-
-                dates.push({
-                    start: Moment(`2007-01-${day} ${starts[i]}`, format),
-                    end: Moment(`2007-01-${day} ${ends[i]}`, format)
-                });
-            }
+            dates.push({
+                start: Moment.utc(start_string),
+                end: Moment.utc(end_string)
+            });
         }
 
         return dates;

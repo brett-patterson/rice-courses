@@ -3,6 +3,8 @@ define(["exports", "module", "moment", "util"], function (exports, module, _mome
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
+    var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
+
     var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
     var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
@@ -17,14 +19,6 @@ define(["exports", "module", "moment", "util"], function (exports, module, _mome
         Wednesday: "W",
         Thursday: "R",
         Friday: "F"
-    };
-
-    var DAY_NUMBER_MAP = {
-        M: "01",
-        T: "02",
-        W: "03",
-        R: "04",
-        F: "05"
     };
 
     var Course = (function () {
@@ -52,7 +46,8 @@ define(["exports", "module", "moment", "util"], function (exports, module, _mome
 
             this.filterMapping = {
                 distribution: this.getDistributionString(),
-                courseID: this.getCourseID()
+                courseID: this.getCourseID(),
+                meetings: this.getMeetingsString()
             };
         }
 
@@ -82,29 +77,18 @@ define(["exports", "module", "moment", "util"], function (exports, module, _mome
                 value: function _convertMeetingsToDates(meetings) {
                     var dates = [];
 
-                    var meetingsPattern = /([A-Z,\s]+)([0-9,\s]+)-([0-9,\s]+)/;
-                    var matches = meetingsPattern.exec(meetings);
+                    for (var i = 0; i < meetings.length; i++) {
+                        var _meetings$i$split = meetings[i].split(",");
 
-                    if (!matches) {
-                        return dates;
-                    }var days = jQuery.trim(matches[1]).split(", ");
-                    var starts = jQuery.trim(matches[2]).split(", ");
-                    var ends = jQuery.trim(matches[3]).split(", ");
+                        var _meetings$i$split2 = _slicedToArray(_meetings$i$split, 2);
 
-                    for (var i = 0; i < days.length; i++) {
-                        var dayString = days[i],
-                            start = starts[i],
-                            end = ends[i];
+                        var start_string = _meetings$i$split2[0];
+                        var end_string = _meetings$i$split2[1];
 
-                        for (var j = 0; j < dayString.length; j++) {
-                            var day = DAY_NUMBER_MAP[dayString[j]];
-                            var format = "YYYY-MM-DD HHmm";
-
-                            dates.push({
-                                start: Moment("2007-01-" + day + " " + starts[i], format),
-                                end: Moment("2007-01-" + day + " " + ends[i], format)
-                            });
-                        }
+                        dates.push({
+                            start: Moment.utc(start_string),
+                            end: Moment.utc(end_string)
+                        });
                     }
 
                     return dates;
@@ -251,7 +235,7 @@ define(["exports", "module", "moment", "util"], function (exports, module, _mome
         }, {
             fromJSON: {
                 value: function fromJSON(j) {
-                    var meetings = "" + j.meeting_days + " " + j.start_time + "-" + j.end_time;
+                    var meetings = JSON.parse(j.meetings);
                     return new Course(j.crn, j.subject, j.course_number, j.section, j.title, j.instructor, j.description, meetings, j.location, j.credits, j.distribution, j.enrollment, j.max_enrollment, j.waitlist, j.max_waitlist, j.prerequisites, j.corequisites, j.restrictions);
                 }
             },

@@ -1,5 +1,7 @@
+import json
 import re
 
+from dateutil.parser import parse
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.deconstruct import deconstructible
@@ -114,3 +116,97 @@ class RangeField(models.CharField):
 
         """
         return str(Range(self.minimum, self.maximum))
+
+
+@deconstructible
+class DateTimeInterval(object):
+    """ Implements an interval represented by a start and end datetime.
+
+    """
+    def __init__(self, start, end):
+        """ Initialize the DateTimeInterval.
+
+        Parameters:
+        -----------
+        start : datetime.datetime
+            The start of the interval.
+
+        end : datetime.datetime
+            The end of the interval.
+
+        """
+        self.start = start
+        self.end = end
+
+    def __str__(self):
+        """ Convert the DateTimeInterval to a string.
+
+        """
+        return '%s,%s' % (self.start.isoformat(), self.end.isoformat())
+
+    def __eq__(self, other):
+        """ Assert equality between intervals by comparing their starts and
+        ends.
+
+        """
+        return self.start == other.start and self.end == other.end
+
+    @classmethod
+    def from_string(cls, value):
+        """ Construct a DateTimeInterval from a string of two ISO format
+        date times separated by a comma.
+
+        """
+        return cls(*[parse(date_str) for date_str in value.split(',')])
+
+
+class DateTimeListField(models.CharField):
+    """ Implements a Django field used to store a list of datetime objects.
+
+    """
+    def __init__(self, objects=[], *args, **kwargs):
+        kwargs['max_length'] = 400
+        self.objects = objects
+        super(DateTimeListField, self).__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        """ Deconstruct the DateTimeListField into serializable components.
+
+        """
+        name, path, args, kwargs = super(DateTimeListField, self).deconstruct()
+        kwargs['objects'] = json.dumps([str(d) for d in self.objects])
+        del kwargs['max_length']
+        return name, path, args, kwargs
+
+    def from_db_value(self, value, connection):
+        """ Create a list of dates from the string in the database.
+
+        """
+        if value is None:
+            return value
+
+        return [DateTimeInterval.from_string(i) for i in json.loads(value)]
+
+    def to_python(self, value):
+        """ Create a list of dates from the given value.
+
+        """
+        if isinstance(value, list) or value is None:
+            return value
+
+        return [DateTimeInterval.from_string(i) for i in json.loads(value)]
+
+    def get_prep_value(self, value):
+        """ Ensure that the value is a string before writing to the database.
+
+        """
+        if isinstance(value, list):
+            return json.dumps([str(d) for d in value])
+
+        return value
+
+    def __str__(self):
+        """ Represent the field as a list of ISO-format dates.
+
+        """
+        return str(self.objects)

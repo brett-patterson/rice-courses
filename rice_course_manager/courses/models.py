@@ -1,6 +1,19 @@
+import re
+
+from dateutil.parser import parse
 from django.db import models
 
-from fields import RangeField, Range
+from fields import RangeField, Range, DateTimeListField, DateTimeInterval
+
+
+def try_set(dictionary, key, target, coerce_func=lambda x: x):
+    """ Attempt to set a value on a target with the value from a dictionary.
+    Assumes the desired attribute on the target is named the same as the
+    dictionary key. The value can optionally be coerced by a function.
+
+    """
+    if key in dictionary:
+        setattr(target, key, coerce_func(dictionary[key]))
 
 
 def parse_distribution(string):
@@ -18,29 +31,44 @@ def parse_credits(string):
     return Range.from_string(string)
 
 
-# Maps each course attribute to a coercing function used to coerce from string
-# to the appropriate type.
-COERCE_MAP = {
-    'meeting_days': unicode,
-    'subject': unicode,
-    'course_number': int,
-    'title': unicode,
-    'section': unicode,
-    'location': unicode,
-    'distribution': parse_distribution,
-    'credits': parse_credits,
-    'start_time': unicode,
-    'end_time': unicode,
-    'description': unicode,
-    'enrollment': int,
-    'max_enrollment': int,
-    'waitlist': int,
-    'max_waitlist': int,
-    'restrictions': unicode,
-    'prerequisites': unicode,
-    'corequisites': unicode,
-    'instructor': unicode,
-    'crn': unicode,
+def parse_meetings(meetings_string):
+    """ Parse a meetings string in the format 'days start_times-end_times'
+    into DateTimeInterval objects.
+
+    """
+    meetings = []
+
+    pattern = r'([A-Z,\s]+)([0-9,\s]+)-([0-9,\s]+)'
+    match = re.search(pattern, meetings_string)
+
+    if not match:
+        return meetings
+
+    days, starts, ends = [group.strip().split(', ') for group in match.groups()]
+
+    for i, day_string in enumerate(days):
+        start_string = starts[i]
+        end_string = ends[i]
+
+        for day_abbr in day_string:
+            day = DAY_NUMBER_MAP[day_abbr]
+            start = parse('2007-01-%s %s' % (day, start_string))
+            end = parse('2007-01-%s %s' % (day, end_string))
+
+            meetings.append(DateTimeInterval(start, end))
+
+    return meetings
+
+
+# Maps each weekday letter to a numbered day string, assuming January 2007
+DAY_NUMBER_MAP = {
+    'M': '01',
+    'T': '02',
+    'W': '03',
+    'R': '04',
+    'F': '05',
+    'S': '06',
+    'U': '07'
 }
 
 
@@ -48,10 +76,6 @@ class Course(models.Model):
     """ A model to represent a course.
 
     """
-    # The days of the week that the courses meets.
-    # Days are represented as 'M', 'T', 'W', 'R', 'F'
-    meeting_days = models.CharField(max_length=10, default='')
-
     # The 4-letter subject code for the course.
     subject = models.CharField(max_length=4, default='')
 
@@ -73,11 +97,8 @@ class Course(models.Model):
     # The number of credits that the course awards.
     credits = RangeField(default=Range(0, 0))
 
-    # The start time of the course, as a string.
-    start_time = models.CharField(max_length=20, default='')
-
-    # The end time of the course, as a string.
-    end_time = models.CharField(max_length=20, default='')
+    # The meeting dates and times for the course
+    meetings = DateTimeListField(default=[])
 
     # A full description of the content of the course.
     description = models.TextField(default='')
@@ -110,19 +131,18 @@ class Course(models.Model):
     # The unique 5-digit number for this course, represented as a string.
     crn = models.CharField(max_length=5, primary_key=True)
 
-    def __str__(self):
+    def __repr__(self):
         """ Represent each course by its subject and course number.
         E.g. MATH 101
 
         """
-        return '%s %i' % (self.subject, self.course_number)
+        return '%s %i %s' % (self.subject, self.course_number, self.section)
 
     def json(self):
         """ Convert the course to a JSON-serializable dictionary.
 
         """
         return {
-            'meeting_days': self.meeting_days,
             'subject': self.subject,
             'course_number': self.course_number,
             'title': self.title,
@@ -130,8 +150,7 @@ class Course(models.Model):
             'location': self.location,
             'distribution': self.distribution,
             'credits': self.credits,
-            'start_time': self.start_time,
-            'end_time': self.end_time,
+            'meetings': self.meetings,
             'description': self.description,
             'enrollment': self.enrollment,
             'max_enrollment': self.max_enrollment,
@@ -151,14 +170,30 @@ class Course(models.Model):
         """
         self = cls()
 
-        for field in self._meta.fields:
-            name = field.name
+        try_set(json_obj, 'subject', self)
+        try_set(json_obj, 'course_number', self)
+        try_set(json_obj, 'title', self)
+        try_set(json_obj, 'section', self)
+        try_set(json_obj, 'location', self)
+        try_set(json_obj, 'distribution', self, parse_distribution)
+        try_set(json_obj, 'credits', self, parse_credits)
+        try_set(json_obj, 'description', self)
+        try_set(json_obj, 'enrollment', self)
+        try_set(json_obj, 'max_enrollment', self)
+        try_set(json_obj, 'waitlist', self)
+        try_set(json_obj, 'max_waitlist', self)
+        try_set(json_obj, 'restrictions', self)
+        try_set(json_obj, 'prerequisites', self)
+        try_set(json_obj, 'corequisites', self)
+        try_set(json_obj, 'instructor', self)
+        try_set(json_obj, 'crn', self)
 
-            if name in json_obj:
-                val = json_obj[name]
+        if ('meeting_days' in json_obj and 'start_time' in json_obj and
+            'end_time' in json_obj):
+            meetings = '%s %s-%s' % (json_obj['meeting_days'],
+                                     json_obj['start_time'],
+                                     json_obj['end_time'])
 
-                typ = COERCE_MAP.get(name, type(field.default))
-
-                setattr(self, name, typ(val))
+            self.meetings = parse_meetings(meetings);
 
         return self
