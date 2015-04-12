@@ -71,6 +71,16 @@ define(["exports"], function (exports) {
                     return this.keywords;
                 }
             },
+            getValue: {
+
+                /** Get the value for the filter.
+                 * @return {any} The filter's value
+                 */
+
+                value: function getValue() {
+                    return this.value;
+                }
+            },
             setValue: {
 
                 /**

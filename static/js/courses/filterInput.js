@@ -12,7 +12,7 @@ define(["exports", "module", "react", "jquery"], function (exports, module, _rea
 
         getInitialState: function getInitialState() {
             return {
-                value: ""
+                value: this.props.filter.getValue()
             };
         },
 

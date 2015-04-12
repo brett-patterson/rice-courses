@@ -90,7 +90,8 @@ export default React.createClass({
             currentFilters: this.props.manager.getFilters()
         }, () => {
             const index = this.props.manager.getFilters().length - 1;
-            React.findDOMNode(this.refs[`filter${index}`].refs.input).focus();
+            const id = `filter-${index+1}-${index}`;
+            React.findDOMNode(this.refs[id].refs.input).focus();
         });
     },
 
@@ -129,8 +130,9 @@ export default React.createClass({
         };
 
         let filterInputs = this.state.currentFilters.map((filter, index) => {
-            return <FilterInput filter={filter} key={`filter${index}`}
-                                delegate={this} ref={`filter${index}`} />;
+            const id = `filter-${this.state.currentFilters.length}-${index}`;
+            return <FilterInput filter={filter} key={id} ref={id}
+                                delegate={this} />;
         });
 
         return (

@@ -43,6 +43,13 @@ class CourseFilter {
         return this.keywords;
     }
 
+    /** Get the value for the filter.
+     * @return {any} The filter's value
+     */
+    getValue() {
+        return this.value;
+    }
+
     /**
      * Set the value for the filter.
      * @param {any} value - The new value

@@ -103,7 +103,8 @@ define(["exports", "module", "react", "courses/filterButton", "courses/filterInp
                 currentFilters: this.props.manager.getFilters()
             }, function () {
                 var index = _this.props.manager.getFilters().length - 1;
-                React.findDOMNode(_this.refs["filter" + index].refs.input).focus();
+                var id = "filter-" + (index + 1) + "-" + index;
+                React.findDOMNode(_this.refs[id].refs.input).focus();
             });
         },
 
@@ -147,8 +148,9 @@ define(["exports", "module", "react", "courses/filterButton", "courses/filterInp
             };
 
             var filterInputs = this.state.currentFilters.map(function (filter, index) {
-                return React.createElement(FilterInput, { filter: filter, key: "filter" + index,
-                    delegate: _this, ref: "filter" + index });
+                var id = "filter-" + _this.state.currentFilters.length + "-" + index;
+                return React.createElement(FilterInput, { filter: filter, key: id, ref: id,
+                    delegate: _this });
             });
 
             return React.createElement(

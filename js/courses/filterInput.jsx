@@ -4,7 +4,7 @@ import jQuery from 'jquery';
 export default React.createClass({
     getInitialState() {
         return {
-            value: ''
+            value: this.props.filter.getValue()
         };
     },
 
