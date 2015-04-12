@@ -99,7 +99,11 @@ export const FILTERS = [
     new CourseFilter('instructor', 'Instructor'),
     new CourseFilter('meetings', 'Meetings', ['meeting']),
     new CourseFilter('credits', 'Credits'),
-    new CourseFilter('distribution', 'Distribution', ['dist'], '', CourseFilter.exact)
+    new CourseFilter('distribution', 'Distribution', ['dist'], '', (one, two) => {
+        const [roman, integer] = one.split(' ');
+        return (roman.toLowerCase() === two.toLowerCase() ||
+                integer.toLowerCase() == two.toLowerCase());
+    })
 ];
 
 //     {

@@ -45,7 +45,7 @@ define(["exports", "module", "moment", "util"], function (exports, module, _mome
             this.restrictions = restrictions;
 
             this.filterMapping = {
-                distribution: this.getDistributionString(),
+                distribution: "" + this.getDistributionString() + " " + this.distribution,
                 courseID: this.getCourseID(),
                 meetings: this.getMeetingsString()
             };
