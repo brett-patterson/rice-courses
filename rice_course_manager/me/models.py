@@ -53,7 +53,8 @@ class Scheduler(models.Model):
 
         """
         if self.shown:
-            Scheduler.objects.filter(shown=True).update(shown=False)
+            Scheduler.objects.filter(user_profile=self.user_profile,
+                                     shown=True).update(shown=False)
         super(Scheduler, self).save(*args, **kwargs)
 
     def show_map(self):
