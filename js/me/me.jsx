@@ -265,7 +265,8 @@ export default React.createClass({
 
     addConflictAlternates(course, alternates) {
         if (alternates.length === 0) {
-            this.addAlert(`No alternate courses found for ${course.getCourseID()}`);
+            this.addAlert(`No alternate courses found for ${course.getCourseID()} that do not conflict with your current schedule.`,
+                          'danger', 6000);
         } else {
             this.state.currentScheduler.setCourseShown(course, false);
 

@@ -235,8 +235,7 @@ define(["exports", "module", "moment", "util"], function (exports, module, _mome
         }, {
             fromJSON: {
                 value: function fromJSON(j) {
-                    var meetings = JSON.parse(j.meetings);
-                    return new Course(j.crn, j.subject, j.course_number, j.section, j.title, j.instructor, j.description, meetings, j.location, j.credits, j.distribution, j.enrollment, j.max_enrollment, j.waitlist, j.max_waitlist, j.prerequisites, j.corequisites, j.restrictions);
+                    return new Course(j.crn, j.subject, j.course_number, j.section, j.title, j.instructor, j.description, j.meetings, j.location, j.credits, j.distribution, j.enrollment, j.max_enrollment, j.waitlist, j.max_waitlist, j.prerequisites, j.corequisites, j.restrictions);
                 }
             },
             all: {

@@ -42,9 +42,8 @@ export default class Course {
     }
 
     static fromJSON(j) {
-        const meetings = JSON.parse(j.meetings);
         return new Course(j.crn, j.subject, j.course_number, j.section,
-                          j.title, j.instructor, j.description, meetings,
+                          j.title, j.instructor, j.description, j.meetings,
                           j.location, j.credits, j.distribution,
                           j.enrollment, j.max_enrollment, j.waitlist,
                           j.max_waitlist, j.prerequisites, j.corequisites,

@@ -66,6 +66,8 @@ class RangeField(models.CharField):
     """ Implements a float range field.
 
     """
+    __metaclass__ = models.SubfieldBase
+
     def __init__(self, minimum=0, maximum=0, *args, **kwargs):
         """ Initialize the RangeField.
 
@@ -85,15 +87,6 @@ class RangeField(models.CharField):
         del kwargs['max_length']
         return name, path, args, kwargs
 
-    def from_db_value(self, value, connection):
-        """ Create a Range object from the string in the database.
-
-        """
-        if value is None:
-            return value
-
-        return Range.from_string(value)
-
     def to_python(self, value):
         """ Create a Range object from the given value.
 
@@ -110,12 +103,6 @@ class RangeField(models.CharField):
         if isinstance(value, Range):
             return str(value)
         return value
-
-    def __str__(self):
-        """ Represent the field as a Range object.
-
-        """
-        return str(Range(self.minimum, self.maximum))
 
 
 @deconstructible
@@ -164,9 +151,11 @@ class DateTimeListField(models.CharField):
     """ Implements a Django field used to store a list of datetime objects.
 
     """
+    __metaclass__ = models.SubfieldBase
+
     def __init__(self, objects=[], *args, **kwargs):
-        kwargs['max_length'] = 400
         self.objects = objects
+        kwargs['max_length'] = 300
         super(DateTimeListField, self).__init__(*args, **kwargs)
 
     def deconstruct(self):
@@ -174,11 +163,11 @@ class DateTimeListField(models.CharField):
 
         """
         name, path, args, kwargs = super(DateTimeListField, self).deconstruct()
-        kwargs['objects'] = json.dumps([str(d) for d in self.objects])
         del kwargs['max_length']
+        kwargs['objects'] = self.objects
         return name, path, args, kwargs
 
-    def from_db_value(self, value, connection):
+    def from_db_value(self, value, expression, connection, context):
         """ Create a list of dates from the string in the database.
 
         """
@@ -191,7 +180,8 @@ class DateTimeListField(models.CharField):
         """ Create a list of dates from the given value.
 
         """
-        if isinstance(value, list) or value is None:
+        if (isinstance(value, list) and len(value) > 0 and
+            isinstance(value[0], DateTimeInterval)) or value is None:
             return value
 
         return [DateTimeInterval.from_string(i) for i in json.loads(value)]
@@ -204,9 +194,3 @@ class DateTimeListField(models.CharField):
             return json.dumps([str(d) for d in value])
 
         return value
-
-    def __str__(self):
-        """ Represent the field as a list of ISO-format dates.
-
-        """
-        return str(self.objects)

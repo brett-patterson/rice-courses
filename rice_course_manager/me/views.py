@@ -87,22 +87,14 @@ def overlap(course_one, course_two):
     A boolean representing whether the two courses overlap in time.
 
     """
-    days_one = course_one.meeting_days.split(',')
-    days_two = course_two.meeting_days.split(',')
-
-    start_times_one = [int(t) for t in course_one.start_time.split(',')]
-    start_times_two = [int(t) for t in course_two.start_time.split(',')]
-
-    end_times_two = [int(t) for t in course_two.end_time.split(',')]
-
-    for i, day in enumerate(days_one):
-        try:
-            j = days_two.index(day)
-            if (start_times_one[i] >= start_times_two[j] and
-                    start_times_one[i] <= end_times_two[j]):
+    for interval_one in course_one.meetings:
+        for interval_two in course_two.meetings:
+            if (interval_two.start < interval_one.start < interval_two.end or
+                interval_two.start < interval_one.end < interval_two.end or
+                interval_one.start == interval_two.start or
+                interval_one.start == interval_two.end or
+                interval_one.end == interval_two.start):
                 return True
-        except ValueError:
-            continue
 
     return False
 
@@ -135,7 +127,8 @@ def suggest_alternate(request):
                     ok = False
                     break
 
-            result.append(alternate.json())
+            if ok:
+                result.append(alternate.json())
 
         return HttpResponse(json.dumps({
             'course': course.json(),
