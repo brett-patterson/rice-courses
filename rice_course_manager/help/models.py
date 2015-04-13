@@ -137,6 +137,9 @@ class Panel(models.Model):
     # The tutorial this panel corresponds to.
     tutorial = models.ForeignKey(Tutorial)
 
+    class Meta:
+        ordering = ['id']
+
     def json(self):
         """ Convert the panel to a JSON-serializable dictionary.
 
@@ -174,6 +177,9 @@ class Annotation(models.Model):
 
     # The panel this annotation corresponds to.
     panel = models.ForeignKey(Panel)
+
+    class Meta:
+        ordering = ['id']
 
     def json(self):
         """ Convert the annotation to a JSON-serializable dictionary.
