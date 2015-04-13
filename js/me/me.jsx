@@ -381,17 +381,17 @@ export default React.createClass({
             totalLabel = 'Total credits:';
 
         courses = courses.concat(
-            <Tr key='creditsShown'>
-                <Td className='text-right' column='enrollment'>
-                    <strong>{shownLabel}</strong>
-                </Td>
-                <Td column='credits'><strong>{creditsShown}</strong></Td>
-            </Tr>,
             <Tr key='totalCredits'>
                 <Td className='text-right' column='enrollment'>
                     <strong>{totalLabel}</strong>
                 </Td>
                 <Td column='credits'><strong>{totalCredits}</strong></Td>
+            </Tr>,
+            <Tr key='creditsShown'>
+                <Td className='text-right' column='enrollment'>
+                    <strong>{shownLabel}</strong>
+                </Td>
+                <Td column='credits'><strong>{creditsShown}</strong></Td>
             </Tr>
         );
 

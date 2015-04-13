@@ -450,27 +450,6 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
 
             courses = courses.concat(React.createElement(
                 Tr,
-                { key: "creditsShown" },
-                React.createElement(
-                    Td,
-                    { className: "text-right", column: "enrollment" },
-                    React.createElement(
-                        "strong",
-                        null,
-                        shownLabel
-                    )
-                ),
-                React.createElement(
-                    Td,
-                    { column: "credits" },
-                    React.createElement(
-                        "strong",
-                        null,
-                        creditsShown
-                    )
-                )
-            ), React.createElement(
-                Tr,
                 { key: "totalCredits" },
                 React.createElement(
                     Td,
@@ -488,6 +467,27 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
                         "strong",
                         null,
                         totalCredits
+                    )
+                )
+            ), React.createElement(
+                Tr,
+                { key: "creditsShown" },
+                React.createElement(
+                    Td,
+                    { className: "text-right", column: "enrollment" },
+                    React.createElement(
+                        "strong",
+                        null,
+                        shownLabel
+                    )
+                ),
+                React.createElement(
+                    Td,
+                    { column: "credits" },
+                    React.createElement(
+                        "strong",
+                        null,
+                        creditsShown
                     )
                 )
             ));
