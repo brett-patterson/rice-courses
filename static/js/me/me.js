@@ -561,7 +561,7 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
                 ),
                 React.createElement(
                     Button,
-                    { className: "fix-schedule-btn", bsStyle: "success",
+                    { className: "fix-schedule-btn", bsStyle: "info",
                         onClick: this.fixMySchedule },
                     "Fix My Schedule!"
                 ),

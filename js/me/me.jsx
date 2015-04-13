@@ -471,7 +471,7 @@ export default React.createClass({
                     </Table>
                 </div>
 
-                <Button className='fix-schedule-btn' bsStyle='success'
+                <Button className='fix-schedule-btn' bsStyle='info'
                         onClick={this.fixMySchedule}>
                     Fix My Schedule!
                 </Button>
