@@ -1,7 +1,7 @@
 import React from 'react';
 import {Button} from 'reactBootstrap';
 
-import {hsvToHex} from 'util';
+import {hsvToRgb, rgbToHex} from 'util';
 
 export default React.createClass({
     /**
@@ -12,7 +12,7 @@ export default React.createClass({
      */
     getColor(h, darken=false) {
         const v = darken === true ? 0.75 : 0.85;
-        return hsvToHex(h, 1, v);
+        return rgbToHex(...hsvToRgb(h, 1, v));
     },
 
     getInitialState() {

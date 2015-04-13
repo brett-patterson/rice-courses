@@ -113,16 +113,16 @@ define(["exports", "jquery"], function (exports, _jquery) {
 
     exports.decToHex = decToHex;
     /**
-     * Convert a HSV color to a hexadecimal RGB color. Uses the
+     * Convert a HSV color to an RGB color. Uses the
      * algorithm described here:
      * http://en.wikipedia.org/wiki/HSL_and_HSV#From_HSV
      * to convert from HSV to RGB, then converts to hexadecimal.
      * @param {number} h - The hue of the color
      * @param {number} s - The saturation of the color
      * @param {number} v - The value of the color
-     * @return {string} An HTML hexadecimal string 
+     * @return {array} The [red, green, blue] components of the color
      */
-    var hsvToHex = function (h, s, v) {
+    var hsvToRgb = function (h, s, v) {
         var r = 0,
             g = 0,
             b = 0;
@@ -159,14 +159,25 @@ define(["exports", "jquery"], function (exports, _jquery) {
 
         var m = v - chroma;
 
-        r = r * 255 + m;
-        g = g * 255 + m;
-        b = b * 255 + m;
+        r = Math.round(r * 255 + m);
+        g = Math.round(g * 255 + m);
+        b = Math.round(b * 255 + m);
 
+        return [r, g, b];
+    };
+
+    exports.hsvToRgb = hsvToRgb;
+    /** Convert an RGB color to a hexadecimal color string.
+     * @param {number} r - The red value of the color
+     * @param {number} g - The green value of the color
+     * @param {number} b - The blue value of the color
+     * @return {string} An HTML hex string
+     */
+    var rgbToHex = function (r, g, b) {
         return "#" + decToHex(r) + "" + decToHex(g) + "" + decToHex(b);
     };
 
-    exports.hsvToHex = hsvToHex;
+    exports.rgbToHex = rgbToHex;
     /**
      * Get the value of a cookie
      * @param {string} name - The name of the cookie

@@ -3,6 +3,8 @@ define(["exports", "module", "react", "jquery", "fullcalendar", "courses/course"
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
+    var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
+
     var React = _interopRequire(_react);
 
     var jQuery = _interopRequire(_jquery);
@@ -16,7 +18,7 @@ define(["exports", "module", "react", "jquery", "fullcalendar", "courses/course"
     var showCourseDetail = _coursesCourseDetail.showCourseDetail;
     var eventOverlap = _util.eventOverlap;
     var getHueByIndex = _util.getHueByIndex;
-    var hsvToHex = _util.hsvToHex;
+    var hsvToRgb = _util.hsvToRgb;
     module.exports = React.createClass({
         displayName: "schedulerView",
 
@@ -35,11 +37,7 @@ define(["exports", "module", "react", "jquery", "fullcalendar", "courses/course"
             });
         },
 
-        eventsForCourse: function eventsForCourse(course) {
-            var index = this.state.courses.indexOf(course);
-            var hue = getHueByIndex(index, this.state.courses.length);
-            var color = hsvToHex(hue, 1, 0.65);
-
+        eventsForCourse: function eventsForCourse(course, color) {
             return course.meetings.map(function (date) {
                 return {
                     id: course.getCRN(),
@@ -68,6 +66,7 @@ define(["exports", "module", "react", "jquery", "fullcalendar", "courses/course"
                 maxTime: "21:00:00",
                 timeFormat: "hh:mm A",
                 eventStartEditable: true,
+                dragOpacity: 1,
 
                 events: function (start, end, timezone, callback) {
                     var events = [];
@@ -77,15 +76,33 @@ define(["exports", "module", "react", "jquery", "fullcalendar", "courses/course"
 
                         for (var i = 0; i < _this.state.courses.length; i++) {
                             var course = _this.state.courses[i];
+                            var hue = getHueByIndex(i, _this.state.courses.length);
 
-                            if (map[course.getCRN()]) events = events.concat(_this.eventsForCourse(course));
+                            var _hsvToRgb = hsvToRgb(hue, 1, 0.65);
+
+                            var _hsvToRgb2 = _slicedToArray(_hsvToRgb, 3);
+
+                            var r = _hsvToRgb2[0];
+                            var g = _hsvToRgb2[1];
+                            var b = _hsvToRgb2[2];
+
+                            var alpha = undefined;
+                            if (_this.state.alternates.length > 0) {
+                                alpha = 0.4;
+                            } else {
+                                alpha = 1;
+                            }
+
+                            var color = "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
+
+                            if (map[course.getCRN()]) events = events.concat(_this.eventsForCourse(course, color));
                         }
 
                         for (var j = 0; j < _this.state.alternates.length; j++) {
                             var alt = _this.state.alternates[j];
                             var altEvents = _this.eventsForCourse(alt);
                             for (var k = 0; k < altEvents.length; k++) {
-                                altEvents[k].color = "rgba(28, 158, 37, .75)";
+                                altEvents[k].color = "green";
                             }
                             events = events.concat(altEvents);
                         }

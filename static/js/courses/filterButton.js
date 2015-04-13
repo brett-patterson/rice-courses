@@ -3,10 +3,13 @@ define(["exports", "module", "react", "reactBootstrap", "util"], function (expor
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
+    var _toConsumableArray = function (arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } };
+
     var React = _interopRequire(_react);
 
     var Button = _reactBootstrap.Button;
-    var hsvToHex = _util.hsvToHex;
+    var hsvToRgb = _util.hsvToRgb;
+    var rgbToHex = _util.rgbToHex;
     module.exports = React.createClass({
         displayName: "filterButton",
 
@@ -20,7 +23,7 @@ define(["exports", "module", "react", "reactBootstrap", "util"], function (expor
             var darken = arguments[1] === undefined ? false : arguments[1];
 
             var v = darken === true ? 0.75 : 0.85;
-            return hsvToHex(h, 1, v);
+            return rgbToHex.apply(undefined, _toConsumableArray(hsvToRgb(h, 1, v)));
         },
 
         getInitialState: function getInitialState() {

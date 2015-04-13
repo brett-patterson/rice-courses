@@ -5,7 +5,7 @@ import FullCalendar from 'fullcalendar';
 import Course from 'courses/course';
 import UserCourses from 'courses/userCourses';
 import {showCourseDetail} from 'courses/courseDetail';
-import {eventOverlap, getHueByIndex, hsvToHex} from 'util';
+import {eventOverlap, getHueByIndex, hsvToRgb} from 'util';
 
 
 export default React.createClass({
@@ -24,11 +24,7 @@ export default React.createClass({
         });
     },
 
-    eventsForCourse(course) {
-        const index = this.state.courses.indexOf(course);
-        const hue = getHueByIndex(index, this.state.courses.length);
-        const color = hsvToHex(hue, 1, 0.65);
-
+    eventsForCourse(course, color) {
         return course.meetings.map(date => {
             return {
                 id: course.getCRN(),
@@ -55,6 +51,7 @@ export default React.createClass({
             maxTime: '21:00:00',
             timeFormat: 'hh:mm A',
             eventStartEditable: true,
+            dragOpacity: 1,
 
             events: (start, end, timezone, callback) => {
                 let events = [];
@@ -67,16 +64,27 @@ export default React.createClass({
 
                     for (let i = 0; i < this.state.courses.length; i++) {
                         const course = this.state.courses[i];
+                        const hue = getHueByIndex(i, this.state.courses.length);
+                        const [r, g, b] = hsvToRgb(hue, 1, 0.65);
+
+                        let alpha;
+                        if (this.state.alternates.length > 0) {
+                            alpha = 0.4;
+                        } else {
+                            alpha = 1;
+                        }
+
+                        const color = `rgba(${r},${g},${b},${alpha})`;
 
                         if (map[course.getCRN()])
-                            events = events.concat(this.eventsForCourse(course));
+                            events = events.concat(this.eventsForCourse(course, color));
                     }
 
                     for (let j = 0; j < this.state.alternates.length; j++) {
                         const alt = this.state.alternates[j];
                         const altEvents = this.eventsForCourse(alt);
                         for (let k = 0; k < altEvents.length; k++) {
-                            altEvents[k].color = 'rgba(28, 158, 37, .75)';
+                            altEvents[k].color = 'green';
                         }
                         events = events.concat(altEvents);
                     }
