@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "courses/filterManager", "courses/filterWidget", "courses/courseFilter", "courses/courseList"], function (exports, module, _react, _coursesFilterManager, _coursesFilterWidget, _coursesCourseFilter, _coursesCourseList) {
+define(["exports", "module", "react", "courses/filterManager", "courses/filterWidget", "courses/courseFilter", "courses/courseList", "util"], function (exports, module, _react, _coursesFilterManager, _coursesFilterWidget, _coursesCourseFilter, _coursesCourseList, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -15,7 +15,17 @@ define(["exports", "module", "react", "courses/filterManager", "courses/filterWi
 
     var CourseList = _interopRequire(_coursesCourseList);
 
-    var FILTERS = [new CourseFilter("crn", "CRN"), new CourseFilter("courseID", "Course ID", ["course_id", "course id"]), new CourseFilter("title", "Title"), new CourseFilter("instructor", "Instructor"), new CourseFilter("meetings", "Meetings", ["meeting"]), new CourseFilter("credits", "Credits"), new CourseFilter("distribution", "Distribution", ["dist"], "", function (one, two) {
+    var ajaxCSRF = _util.ajaxCSRF;
+
+    var FILTERS = [new CourseFilter("crn", "CRN"), new CourseFilter("courseID", "Course ID", ["course_id", "course id"], "", CourseFilter.contains, function (callback) {
+        ajaxCSRF({
+            url: "/courses/api/subjects/",
+            method: "POST",
+            dataType: "json"
+        }).done(function (result) {
+            callback(result);
+        });
+    }), new CourseFilter("title", "Title"), new CourseFilter("instructor", "Instructor"), new CourseFilter("meetings", "Meetings", ["meeting"]), new CourseFilter("credits", "Credits"), new CourseFilter("distribution", "Distribution", ["dist"], "", function (one, two) {
         var _one$split = one.split(" ");
 
         var _one$split2 = _slicedToArray(_one$split, 2);

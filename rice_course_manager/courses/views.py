@@ -46,3 +46,13 @@ def get_sections(request):
     msg = 'Must specify subject and number'
     return HttpResponse(json.dumps({'error': msg}),
                         content_type='application/json')
+
+
+@login_required(login_url='/login/')
+def get_subjects(request):
+    """ Get all unique course subjects.
+
+    """
+    subjects = sorted(map(lambda x: x['subject'],
+                          Course.objects.values('subject').distinct()))
+    return HttpResponse(json.dumps(subjects), content_type='application/json')

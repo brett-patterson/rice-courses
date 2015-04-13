@@ -7,9 +7,12 @@ export default class CourseFilter {
      *  the filter
      * @param {any} value - The value to filter for
      * @param {function} compare - A function that takes two values and returns
+     * @param {array or function} - An array of value suggestions or an function
+     *  that takes a callback used to provide the suggestions
      *  a boolean that is the result of a comparison between the two
      */
-    constructor(key, name, keywords=[], value='', compare=CourseFilter.contains) {
+    constructor(key, name, keywords=[], value='', compare=CourseFilter.contains,
+                suggestions=[]) {
         this.key = key;
         this.name = name;
 
@@ -18,6 +21,15 @@ export default class CourseFilter {
 
         this.value = value;
         this.compare = compare;
+
+        if (typeof suggestions === 'function') {
+            this.suggestions = [];
+            suggestions(result => {
+                this.suggestions = result;
+            });
+        } else {
+            this.suggestions = suggestions;
+        }
     }
 
     /**
@@ -56,6 +68,24 @@ export default class CourseFilter {
      */
     setValue(value) {
         this.value = value;
+    }
+
+    /**
+     * Get all suggestions.
+     * @return {array} The array of suggestions
+     */
+    getSuggestions() {
+        return this.suggestions;
+    }
+
+    /**
+     * Get all suggestions that start with the current value.
+     * @return {array} A filtered list of suggestions.
+     */
+    getApplicableSuggestions() {
+        return this.suggestions.filter(suggestion => {
+            return suggestion.toLowerCase().indexOf(this.value.toLowerCase()) === 0;
+        });
     }
 
     /**

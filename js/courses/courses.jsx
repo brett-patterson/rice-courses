@@ -4,11 +4,21 @@ import FilterManager from 'courses/filterManager';
 import FilterWidget from 'courses/filterWidget';
 import CourseFilter from 'courses/courseFilter';
 import CourseList from 'courses/courseList';
+import {ajaxCSRF} from 'util';
 
 
 const FILTERS = [
     new CourseFilter('crn', 'CRN'),
-    new CourseFilter('courseID', 'Course ID', ['course_id', 'course id']),
+    new CourseFilter('courseID', 'Course ID', ['course_id', 'course id'], '',
+                     CourseFilter.contains, callback => {
+                        ajaxCSRF({
+                            url: '/courses/api/subjects/',
+                            method: 'POST',
+                            dataType: 'json'
+                        }).done(result => {
+                            callback(result);
+                        });
+                     }),
     new CourseFilter('title', 'Title'),
     new CourseFilter('instructor', 'Instructor'),
     new CourseFilter('meetings', 'Meetings', ['meeting']),
@@ -17,7 +27,7 @@ const FILTERS = [
         const [roman, integer] = one.split(' ');
         return (roman.toLowerCase() === two.toLowerCase() ||
                 integer.toLowerCase() == two.toLowerCase());
-    })
+        })
 ];
 
 

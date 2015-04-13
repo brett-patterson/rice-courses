@@ -1,18 +1,19 @@
-define(["exports", "module", "react", "jquery"], function (exports, module, _react, _jquery) {
+define(["exports", "module", "react"], function (exports, module, _react) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
     var React = _interopRequire(_react);
 
-    var jQuery = _interopRequire(_jquery);
-
     module.exports = React.createClass({
         displayName: "filterInput",
 
         getInitialState: function getInitialState() {
+            this.mouseOverSuggestions = false;
+
             return {
-                value: this.props.filter.getValue()
+                value: this.props.filter.getValue(),
+                showSuggestions: false
             };
         },
 
@@ -30,13 +31,7 @@ define(["exports", "module", "react", "jquery"], function (exports, module, _rea
         },
 
         inputChanged: function inputChanged(event) {
-            var _this = this;
-
-            this.setState({
-                value: event.target.value
-            }, function () {
-                _this.props.delegate.updateFilter(_this.props.filter, _this.state.value);
-            });
+            this.setValue(event.target.value);
         },
 
         onInputClick: function onInputClick(event) {
@@ -45,12 +40,50 @@ define(["exports", "module", "react", "jquery"], function (exports, module, _rea
             event.stopPropagation();
         },
 
+        onFocus: function onFocus(event) {
+            this.setState({
+                showSuggestions: true
+            });
+        },
+
+        onBlur: function onBlur(event) {
+            if (!this.mouseOverSuggestions) {
+                this.setState({
+                    showSuggestions: false
+                });
+            }
+        },
+
+        setValue: function setValue(value) {
+            this.props.delegate.updateFilter(this.props.filter, value);
+
+            this.setState({
+                value: value
+            });
+        },
+
+        suggestionClicked: function suggestionClicked(event) {
+            this.setValue(event.target.text);
+            this.setState({
+                showSuggestions: false
+            });
+        },
+
+        onMouseEnter: function onMouseEnter(event) {
+            this.mouseOverSuggestions = true;
+        },
+
+        onMouseLeave: function onMouseLeave(event) {
+            this.mouseOverSuggestions = false;
+        },
+
         render: function render() {
+            var _this = this;
+
             var virtual = jQuery("<span/>", {
                 text: this.state.value
             }).hide().appendTo(document.body);
 
-            var filter = this.props.filter;
             var style = {
                 marginLeft: 5,
                 width: virtual.width() + 10
@@ -58,19 +91,52 @@ define(["exports", "module", "react", "jquery"], function (exports, module, _rea
 
             virtual.remove();
 
+            var applicable = this.props.filter.getApplicableSuggestions();
+            var suggestionItems = applicable.map(function (suggestion, i) {
+                var key = "" + applicable.length + "." + i;
+                return React.createElement(
+                    "li",
+                    { key: key },
+                    React.createElement(
+                        "a",
+                        { onClick: _this.suggestionClicked },
+                        suggestion
+                    )
+                );
+            });
+
+            var suggestions = undefined;
+
+            if (this.state.showSuggestions && suggestionItems.length > 0) {
+                suggestions = React.createElement(
+                    "div",
+                    { className: "filter-suggestions",
+                        onMouseEnter: this.onMouseEnter,
+                        onMouseLeave: this.onMouseLeave },
+                    React.createElement(
+                        "ul",
+                        null,
+                        suggestionItems
+                    )
+                );
+            }
+
             return React.createElement(
                 "div",
                 { className: "filter-view" },
                 React.createElement(
                     "span",
                     { className: "filter-view-name" },
-                    "" + filter.getName()
+                    "" + this.props.filter.getName()
                 ),
                 React.createElement("input", { ref: "input", className: "filter-view-input", style: style,
                     onKeyDown: this.inputKeyDown,
                     onChange: this.inputChanged,
                     value: this.state.value,
-                    onClick: this.onInputClick }),
+                    onClick: this.onInputClick,
+                    onFocus: this.onFocus,
+                    onBlur: this.onBlur }),
+                suggestions,
                 React.createElement(
                     "a",
                     { onClick: this.remove },

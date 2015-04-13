@@ -18,6 +18,16 @@
   outline: none;
 }
 
+.filter-suggestions {
+  background: #fff;
+  position: absolute;
+  z-index: 10;
+}
+
+.filter-suggestions ul {
+  list-style-type: none;
+}
+
 .filter-view {
   border: 1px solid #ccc;
   border-radius: 3px;
