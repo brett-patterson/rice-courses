@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "bootbox", "jquery", "courses/course", "util"], function (exports, module, _react, _bootbox, _jquery, _coursesCourse, _util) {
+define(["exports", "module", "react", "bootbox", "courses/course", "util"], function (exports, module, _react, _bootbox, _coursesCourse, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -10,8 +10,6 @@ define(["exports", "module", "react", "bootbox", "jquery", "courses/course", "ut
     var React = _interopRequire(_react);
 
     var Bootbox = _interopRequire(_bootbox);
-
-    var jQuery = _interopRequire(_jquery);
 
     var Course = _interopRequire(_coursesCourse);
 

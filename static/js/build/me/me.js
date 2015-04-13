@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipboard", "jquery", "courses/courseDetail", "me/scheduler", "courses/userCourses", "me/schedulerView", "me/export", "me/showConflicts", "alertMixin", "util"], function (exports, module, _react, _reactable, _reactBootstrap, _zeroClipboard, _jquery, _coursesCourseDetail, _meScheduler, _coursesUserCourses, _meSchedulerView, _meExport, _meShowConflicts, _alertMixin, _util) {
+define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipboard", "courses/courseDetail", "me/scheduler", "courses/userCourses", "me/schedulerView", "me/export", "me/showConflicts", "alertMixin", "util"], function (exports, module, _react, _reactable, _reactBootstrap, _zeroClipboard, _coursesCourseDetail, _meScheduler, _coursesUserCourses, _meSchedulerView, _meExport, _meShowConflicts, _alertMixin, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -14,8 +14,6 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
     var ButtonGroup = _reactBootstrap.ButtonGroup;
 
     var ZeroClipboard = _interopRequire(_zeroClipboard);
-
-    var jQuery = _interopRequire(_jquery);
 
     var showCourseFactory = _coursesCourseDetail.showCourseFactory;
 

@@ -1,11 +1,9 @@
-define(["exports", "module", "react", "jquery", "highcharts"], function (exports, module, _react, _jquery, _highcharts) {
+define(["exports", "module", "react", "highcharts"], function (exports, module, _react, _highcharts) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
     var React = _interopRequire(_react);
-
-    var jQuery = _interopRequire(_jquery);
 
     var Highcharts = _interopRequire(_highcharts);
 

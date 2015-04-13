@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "bootbox", "jquery", "util"], function (exports, module, _react, _bootbox, _jquery, _util) {
+define(["exports", "module", "react", "bootbox", "util"], function (exports, module, _react, _bootbox, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -8,8 +8,6 @@ define(["exports", "module", "react", "bootbox", "jquery", "util"], function (ex
     var React = _interopRequire(_react);
 
     var Bootbox = _interopRequire(_bootbox);
-
-    var jQuery = _interopRequire(_jquery);
 
     var ajaxCSRF = _util.ajaxCSRF;
 

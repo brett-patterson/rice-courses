@@ -1,5 +1,4 @@
 import React from 'react';
-import jQuery from 'jquery';
 import FullCalendar from 'fullcalendar';
 
 import Course from 'courses/course';

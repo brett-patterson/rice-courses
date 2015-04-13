@@ -2,7 +2,6 @@ import React from 'react';
 import {Table, Tr, Td} from 'reactable';
 import {Button, ButtonGroup} from 'reactBootstrap';
 import ZeroClipboard from 'zeroClipboard';
-import jQuery from 'jquery';
 
 import {showCourseFactory} from 'courses/courseDetail';
 import Scheduler from 'me/scheduler';

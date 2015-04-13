@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "jquery", "fullcalendar", "courses/course", "courses/userCourses", "courses/courseDetail", "util"], function (exports, module, _react, _jquery, _fullcalendar, _coursesCourse, _coursesUserCourses, _coursesCourseDetail, _util) {
+define(["exports", "module", "react", "fullcalendar", "courses/course", "courses/userCourses", "courses/courseDetail", "util"], function (exports, module, _react, _fullcalendar, _coursesCourse, _coursesUserCourses, _coursesCourseDetail, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -6,8 +6,6 @@ define(["exports", "module", "react", "jquery", "fullcalendar", "courses/course"
     var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
 
     var React = _interopRequire(_react);
-
-    var jQuery = _interopRequire(_jquery);
 
     var FullCalendar = _interopRequire(_fullcalendar);
 

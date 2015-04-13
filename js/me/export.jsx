@@ -1,6 +1,5 @@
 import React from 'react';
 import Bootbox from 'bootbox';
-import jQuery from 'jquery';
 
 import {ajaxCSRF} from 'util';
 
