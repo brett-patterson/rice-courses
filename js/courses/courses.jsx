@@ -1,9 +1,25 @@
 import React from 'react';
 
-import {FILTERS} from 'courses/filters';
 import FilterManager from 'courses/filterManager';
 import FilterWidget from 'courses/filterWidget';
+import CourseFilter from 'courses/courseFilter';
 import CourseList from 'courses/courseList';
+
+
+const FILTERS = [
+    new CourseFilter('crn', 'CRN'),
+    new CourseFilter('courseID', 'Course ID', ['course_id', 'course id']),
+    new CourseFilter('title', 'Title'),
+    new CourseFilter('instructor', 'Instructor'),
+    new CourseFilter('meetings', 'Meetings', ['meeting']),
+    new CourseFilter('credits', 'Credits'),
+    new CourseFilter('distribution', 'Distribution', ['dist'], '', (one, two) => {
+        const [roman, integer] = one.split(' ');
+        return (roman.toLowerCase() === two.toLowerCase() ||
+                integer.toLowerCase() == two.toLowerCase());
+    })
+];
+
 
 export default React.createClass({
     getInitialState() {

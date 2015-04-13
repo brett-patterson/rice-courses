@@ -1,4 +1,4 @@
-class CourseFilter {
+export default class CourseFilter {
     /**
      * Create a new CourseFilter object.
      * @param {string} key - The key to filter objects for
@@ -90,33 +90,3 @@ class CourseFilter {
         return String(one).toLowerCase() === String(two).toLowerCase();
     }
 }
-
-
-export const FILTERS = [
-    new CourseFilter('crn', 'CRN'),
-    new CourseFilter('courseID', 'Course ID', ['course_id', 'course id']),
-    new CourseFilter('title', 'Title'),
-    new CourseFilter('instructor', 'Instructor'),
-    new CourseFilter('meetings', 'Meetings', ['meeting']),
-    new CourseFilter('credits', 'Credits'),
-    new CourseFilter('distribution', 'Distribution', ['dist'], '', (one, two) => {
-        const [roman, integer] = one.split(' ');
-        return (roman.toLowerCase() === two.toLowerCase() ||
-                integer.toLowerCase() == two.toLowerCase());
-    })
-];
-
-//     {
-//         id: 'major',
-//         cleanName: 'Major',
-//         keywords: ['major'],
-//         factory: function(field, value) {
-//             return function(course) {
-//                 // requirements.courses(value, function(courses) {
-//                 //     TODO: FACTORY SHOULD ACCEPT PROMISES
-//                 // });
-//                 return true;
-//             };
-//         }
-//     }
-// ];
