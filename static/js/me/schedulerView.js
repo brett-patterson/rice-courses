@@ -125,12 +125,7 @@ define(["exports", "module", "react", "jquery", "fullcalendar", "courses/course"
                     });
 
                     if (newCourse !== undefined) {
-                        _this.props.courseDelegate.addUserCourse(newCourse);
-                        _this.props.scheduler.setCourseShown(event.course, false);
-                        _this.props.scheduler.setCourseShown(newCourse, true);
-                        _this.props.courseDelegate.forceUpdate();
-
-                        UserCourses.add(newCourse);
+                        _this.props.courseDelegate.replaceSection(event.course, newCourse);
                     } else {
                         revert();
                     }

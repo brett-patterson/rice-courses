@@ -77,6 +77,23 @@ export default React.createClass({
         }
     },
 
+    replaceSection(oldSection, newSection) {
+        this.addUserCourse(newSection);
+        this.state.currentScheduler.setCourseShown(oldSection, false);
+        this.state.currentScheduler.setCourseShown(newSection, true);
+        UserCourses.add(newSection);
+
+        for (let i = 0; i < this.state.schedulers.length; i++) {
+            const scheduler = this.state.schedulers[i];
+
+            if (scheduler !== this.state.currentScheduler) {
+                scheduler.setCourseShown(newSection, false);
+            }
+        }
+
+        this.forceUpdate();
+    },
+
     toggleCourseShownFactory(course) {
         return event => {
             const scheduler = this.state.currentScheduler;

@@ -64,7 +64,7 @@ class Scheduler(models.Model):
         """
         result = {}
         for course_shown in self.courseshown_set.all():
-            result[course_shown.course.crn] = course_shown.show
+            result[course_shown.crn] = course_shown.show
 
         return result
 
@@ -77,7 +77,7 @@ class Scheduler(models.Model):
             The course to remove.
 
         """
-        self.courseshown_set.get(course__crn=course.crn).delete()
+        self.courseshown_set.get(crn=course.crn).delete()
 
     def set_shown(self, course, show):
         """ Set whether a course should be shown in the scheduler.
@@ -91,7 +91,7 @@ class Scheduler(models.Model):
             Whether the course should be shown (True) or hidden (False).
 
         """
-        course_shown, new = self.courseshown_set.get_or_create(course=course)
+        course_shown, new = self.courseshown_set.get_or_create(crn=course.crn)
         course_shown.show = show
         course_shown.save()
 
@@ -116,7 +116,7 @@ class CourseShown(models.Model):
     scheduler = models.ForeignKey(Scheduler)
 
     # The course that this model corresponds to.
-    course = models.ForeignKey(Course)
+    crn = models.CharField(max_length=5)
 
     # Whether or not the course should be shown in the scheduler.
     show = models.BooleanField(default=False)

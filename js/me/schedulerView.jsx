@@ -119,12 +119,7 @@ export default React.createClass({
                 });
 
                 if (newCourse !== undefined) {
-                    this.props.courseDelegate.addUserCourse(newCourse);
-                    this.props.scheduler.setCourseShown(event.course, false);
-                    this.props.scheduler.setCourseShown(newCourse, true);
-                    this.props.courseDelegate.forceUpdate();
-
-                    UserCourses.add(newCourse);
+                    this.props.courseDelegate.replaceSection(event.course, newCourse);                    
                 } else {
                     revert();
                 }

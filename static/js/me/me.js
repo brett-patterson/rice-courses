@@ -102,6 +102,23 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
             }
         },
 
+        replaceSection: function replaceSection(oldSection, newSection) {
+            this.addUserCourse(newSection);
+            this.state.currentScheduler.setCourseShown(oldSection, false);
+            this.state.currentScheduler.setCourseShown(newSection, true);
+            UserCourses.add(newSection);
+
+            for (var i = 0; i < this.state.schedulers.length; i++) {
+                var scheduler = this.state.schedulers[i];
+
+                if (scheduler !== this.state.currentScheduler) {
+                    scheduler.setCourseShown(newSection, false);
+                }
+            }
+
+            this.forceUpdate();
+        },
+
         toggleCourseShownFactory: function toggleCourseShownFactory(course) {
             var _this = this;
 
