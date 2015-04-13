@@ -84,7 +84,9 @@ export default class CourseFilter {
      */
     getApplicableSuggestions() {
         return this.suggestions.filter(suggestion => {
-            return suggestion.toLowerCase().indexOf(this.value.toLowerCase()) === 0;
+            const suggest = suggestion.toLowerCase();
+            const val = this.value.toLowerCase();
+            return suggest.indexOf(val) === 0 && suggest !== val;
         });
     }
 

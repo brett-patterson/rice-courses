@@ -124,7 +124,9 @@ define(["exports", "module"], function (exports, module) {
                     var _this = this;
 
                     return this.suggestions.filter(function (suggestion) {
-                        return suggestion.toLowerCase().indexOf(_this.value.toLowerCase()) === 0;
+                        var suggest = suggestion.toLowerCase();
+                        var val = _this.value.toLowerCase();
+                        return suggest.indexOf(val) === 0 && suggest !== val;
                     });
                 }
             },
