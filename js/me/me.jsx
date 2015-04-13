@@ -446,10 +446,6 @@ export default React.createClass({
                         bsStyle='info' onClick={this.exportScheduler}>
                     Export Current CRNs
                 </Button>
-                &nbsp;
-                <Button bsStyle='success' onClick={this.fixMySchedule}>
-                    Fix My Schedule!
-                </Button>
 
                 <div className='table-responsive'>
                     <Table ref='courseTable' columns={columns}
@@ -457,6 +453,11 @@ export default React.createClass({
                         {courses}
                     </Table>
                 </div>
+
+                <Button className='fix-schedule-btn' bsStyle='success'
+                        onClick={this.fixMySchedule}>
+                    Fix My Schedule!
+                </Button>
 
                 <ul className='nav nav-tabs scheduler-tabs'>
                     {schedulerTabs}

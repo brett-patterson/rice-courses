@@ -532,12 +532,6 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
                         bsStyle: "info", onClick: this.exportScheduler },
                     "Export Current CRNs"
                 ),
-                " ",
-                React.createElement(
-                    Button,
-                    { bsStyle: "success", onClick: this.fixMySchedule },
-                    "Fix My Schedule!"
-                ),
                 React.createElement(
                     "div",
                     { className: "table-responsive" },
@@ -547,6 +541,12 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
                             className: "table table-hover course-table" },
                         courses
                     )
+                ),
+                React.createElement(
+                    Button,
+                    { className: "fix-schedule-btn", bsStyle: "success",
+                        onClick: this.fixMySchedule },
+                    "Fix My Schedule!"
                 ),
                 React.createElement(
                     "ul",

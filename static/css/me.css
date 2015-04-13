@@ -26,6 +26,10 @@
   cursor: pointer;
 }
 
+.fix-schedule-btn {
+  margin-bottom: 10px;
+}
+
 .scheduler-tabs {
     border-bottom: none;
 }
