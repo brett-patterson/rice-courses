@@ -48,6 +48,9 @@ class Scheduler(models.Model):
     # The user profile this scheduler corresponds to.
     user_profile = models.ForeignKey(UserProfile)
 
+    class Meta:
+        ordering = ['id']
+
     def save(self, *args, **kwargs):
         """ On save, ensure that only one Scheduler object is shown.
 
