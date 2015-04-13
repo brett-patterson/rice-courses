@@ -2,7 +2,7 @@ import React from 'react';
 
 import FilterButton from 'courses/filterButton';
 import FilterInput from 'courses/filterInput';
-
+import {getHueByIndex} from 'util';
 
 export default React.createClass({
     getDefaultProps() {
@@ -107,20 +107,10 @@ export default React.createClass({
         this.props.manager.updateFilter(filter, value);
     },
 
-    /**
-     * Get the appropriate hue for a filter button.
-     * @param {number} index - The index of the filter
-     * @param {number} total - The total number of filters
-     * @return {number} The hue of the filter
-     */
-    getFilterHue(index=0, total=1) {
-        return 360 / total * index;
-    },
-
     render() {
         let filterButtons = this.props.filters.map((filter, index) => {
             return <FilterButton filter={filter}
-                         hue={this.getFilterHue(index, this.props.filters.length)}
+                         hue={getHueByIndex(index, this.props.filters.length)}
                          key={`filterBtn${index}`}
                          delegate={this} />;
         });

@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "courses/filterButton", "courses/filterInput"], function (exports, module, _react, _coursesFilterButton, _coursesFilterInput) {
+define(["exports", "module", "react", "courses/filterButton", "courses/filterInput", "util"], function (exports, module, _react, _coursesFilterButton, _coursesFilterInput, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -9,6 +9,7 @@ define(["exports", "module", "react", "courses/filterButton", "courses/filterInp
 
     var FilterInput = _interopRequire(_coursesFilterInput);
 
+    var getHueByIndex = _util.getHueByIndex;
     module.exports = React.createClass({
         displayName: "filterWidget",
 
@@ -120,25 +121,12 @@ define(["exports", "module", "react", "courses/filterButton", "courses/filterInp
             this.props.manager.updateFilter(filter, value);
         },
 
-        /**
-         * Get the appropriate hue for a filter button.
-         * @param {number} index - The index of the filter
-         * @param {number} total - The total number of filters
-         * @return {number} The hue of the filter
-         */
-        getFilterHue: function getFilterHue() {
-            var index = arguments[0] === undefined ? 0 : arguments[0];
-            var total = arguments[1] === undefined ? 1 : arguments[1];
-
-            return 360 / total * index;
-        },
-
         render: function render() {
             var _this = this;
 
             var filterButtons = this.props.filters.map(function (filter, index) {
                 return React.createElement(FilterButton, { filter: filter,
-                    hue: _this.getFilterHue(index, _this.props.filters.length),
+                    hue: getHueByIndex(index, _this.props.filters.length),
                     key: "filterBtn" + index,
                     delegate: _this });
             });

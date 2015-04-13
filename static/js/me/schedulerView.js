@@ -15,6 +15,8 @@ define(["exports", "module", "react", "jquery", "fullcalendar", "courses/course"
 
     var showCourseDetail = _coursesCourseDetail.showCourseDetail;
     var eventOverlap = _util.eventOverlap;
+    var getHueByIndex = _util.getHueByIndex;
+    var hsvToHex = _util.hsvToHex;
     module.exports = React.createClass({
         displayName: "schedulerView",
 
@@ -34,13 +36,18 @@ define(["exports", "module", "react", "jquery", "fullcalendar", "courses/course"
         },
 
         eventsForCourse: function eventsForCourse(course) {
+            var index = this.state.courses.indexOf(course);
+            var hue = getHueByIndex(index, this.state.courses.length);
+            var color = hsvToHex(hue, 1, 0.65);
+
             return course.meetings.map(function (date) {
                 return {
                     id: course.getCRN(),
                     title: course.getCourseID(),
                     start: date.start,
                     end: date.end,
-                    course: course
+                    course: course,
+                    color: color
                 };
             });
         },
@@ -78,7 +85,7 @@ define(["exports", "module", "react", "jquery", "fullcalendar", "courses/course"
                             var alt = _this.state.alternates[j];
                             var altEvents = _this.eventsForCourse(alt);
                             for (var k = 0; k < altEvents.length; k++) {
-                                altEvents[k].color = "green";
+                                altEvents[k].color = "rgba(28, 158, 37, .75)";
                             }
                             events = events.concat(altEvents);
                         }

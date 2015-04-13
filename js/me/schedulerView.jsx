@@ -5,7 +5,7 @@ import FullCalendar from 'fullcalendar';
 import Course from 'courses/course';
 import UserCourses from 'courses/userCourses';
 import {showCourseDetail} from 'courses/courseDetail';
-import {eventOverlap} from 'util';
+import {eventOverlap, getHueByIndex, hsvToHex} from 'util';
 
 
 export default React.createClass({
@@ -25,13 +25,18 @@ export default React.createClass({
     },
 
     eventsForCourse(course) {
+        const index = this.state.courses.indexOf(course);
+        const hue = getHueByIndex(index, this.state.courses.length);
+        const color = hsvToHex(hue, 1, 0.65);
+
         return course.meetings.map(date => {
             return {
                 id: course.getCRN(),
                 title: course.getCourseID(),
                 start: date.start,
                 end: date.end,
-                course: course
+                course: course,
+                color
             };
         });
     },
@@ -71,7 +76,7 @@ export default React.createClass({
                         const alt = this.state.alternates[j];
                         const altEvents = this.eventsForCourse(alt);
                         for (let k = 0; k < altEvents.length; k++) {
-                            altEvents[k].color = 'green';
+                            altEvents[k].color = 'rgba(28, 158, 37, .75)';
                         }
                         events = events.concat(altEvents);
                     }

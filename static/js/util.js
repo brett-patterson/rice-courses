@@ -87,6 +87,20 @@ define(["exports", "jquery"], function (exports, _jquery) {
 
     exports.makeClasses = makeClasses;
     /**
+     * Get the appropriate hue based on an item's index in an array.
+     * @param {number} index - The index of the item
+     * @param {number} total - The total number of items
+     * @return {number} The hue of the item
+     */
+    var getHueByIndex = function () {
+        var index = arguments[0] === undefined ? 0 : arguments[0];
+        var total = arguments[1] === undefined ? 1 : arguments[1];
+
+        return 360 / total * index;
+    };
+
+    exports.getHueByIndex = getHueByIndex;
+    /**
      * Convert a decimal number to a hexadecimal number (base 10 -> base 16)
      * @param {number} dec - The decimal value to convert
      * @return {number} A hexadecimal representation of the number
