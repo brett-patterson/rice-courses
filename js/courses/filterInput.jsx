@@ -17,10 +17,21 @@ export default React.createClass({
 
     inputKeyDown(event) {
         if (event.keyCode === 13) {
+            // Enter: Focus main input
             React.findDOMNode(this.props.delegate.refs.input).focus();
         } else if (event.keyCode === 8 && this.state.value === '') {
+            // Backspace: Remove input if no text entered
             this.remove();
             React.findDOMNode(this.props.delegate.refs.input).focus();
+        } else if (event.keyCode === 40) {
+            // Down arrow: Focus suggestions menu if it exists
+            if (this.refs.suggestions) {
+                this.mouseOverSuggestions = true;
+
+                const suggestNode = React.findDOMNode(this.refs.suggestions);
+                jQuery('a', suggestNode).eq(0).focus();
+                event.preventDefault();
+            }
         }
     },
 
@@ -57,9 +68,39 @@ export default React.createClass({
     },
 
     suggestionClicked(event) {
-        this.setValue(event.target.text);
+        this.acceptSuggestion(event.target.text);
+    },
+
+    suggestionKeyFired(event) {
+        if (event.keyCode === 13) {
+            // Enter: accept the suggestion
+            this.acceptSuggestion(event.target.text);
+        } else if (event.keyCode === 40) {
+            // Down arrow: focus the next suggestion
+            jQuery(event.target).parent().next().find('a').focus();
+            event.preventDefault();
+        } else if (event.keyCode === 38) {
+            // Up arrow: focus the previous suggestion or focus the input if
+            // at the top of the list of suggestions
+            const prev = jQuery(event.target).parent().prev();
+
+            if (prev.length === 0) {
+                React.findDOMNode(this.refs.input).focus();
+            } else {
+                prev.find('a').focus();
+            }
+
+            event.preventDefault();
+        }
+    },
+
+    acceptSuggestion(suggestion) {
+        this.setValue(suggestion);
+        
         this.setState({
             showSuggestions: false
+        }, () => {
+            React.findDOMNode(this.refs.input).focus();
         });
     },
 
@@ -88,7 +129,8 @@ export default React.createClass({
             const key = `${applicable.length}.${i}`;
             return (
                 <li key={key}>
-                    <a onClick={this.suggestionClicked}>{suggestion}</a>
+                    <a tabIndex={i} onClick={this.suggestionClicked}
+                       onKeyDown={this.suggestionKeyFired}>{suggestion}</a>
                 </li>
             );
         });
@@ -97,7 +139,7 @@ export default React.createClass({
 
         if (this.state.showSuggestions && suggestionItems.length > 0) {
             suggestions = (
-                <div className='filter-suggestions'
+                <div ref='suggestions' className='filter-suggestions'
                      onMouseEnter={this.onMouseEnter}
                      onMouseLeave={this.onMouseLeave}>
                     <ul>{suggestionItems}</ul>

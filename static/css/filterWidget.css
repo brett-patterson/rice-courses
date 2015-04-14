@@ -20,12 +20,32 @@
 
 .filter-suggestions {
   background: #fff;
+  border-bottom: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  margin-top: 4px;
+  max-height: 400px;
+  overflow: scroll;
   position: absolute;
+  width: 100px;
   z-index: 10;
 }
 
 .filter-suggestions ul {
   list-style-type: none;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+.filter-suggestions li a {
+  display: block;
+  padding: 10px 5px;
+}
+
+.filter-suggestions a:hover, .filter-suggestions a:focus {
+  background: rgba(0, 0, 0, 0.2);
+  text-decoration: none;
 }
 
 .filter-view {

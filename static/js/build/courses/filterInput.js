@@ -23,10 +23,21 @@ define(["exports", "module", "react"], function (exports, module, _react) {
 
         inputKeyDown: function inputKeyDown(event) {
             if (event.keyCode === 13) {
+                // Enter: Focus main input
                 React.findDOMNode(this.props.delegate.refs.input).focus();
             } else if (event.keyCode === 8 && this.state.value === "") {
+                // Backspace: Remove input if no text entered
                 this.remove();
                 React.findDOMNode(this.props.delegate.refs.input).focus();
+            } else if (event.keyCode === 40) {
+                // Down arrow: Focus suggestions menu if it exists
+                if (this.refs.suggestions) {
+                    this.mouseOverSuggestions = true;
+
+                    var suggestNode = React.findDOMNode(this.refs.suggestions);
+                    jQuery("a", suggestNode).eq(0).focus();
+                    event.preventDefault();
+                }
             }
         },
 
@@ -63,9 +74,41 @@ define(["exports", "module", "react"], function (exports, module, _react) {
         },
 
         suggestionClicked: function suggestionClicked(event) {
-            this.setValue(event.target.text);
+            this.acceptSuggestion(event.target.text);
+        },
+
+        suggestionKeyFired: function suggestionKeyFired(event) {
+            if (event.keyCode === 13) {
+                // Enter: accept the suggestion
+                this.acceptSuggestion(event.target.text);
+            } else if (event.keyCode === 40) {
+                // Down arrow: focus the next suggestion
+                jQuery(event.target).parent().next().find("a").focus();
+                event.preventDefault();
+            } else if (event.keyCode === 38) {
+                // Up arrow: focus the previous suggestion or focus the input if
+                // at the top of the list of suggestions
+                var prev = jQuery(event.target).parent().prev();
+
+                if (prev.length === 0) {
+                    React.findDOMNode(this.refs.input).focus();
+                } else {
+                    prev.find("a").focus();
+                }
+
+                event.preventDefault();
+            }
+        },
+
+        acceptSuggestion: function acceptSuggestion(suggestion) {
+            var _this = this;
+
+            this.setValue(suggestion);
+
             this.setState({
                 showSuggestions: false
+            }, function () {
+                React.findDOMNode(_this.refs.input).focus();
             });
         },
 
@@ -99,7 +142,8 @@ define(["exports", "module", "react"], function (exports, module, _react) {
                     { key: key },
                     React.createElement(
                         "a",
-                        { onClick: _this.suggestionClicked },
+                        { tabIndex: i, onClick: _this.suggestionClicked,
+                            onKeyDown: _this.suggestionKeyFired },
                         suggestion
                     )
                 );
@@ -110,7 +154,7 @@ define(["exports", "module", "react"], function (exports, module, _react) {
             if (this.state.showSuggestions && suggestionItems.length > 0) {
                 suggestions = React.createElement(
                     "div",
-                    { className: "filter-suggestions",
+                    { ref: "suggestions", className: "filter-suggestions",
                         onMouseEnter: this.onMouseEnter,
                         onMouseLeave: this.onMouseLeave },
                     React.createElement(
