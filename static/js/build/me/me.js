@@ -362,6 +362,12 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
                     "glyphicon-eye-close": !courseShown
                 });
 
+                var percent = course.getEnrollmentPercentage();
+                var enrollClasses = makeClasses({
+                    "enroll-warning": percent >= 75 && percent < 100,
+                    "enroll-full": percent === 100
+                });
+
                 return React.createElement(
                     Tr,
                     { key: course.getCRN() },
@@ -424,7 +430,7 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
                     ),
                     React.createElement(
                         Td,
-                        { column: "enrollment",
+                        { column: "enrollment", className: enrollClasses,
                             handleClick: showCourseFactory(course) },
                         course.getEnrollmentString()
                     ),

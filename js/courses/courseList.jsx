@@ -108,6 +108,12 @@ export default React.createClass({
                 'glyphicon-heart-empty': !isUserCourse
             });
 
+            const percent = course.getEnrollmentPercentage();
+            const enrollClasses = makeClasses({
+                'enroll-warning': percent >= 75 && percent < 100,
+                'enroll-full': percent === 100
+            });
+
             return (
                 <Tr key={course.getCRN()}>
                     <Td column='userCourse'
@@ -140,7 +146,7 @@ export default React.createClass({
                         handleClick={showCourseFactory(course)}>
                         {course.getDistributionString()}
                     </Td>
-                    <Td column='enrollment'
+                    <Td column='enrollment' className={enrollClasses}
                         handleClick={showCourseFactory(course)}>
                         {course.getEnrollmentString()}
                     </Td>
