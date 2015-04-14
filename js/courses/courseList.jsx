@@ -158,7 +158,7 @@ export default React.createClass({
         const columns = [
             { key: 'userCourse', label: '' },
             { key: 'crn', label: 'CRN' },
-            { key: 'courseID', label: 'Course ID' },
+            { key: 'courseID', label: 'Course' },
             { key: 'title', label: 'Title' },
             { key: 'instructor', label: 'Instructor' },
             { key: 'meetings', label: 'Meetings' },

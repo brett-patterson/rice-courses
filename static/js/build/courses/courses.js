@@ -17,7 +17,7 @@ define(["exports", "module", "react", "courses/filterManager", "courses/filterWi
 
     var ajaxCSRF = _util.ajaxCSRF;
 
-    var FILTERS = [new CourseFilter("crn", "CRN"), new CourseFilter("courseID", "Course ID", ["course_id", "course id"], "", CourseFilter.contains, function (callback) {
+    var FILTERS = [new CourseFilter("crn", "CRN"), new CourseFilter("courseID", "Course", ["course"], "", CourseFilter.contains, function (callback) {
         ajaxCSRF({
             url: "/courses/api/subjects/",
             method: "POST",

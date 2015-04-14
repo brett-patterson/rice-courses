@@ -9,7 +9,7 @@ import {ajaxCSRF} from 'util';
 
 const FILTERS = [
     new CourseFilter('crn', 'CRN'),
-    new CourseFilter('courseID', 'Course ID', ['course_id', 'course id'], '',
+    new CourseFilter('courseID', 'Course', ['course'], '',
                      CourseFilter.contains, callback => {
                         ajaxCSRF({
                             url: '/courses/api/subjects/',
