@@ -1,25 +1,18 @@
-define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipboard", "courses/courseDetail", "me/scheduler", "courses/userCourses", "me/schedulerView", "me/export", "me/showConflicts", "alertMixin", "util"], function (exports, module, _react, _reactable, _reactBootstrap, _zeroClipboard, _coursesCourseDetail, _meScheduler, _coursesUserCourses, _meSchedulerView, _meExport, _meShowConflicts, _alertMixin, _util) {
+define(["exports", "module", "react", "reactBootstrap", "me/scheduler", "courses/userCourses", "me/userCourseList", "me/schedulerView", "me/export", "me/showConflicts", "alertMixin", "util"], function (exports, module, _react, _reactBootstrap, _meScheduler, _coursesUserCourses, _meUserCourseList, _meSchedulerView, _meExport, _meShowConflicts, _alertMixin, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-    var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
-
     var React = _interopRequire(_react);
 
-    var Table = _reactable.Table;
-    var Tr = _reactable.Tr;
-    var Td = _reactable.Td;
     var Button = _reactBootstrap.Button;
     var ButtonGroup = _reactBootstrap.ButtonGroup;
-
-    var ZeroClipboard = _interopRequire(_zeroClipboard);
-
-    var showCourseFactory = _coursesCourseDetail.showCourseFactory;
 
     var Scheduler = _interopRequire(_meScheduler);
 
     var UserCourses = _interopRequire(_coursesUserCourses);
+
+    var UserCourseList = _interopRequire(_meUserCourseList);
 
     var SchedulerView = _interopRequire(_meSchedulerView);
 
@@ -31,7 +24,6 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
 
     var indexOf = _util.indexOf;
     var courseOverlap = _util.courseOverlap;
-    var makeClasses = _util.makeClasses;
     module.exports = React.createClass({
         displayName: "me",
 
@@ -100,6 +92,24 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
             }
         },
 
+        removeUserCourse: function removeUserCourse(course) {
+            var index = this.state.userCourses.indexOf(course);
+
+            if (index > -1) {
+                UserCourses.remove(course);
+
+                for (var i = 0; i < this.state.schedulers.length; i++) {
+                    this.state.schedulers[i].removeCourse(course);
+                }
+
+                this.setState(React.addons.update(this.state, {
+                    userCourses: {
+                        $splice: [[index, 1]]
+                    }
+                }));
+            }
+        },
+
         replaceSection: function replaceSection(oldSection, newSection) {
             this.addUserCourse(newSection);
             this.state.currentScheduler.setCourseShown(oldSection, false);
@@ -115,86 +125,6 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
             }
 
             this.forceUpdate();
-        },
-
-        toggleCourseShownFactory: function toggleCourseShownFactory(course) {
-            var _this = this;
-
-            return function (event) {
-                var scheduler = _this.state.currentScheduler;
-                if (scheduler) {
-                    var shown = scheduler.getMap()[course.getCRN()];
-                    scheduler.setCourseShown(course, !shown);
-                    _this.forceUpdate();
-                }
-            };
-        },
-
-        removeCourseFactory: function removeCourseFactory(course) {
-            var _this = this;
-
-            return function (event) {
-                var index = _this.state.userCourses.indexOf(course);
-
-                if (index > -1) {
-                    event.stopPropagation();
-                    UserCourses.remove(course);
-
-                    for (var i = 0; i < _this.state.schedulers.length; i++) {
-                        _this.state.schedulers[i].removeCourse(course);
-                    }
-
-                    _this.setState(React.addons.update(_this.state, {
-                        userCourses: {
-                            $splice: [[index, 1]]
-                        }
-                    }));
-                }
-            };
-        },
-
-        getCreditsShown: function getCreditsShown() {
-            var vary = false;
-            var total = 0;
-
-            if (this.state.currentScheduler !== undefined) {
-                var map = this.state.currentScheduler.getMap();
-
-                for (var i = 0; i < this.state.userCourses.length; i++) {
-                    var course = this.state.userCourses[i];
-
-                    if (map[course.getCRN()]) {
-                        var credits = course.getCredits();
-
-                        if (credits.indexOf("to") > -1) vary = true;
-
-                        total += parseFloat(credits);
-                    }
-                }
-            }
-
-            return [total.toFixed(1), vary];
-        },
-
-        getTotalCredits: function getTotalCredits() {
-            var vary = false;
-            var total = 0;
-
-            for (var i = 0; i < this.state.userCourses.length; i++) {
-                var credits = this.state.userCourses[i].getCredits();
-
-                if (credits.indexOf("to") > -1) vary = true;
-
-                total += parseFloat(credits);
-            }
-
-            return [total.toFixed(1), vary];
-        },
-
-        copyButtonClicked: function copyButtonClicked(event) {
-            var crn = jQuery(event.target).attr("data-clipboard-text");
-            this.addAlert("Copied CRN <strong>" + crn + "</strong> to clipboard.", "success");
-            event.stopPropagation();
         },
 
         schedulerSelectFactory: function schedulerSelectFactory(scheduler) {
@@ -340,180 +270,6 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
             }
         },
 
-        componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-            var _this = this;
-
-            jQuery(".copy-btn").each(function (index, button) {
-                _this.clip = new ZeroClipboard(button);
-            });
-        },
-
-        renderCourseRows: function renderCourseRows() {
-            var _this = this;
-
-            return this.state.userCourses.map(function (course) {
-                var courseShown = undefined;
-                if (_this.state.currentScheduler === undefined) courseShown = true;else courseShown = _this.state.currentScheduler.getMap()[course.getCRN()];
-
-                var buttonClass = courseShown ? "toggle-btn-show" : "toggle-btn-hide";
-                var eyeClasses = makeClasses({
-                    glyphicon: true,
-                    "glyphicon-eye-open": courseShown,
-                    "glyphicon-eye-close": !courseShown
-                });
-
-                var percent = course.getEnrollmentPercentage();
-                var enrollClasses = makeClasses({
-                    "enroll-warning": percent >= 75 && percent < 100,
-                    "enroll-full": percent === 100
-                });
-
-                return React.createElement(
-                    Tr,
-                    { key: course.getCRN() },
-                    React.createElement(
-                        Td,
-                        { column: "shown",
-                            handleClick: _this.toggleCourseShownFactory(course) },
-                        React.createElement(
-                            "a",
-                            { className: buttonClass },
-                            React.createElement("span", { className: eyeClasses })
-                        )
-                    ),
-                    React.createElement(
-                        Td,
-                        { column: "crn",
-                            handleClick: showCourseFactory(course) },
-                        React.createElement(
-                            "span",
-                            null,
-                            course.getCRN() + " ",
-                            React.createElement(
-                                "a",
-                                { className: "copy-btn",
-                                    "data-clipboard-text": course.getCRN(),
-                                    onClick: _this.copyButtonClicked },
-                                React.createElement("span", { className: "glyphicon glyphicon-paperclip" })
-                            )
-                        )
-                    ),
-                    React.createElement(
-                        Td,
-                        { column: "courseID",
-                            handleClick: showCourseFactory(course) },
-                        course.getCourseID()
-                    ),
-                    React.createElement(
-                        Td,
-                        { column: "title",
-                            handleClick: showCourseFactory(course) },
-                        course.getTitle()
-                    ),
-                    React.createElement(
-                        Td,
-                        { column: "instructor",
-                            handleClick: showCourseFactory(course) },
-                        course.getInstructor()
-                    ),
-                    React.createElement(
-                        Td,
-                        { column: "meetings",
-                            handleClick: showCourseFactory(course) },
-                        course.getMeetingsString()
-                    ),
-                    React.createElement(
-                        Td,
-                        { column: "distribution",
-                            handleClick: showCourseFactory(course) },
-                        course.getDistributionString()
-                    ),
-                    React.createElement(
-                        Td,
-                        { column: "enrollment", className: enrollClasses,
-                            handleClick: showCourseFactory(course) },
-                        course.getEnrollmentString()
-                    ),
-                    React.createElement(
-                        Td,
-                        { column: "credits",
-                            handleClick: showCourseFactory(course) },
-                        course.getCredits()
-                    ),
-                    React.createElement(
-                        Td,
-                        { column: "remove", className: "remove-btn",
-                            handleClick: _this.removeCourseFactory(course) },
-                        React.createElement("span", { className: "glyphicon glyphicon-remove" })
-                    )
-                );
-            });
-        },
-
-        renderCourseTable: function renderCourseTable() {
-            var columns = [{ key: "shown", label: "" }, { key: "crn", label: "CRN" }, { key: "courseID", label: "Course" }, { key: "title", label: "Title" }, { key: "instructor", label: "Instructor" }, { key: "meetings", label: "Meetings" }, { key: "distribution", label: "Distribution" }, { key: "enrollment", label: "Enrollment" }, { key: "credits", label: "Credits" }, { key: "remove", label: "" }];
-
-            return React.createElement(
-                "div",
-                { className: "table-responsive" },
-                React.createElement(
-                    Table,
-                    { ref: "courseTable", columns: columns,
-                        className: "table table-hover course-table" },
-                    this.renderCourseRows()
-                )
-            );
-        },
-
-        renderCourseCredits: function renderCourseCredits() {
-            var _getCreditsShown = this.getCreditsShown();
-
-            var _getCreditsShown2 = _slicedToArray(_getCreditsShown, 2);
-
-            var creditsShown = _getCreditsShown2[0];
-            var shownVary = _getCreditsShown2[1];
-
-            var shownLabel = undefined;
-            if (shownVary) shownLabel = "Credits shown (approximate):";else shownLabel = "Credits shown:";
-
-            var _getTotalCredits = this.getTotalCredits();
-
-            var _getTotalCredits2 = _slicedToArray(_getTotalCredits, 2);
-
-            var totalCredits = _getTotalCredits2[0];
-            var totalVary = _getTotalCredits2[1];
-
-            var totalLabel = undefined;
-            if (totalVary) totalLabel = "Total credits (approximate):";else totalLabel = "Total credits:";
-
-            return React.createElement(
-                "div",
-                { className: "course-credits" },
-                React.createElement(
-                    "p",
-                    null,
-                    totalLabel,
-                    " ",
-                    React.createElement(
-                        "strong",
-                        null,
-                        totalCredits
-                    )
-                ),
-                React.createElement(
-                    "p",
-                    null,
-                    shownLabel,
-                    " ",
-                    React.createElement(
-                        "strong",
-                        null,
-                        creditsShown
-                    )
-                )
-            );
-        },
-
         renderSchedulerTabs: function renderSchedulerTabs() {
             var _this = this;
 
@@ -572,8 +328,9 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
                         bsStyle: "info", onClick: this.exportScheduler },
                     "Export Current CRNs"
                 ),
-                this.renderCourseTable(),
-                this.renderCourseCredits(),
+                React.createElement(UserCourseList, { scheduler: this.state.currentScheduler,
+                    courses: this.state.userCourses,
+                    delegate: this }),
                 React.createElement(
                     Button,
                     { className: "fix-schedule-btn", bsStyle: "info",

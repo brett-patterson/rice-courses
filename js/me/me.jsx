@@ -1,16 +1,14 @@
 import React from 'react';
-import {Table, Tr, Td} from 'reactable';
-import {Button, ButtonGroup} from 'reactBootstrap';
-import ZeroClipboard from 'zeroClipboard';
+import {Button} from 'reactBootstrap';
 
-import {showCourseFactory} from 'courses/courseDetail';
 import Scheduler from 'me/scheduler';
 import UserCourses from 'courses/userCourses';
+import UserCourseList from 'me/userCourseList';
 import SchedulerView from 'me/schedulerView';
 import showSchedulerExport from 'me/export';
 import showConflicts from 'me/showConflicts';
 import AlertMixin from 'alertMixin';
-import {indexOf, courseOverlap, makeClasses} from 'util';
+import {indexOf, courseOverlap} from 'util';
 
 
 export default React.createClass({
@@ -76,6 +74,24 @@ export default React.createClass({
         }
     },
 
+    removeUserCourse(course) {
+        const index = this.state.userCourses.indexOf(course);
+
+        if (index > -1) {
+            UserCourses.remove(course);
+
+            for (let i = 0; i < this.state.schedulers.length; i++) {
+                this.state.schedulers[i].removeCourse(course);
+            }
+
+            this.setState(React.addons.update(this.state, {
+                userCourses: {
+                    $splice: [[index, 1]]
+                }
+            }));
+        }
+    },
+
     replaceSection(oldSection, newSection) {
         this.addUserCourse(newSection);
         this.state.currentScheduler.setCourseShown(oldSection, false);
@@ -91,85 +107,6 @@ export default React.createClass({
         }
 
         this.forceUpdate();
-    },
-
-    toggleCourseShownFactory(course) {
-        return event => {
-            const scheduler = this.state.currentScheduler;
-            if (scheduler) {
-                const shown = scheduler.getMap()[course.getCRN()];
-                scheduler.setCourseShown(course, !shown);
-                this.forceUpdate();
-            }
-        };
-    },
-
-    removeCourseFactory(course) {
-        return event => {
-            const index = this.state.userCourses.indexOf(course);
-
-            if (index > -1) {
-                event.stopPropagation();
-                UserCourses.remove(course);
-
-                for (let i = 0; i < this.state.schedulers.length; i++) {
-                    this.state.schedulers[i].removeCourse(course);
-                }
-
-                this.setState(React.addons.update(this.state, {
-                    userCourses: {
-                        $splice: [[index, 1]]
-                    }
-                }));                
-            }
-        };
-    },
-
-    getCreditsShown() {
-        let vary = false;
-        let total = 0;
-
-        if (this.state.currentScheduler !== undefined) {
-            const map = this.state.currentScheduler.getMap();
-
-            for (let i = 0; i < this.state.userCourses.length; i++) {
-                const course = this.state.userCourses[i];
-
-                if (map[course.getCRN()]) {
-                    const credits = course.getCredits();
-                    
-                    if (credits.indexOf('to') > -1)
-                        vary = true;
-
-                    total += parseFloat(credits);
-                }
-            }
-        }
-
-        return [total.toFixed(1), vary];
-    },
-
-    getTotalCredits() {
-        let vary = false;
-        let total = 0;
-
-        for (let i = 0; i < this.state.userCourses.length; i++) {
-            const credits = this.state.userCourses[i].getCredits();
-            
-            if (credits.indexOf('to') > -1)
-                vary = true;
-
-            total += parseFloat(credits);
-        }
-
-        return [total.toFixed(1), vary];
-    },
-
-    copyButtonClicked(event) {
-        let crn = jQuery(event.target).attr('data-clipboard-text');
-        this.addAlert(`Copied CRN <strong>${crn}</strong> to clipboard.`,
-                      'success');
-        event.stopPropagation();
     },
 
     schedulerSelectFactory(scheduler) {
@@ -306,136 +243,6 @@ export default React.createClass({
         }
     },
 
-    componentDidUpdate(prevProps, prevState) {
-        jQuery('.copy-btn').each((index, button) => {
-            this.clip = new ZeroClipboard(button);
-        });
-    },
-
-    renderCourseRows() {
-        return this.state.userCourses.map(course => {
-            let courseShown;
-            if (this.state.currentScheduler === undefined)
-                courseShown = true;
-            else
-                courseShown = this.state.currentScheduler.getMap()[course.getCRN()];
-
-            const buttonClass = courseShown ? 'toggle-btn-show' : 'toggle-btn-hide';
-            const eyeClasses = makeClasses({
-                'glyphicon': true,
-                'glyphicon-eye-open': courseShown,
-                'glyphicon-eye-close': !courseShown
-            });
-
-            const percent = course.getEnrollmentPercentage();
-            const enrollClasses = makeClasses({
-                'enroll-warning': percent >= 75 && percent < 100,
-                'enroll-full': percent === 100
-            });
-
-            return (
-                <Tr key={course.getCRN()}>
-                    <Td column='shown'
-                        handleClick={this.toggleCourseShownFactory(course)}>
-                        <a className={buttonClass}>
-                            <span className={eyeClasses} />
-                        </a>
-                    </Td>
-                    <Td column='crn'
-                        handleClick={showCourseFactory(course)}>
-                        <span>
-                            {course.getCRN() + ' '}
-                            <a className='copy-btn'
-                               data-clipboard-text={course.getCRN()}
-                               onClick={this.copyButtonClicked}>
-                               <span className='glyphicon glyphicon-paperclip' />
-                            </a>
-                        </span>
-                    </Td>
-                    <Td column='courseID'
-                        handleClick={showCourseFactory(course)}>
-                        {course.getCourseID()}
-                    </Td>
-                    <Td column='title'
-                        handleClick={showCourseFactory(course)}>
-                        {course.getTitle()}
-                    </Td>
-                    <Td column='instructor'
-                        handleClick={showCourseFactory(course)}>
-                        {course.getInstructor()}
-                    </Td>
-                    <Td column='meetings'
-                        handleClick={showCourseFactory(course)}>
-                        {course.getMeetingsString()}
-                    </Td>
-                    <Td column='distribution'
-                        handleClick={showCourseFactory(course)}>
-                        {course.getDistributionString()}
-                    </Td>
-                    <Td column='enrollment' className={enrollClasses}
-                        handleClick={showCourseFactory(course)}>
-                        {course.getEnrollmentString()}
-                    </Td>
-                    <Td column='credits'
-                        handleClick={showCourseFactory(course)}>
-                        {course.getCredits()}
-                    </Td>
-                    <Td column='remove' className='remove-btn'
-                        handleClick={this.removeCourseFactory(course)}>
-                        <span className='glyphicon glyphicon-remove' />
-                    </Td>
-                </Tr>
-            );
-        });
-    },
-
-    renderCourseTable() {
-        const columns = [
-            { key: 'shown', label: '' },
-            { key: 'crn', label: 'CRN' },
-            { key: 'courseID', label: 'Course' },
-            { key: 'title', label: 'Title' },
-            { key: 'instructor', label: 'Instructor' },
-            { key: 'meetings', label: 'Meetings' },
-            { key: 'distribution', label: 'Distribution' },
-            { key: 'enrollment', label: 'Enrollment' },
-            { key: 'credits', label: 'Credits' },
-            { key: 'remove', label: ''}
-        ];
-
-        return (
-            <div className='table-responsive'>
-                <Table ref='courseTable' columns={columns}
-                       className='table table-hover course-table'>
-                    {this.renderCourseRows()}
-                </Table>
-            </div>
-        );
-    },
-
-    renderCourseCredits() {
-        const [creditsShown, shownVary] = this.getCreditsShown();
-        let shownLabel;
-        if (shownVary)
-            shownLabel = 'Credits shown (approximate):';
-        else
-            shownLabel = 'Credits shown:';
-
-        const [totalCredits, totalVary] = this.getTotalCredits();
-        let totalLabel;
-        if (totalVary)
-            totalLabel = 'Total credits (approximate):';
-        else
-            totalLabel = 'Total credits:';
-
-        return (
-            <div className='course-credits'>
-                <p>{totalLabel} <strong>{totalCredits}</strong></p>
-                <p>{shownLabel} <strong>{creditsShown}</strong></p>
-            </div>
-        );
-    },
-
     renderSchedulerTabs() {
         const schedulerTabs = this.state.schedulers.map(scheduler => {
             let closeButton;
@@ -489,9 +296,9 @@ export default React.createClass({
                     Export Current CRNs
                 </Button>
 
-                {this.renderCourseTable()}
-
-                {this.renderCourseCredits()}
+                <UserCourseList scheduler={this.state.currentScheduler}
+                                courses={this.state.userCourses}
+                                delegate={this} />
 
                 <Button className='fix-schedule-btn' bsStyle='info'
                         onClick={this.fixMySchedule}>
