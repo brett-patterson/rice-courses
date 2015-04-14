@@ -1,4 +1,5 @@
 import React from 'react';
+import {Badge} from 'reactBootstrap';
 import {Table, Tr, Td} from 'reactable';
 import ZeroClipboard from 'zeroClipboard';
 
@@ -232,13 +233,15 @@ export default React.createClass({
     },
 
     renderCourseCredits() {
-        const [creditsShown, shownLabel, shownDist] = this.getCreditsShown();
         const [totalCredits, totalLabel, totalDist] = this.getTotalCredits();
+        const [creditsShown, shownLabel, shownDist] = this.getCreditsShown();
 
         return (
             <div className='course-credits'>
-                <p>{totalLabel} <strong>{totalCredits} {totalDist}</strong></p>
-                <p>{shownLabel} <strong>{creditsShown} {shownDist}</strong></p>
+                <p>{totalLabel} <strong>{totalCredits}</strong><br/>
+                    <Badge>{totalDist}</Badge></p>
+                <p>{shownLabel} <strong>{creditsShown}</strong><br/>
+                    <Badge>{shownDist}</Badge></p>
             </div>
         );
     },

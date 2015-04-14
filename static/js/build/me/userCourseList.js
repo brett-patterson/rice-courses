@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "reactable", "zeroClipboard", "courses/courseDetail", "util"], function (exports, module, _react, _reactable, _zeroClipboard, _coursesCourseDetail, _util) {
+define(["exports", "module", "react", "reactBootstrap", "reactable", "zeroClipboard", "courses/courseDetail", "util"], function (exports, module, _react, _reactBootstrap, _reactable, _zeroClipboard, _coursesCourseDetail, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -7,6 +7,7 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "courses/cou
 
     var React = _interopRequire(_react);
 
+    var Badge = _reactBootstrap.Badge;
     var Table = _reactable.Table;
     var Tr = _reactable.Tr;
     var Td = _reactable.Td;
@@ -285,14 +286,6 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "courses/cou
         },
 
         renderCourseCredits: function renderCourseCredits() {
-            var _getCreditsShown = this.getCreditsShown();
-
-            var _getCreditsShown2 = _slicedToArray(_getCreditsShown, 3);
-
-            var creditsShown = _getCreditsShown2[0];
-            var shownLabel = _getCreditsShown2[1];
-            var shownDist = _getCreditsShown2[2];
-
             var _getTotalCredits = this.getTotalCredits();
 
             var _getTotalCredits2 = _slicedToArray(_getTotalCredits, 3);
@@ -300,6 +293,14 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "courses/cou
             var totalCredits = _getTotalCredits2[0];
             var totalLabel = _getTotalCredits2[1];
             var totalDist = _getTotalCredits2[2];
+
+            var _getCreditsShown = this.getCreditsShown();
+
+            var _getCreditsShown2 = _slicedToArray(_getCreditsShown, 3);
+
+            var creditsShown = _getCreditsShown2[0];
+            var shownLabel = _getCreditsShown2[1];
+            var shownDist = _getCreditsShown2[2];
 
             return React.createElement(
                 "div",
@@ -312,8 +313,12 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "courses/cou
                     React.createElement(
                         "strong",
                         null,
-                        totalCredits,
-                        " ",
+                        totalCredits
+                    ),
+                    React.createElement("br", null),
+                    React.createElement(
+                        Badge,
+                        null,
                         totalDist
                     )
                 ),
@@ -325,8 +330,12 @@ define(["exports", "module", "react", "reactable", "zeroClipboard", "courses/cou
                     React.createElement(
                         "strong",
                         null,
-                        creditsShown,
-                        " ",
+                        creditsShown
+                    ),
+                    React.createElement("br", null),
+                    React.createElement(
+                        Badge,
+                        null,
                         shownDist
                     )
                 )

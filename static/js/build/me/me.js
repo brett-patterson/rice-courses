@@ -6,7 +6,6 @@ define(["exports", "module", "react", "reactBootstrap", "me/scheduler", "courses
     var React = _interopRequire(_react);
 
     var Button = _reactBootstrap.Button;
-    var ButtonGroup = _reactBootstrap.ButtonGroup;
 
     var Scheduler = _interopRequire(_meScheduler);
 
