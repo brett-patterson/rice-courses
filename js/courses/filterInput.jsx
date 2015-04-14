@@ -112,6 +112,32 @@ export default React.createClass({
         this.mouseOverSuggestions = false;
     },
 
+    renderSuggestions(event) {
+        const applicable = this.props.filter.getApplicableSuggestions();
+
+        if (!this.state.showSuggestions || applicable.length === 0) {
+            return undefined;
+        }
+
+        const suggestionItems = applicable.map((suggestion, i) => {
+            const key = `${applicable.length}.${i}`;
+            return (
+                <li key={key}>
+                    <a tabIndex={i} onClick={this.suggestionClicked}
+                       onKeyDown={this.suggestionKeyFired}>{suggestion}</a>
+                </li>
+            );
+        });
+
+        return (
+            <div ref='suggestions' className='filter-suggestions'
+                 onMouseEnter={this.onMouseEnter}
+                 onMouseLeave={this.onMouseLeave}>
+                <ul>{suggestionItems}</ul>
+            </div>
+        );
+    },
+
     render() {
         let virtual = jQuery('<span/>', {
             text: this.state.value
@@ -123,29 +149,6 @@ export default React.createClass({
         };
 
         virtual.remove();
-
-        const applicable = this.props.filter.getApplicableSuggestions();
-        const suggestionItems = applicable.map((suggestion, i) => {
-            const key = `${applicable.length}.${i}`;
-            return (
-                <li key={key}>
-                    <a tabIndex={i} onClick={this.suggestionClicked}
-                       onKeyDown={this.suggestionKeyFired}>{suggestion}</a>
-                </li>
-            );
-        });
-
-        let suggestions;
-
-        if (this.state.showSuggestions && suggestionItems.length > 0) {
-            suggestions = (
-                <div ref='suggestions' className='filter-suggestions'
-                     onMouseEnter={this.onMouseEnter}
-                     onMouseLeave={this.onMouseLeave}>
-                    <ul>{suggestionItems}</ul>
-                </div>
-            );
-        }
 
         return (
             <div className='filter-view'>
@@ -161,7 +164,7 @@ export default React.createClass({
                        onFocus={this.onFocus}
                        onBlur={this.onBlur} />
 
-               {suggestions}
+               {this.renderSuggestions()}
 
                 <a onClick={this.remove}>
                     <span className='glyphicon glyphicon-remove' />

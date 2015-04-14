@@ -312,8 +312,8 @@ export default React.createClass({
         });
     },
 
-    render() {
-        let courses = this.state.userCourses.map(course => {
+    renderCourseRows() {
+        return this.state.userCourses.map(course => {
             let courseShown;
             if (this.state.currentScheduler === undefined)
                 courseShown = true;
@@ -381,7 +381,33 @@ export default React.createClass({
                 </Tr>
             );
         });
+    },
 
+    renderCourseTable() {
+        const columns = [
+            { key: 'shown', label: '' },
+            { key: 'crn', label: 'CRN' },
+            { key: 'courseID', label: 'Course' },
+            { key: 'title', label: 'Title' },
+            { key: 'instructor', label: 'Instructor' },
+            { key: 'meetings', label: 'Meetings' },
+            { key: 'distribution', label: 'Distribution' },
+            { key: 'enrollment', label: 'Enrollment' },
+            { key: 'credits', label: 'Credits' },
+            { key: 'remove', label: ''}
+        ];
+
+        return (
+            <div className='table-responsive'>
+                <Table ref='courseTable' columns={columns}
+                       className='table table-hover course-table'>
+                    {this.renderCourseRows()}
+                </Table>
+            </div>
+        );
+    },
+
+    renderCourseCredits() {
         const [creditsShown, shownVary] = this.getCreditsShown();
         let shownLabel;
         if (shownVary)
@@ -396,34 +422,15 @@ export default React.createClass({
         else
             totalLabel = 'Total credits:';
 
-        courses = courses.concat(
-            <Tr key='totalCredits'>
-                <Td className='text-right' column='enrollment'>
-                    <strong>{totalLabel}</strong>
-                </Td>
-                <Td column='credits'><strong>{totalCredits}</strong></Td>
-            </Tr>,
-            <Tr key='creditsShown'>
-                <Td className='text-right' column='enrollment'>
-                    <strong>{shownLabel}</strong>
-                </Td>
-                <Td column='credits'><strong>{creditsShown}</strong></Td>
-            </Tr>
+        return (
+            <div className='course-credits'>
+                <p>{totalLabel} <strong>{totalCredits}</strong></p>
+                <p>{shownLabel} <strong>{creditsShown}</strong></p>
+            </div>
         );
+    },
 
-        const columns = [
-            { key: 'shown', label: '' },
-            { key: 'crn', label: 'CRN' },
-            { key: 'courseID', label: 'Course' },
-            { key: 'title', label: 'Title' },
-            { key: 'instructor', label: 'Instructor' },
-            { key: 'meetings', label: 'Meetings' },
-            { key: 'distribution', label: 'Distribution' },
-            { key: 'enrollment', label: 'Enrollment' },
-            { key: 'credits', label: 'Credits' },
-            { key: 'remove', label: ''}
-        ];
-
+    renderSchedulerTabs() {
         const schedulerTabs = this.state.schedulers.map(scheduler => {
             let closeButton;
             if (this.state.schedulers.length > 1)
@@ -455,34 +462,38 @@ export default React.createClass({
         });
 
         return (
+            <ul className='nav nav-tabs scheduler-tabs'>
+                {schedulerTabs}
+                <li>
+                    <a onClick={this.addScheduler}>
+                        <span className='glyphicon glyphicon-plus' />
+                    </a>
+                </li>
+            </ul>
+        );
+    },
+
+    render() {
+        return (
             <div>
-                {this.getAlerts()}
+                {this.renderAlerts()}
 
                 <Button id='exportCRNButton'
                         bsStyle='info' onClick={this.exportScheduler}>
                     Export Current CRNs
                 </Button>
 
-                <div className='table-responsive'>
-                    <Table ref='courseTable' columns={columns}
-                           className='table table-hover course-table'>
-                        {courses}
-                    </Table>
-                </div>
+                {this.renderCourseTable()}
+
+                {this.renderCourseCredits()}
 
                 <Button className='fix-schedule-btn' bsStyle='info'
                         onClick={this.fixMySchedule}>
                     Fix My Schedule!
                 </Button>
 
-                <ul className='nav nav-tabs scheduler-tabs'>
-                    {schedulerTabs}
-                    <li>
-                        <a onClick={this.addScheduler}>
-                            <span className='glyphicon glyphicon-plus' />
-                        </a>
-                    </li>
-                </ul>
+                {this.renderSchedulerTabs()}
+
                 <SchedulerView ref='schedulerView'
                                courses={this.state.userCourses}
                                scheduler={this.state.currentScheduler}

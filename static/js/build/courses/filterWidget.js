@@ -121,25 +121,31 @@ define(["exports", "module", "react", "courses/filterButton", "courses/filterInp
             this.props.manager.updateFilter(filter, value);
         },
 
-        render: function render() {
+        renderFilterButtons: function renderFilterButtons() {
             var _this = this;
 
-            var filterButtons = this.props.filters.map(function (filter, index) {
+            return this.props.filters.map(function (filter, index) {
                 return React.createElement(FilterButton, { filter: filter,
                     hue: getHueByIndex(index, _this.props.filters.length),
                     key: "filterBtn" + index,
                     delegate: _this });
             });
+        },
 
-            var widgetStyle = {
-                outline: this.state.outline
-            };
+        renderFilterInputs: function renderFilterInputs() {
+            var _this = this;
 
-            var filterInputs = this.state.currentFilters.map(function (filter, index) {
+            return this.state.currentFilters.map(function (filter, index) {
                 var id = "filter-" + _this.state.currentFilters.length + "-" + index;
                 return React.createElement(FilterInput, { filter: filter, key: id, ref: id,
                     delegate: _this });
             });
+        },
+
+        render: function render() {
+            var widgetStyle = {
+                outline: this.state.outline
+            };
 
             return React.createElement(
                 "div",
@@ -147,13 +153,13 @@ define(["exports", "module", "react", "courses/filterButton", "courses/filterInp
                 React.createElement(
                     "div",
                     { className: "course-filters" },
-                    filterButtons
+                    this.renderFilterButtons()
                 ),
                 React.createElement(
                     "div",
                     { className: "filter-widget", style: widgetStyle,
                         onClick: this.widgetClicked },
-                    filterInputs,
+                    this.renderFilterInputs(),
                     React.createElement("input", { ref: "input", type: "text", className: "filter-input",
                         placeholder: this.state.placeholder,
                         value: this.state.text,

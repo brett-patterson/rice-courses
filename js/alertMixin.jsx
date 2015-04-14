@@ -30,7 +30,7 @@ export default {
         };
     },
 
-    getAlerts() {
+    renderAlerts() {
         return this.state.alerts.map((message, index) => {
             return (
                 <Alert key={index}

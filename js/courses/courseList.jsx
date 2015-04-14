@@ -88,73 +88,72 @@ export default React.createClass({
             }, 0);
     },
 
-    render() {
-        let courses;
+    renderCourseRows() {
         if (this.state.filtered === undefined)
-            courses = <Tr><Td column='userCourse'>Loading courses...</Td></Tr>;
-        else {
-            if (this.state.filtered.length === 0)
-                courses = <Tr><Td column='userCourse'>No courses found</Td></Tr>;
-            else
-                courses = this.state.filtered.map(course => {
-                    const isUserCourse = this.isUserCourse(course);
+            return <Tr><Td column='userCourse'>Loading courses...</Td></Tr>;
+        else if (this.state.filtered.length === 0)
+            return <Tr><Td column='userCourse'>No courses found</Td></Tr>;
 
-                    const userClasses = makeClasses({
-                        'user-course': isUserCourse,
-                        'not-user-course': !isUserCourse
-                    });
+        return this.state.filtered.map(course => {
+            const isUserCourse = this.isUserCourse(course);
 
-                    const heartClasses = makeClasses({
-                        'glyphicon': true,
-                        'glyphicon-heart': isUserCourse,
-                        'glyphicon-heart-empty': !isUserCourse
-                    });
+            const userClasses = makeClasses({
+                'user-course': isUserCourse,
+                'not-user-course': !isUserCourse
+            });
 
-                    return (
-                        <Tr key={course.getCRN()}>
-                            <Td column='userCourse'
-                                handleClick={this.toggleUserCourseFactory(course)}>
-                                <a className={userClasses}>
-                                    <span className={heartClasses} />
-                                </a>
-                            </Td>
-                            <Td column='crn'
-                                handleClick={showCourseFactory(course)}>
-                                {course.getCRN()}
-                            </Td>
-                            <Td column='courseID'
-                                handleClick={showCourseFactory(course)}>
-                                {course.getCourseID()}
-                            </Td>
-                            <Td column='title'
-                                handleClick={showCourseFactory(course)}>
-                                {course.getTitle()}
-                            </Td>
-                            <Td column='instructor'
-                                handleClick={showCourseFactory(course)}>
-                                {course.getInstructor()}
-                            </Td>
-                            <Td column='meetings'
-                                handleClick={showCourseFactory(course)}>
-                                {course.getMeetingsString()}
-                            </Td>
-                            <Td column='distribution'
-                                handleClick={showCourseFactory(course)}>
-                                {course.getDistributionString()}
-                            </Td>
-                            <Td column='enrollment'
-                                handleClick={showCourseFactory(course)}>
-                                {course.getEnrollmentString()}
-                            </Td>
-                            <Td column='credits'
-                                handleClick={showCourseFactory(course)}>
-                                {course.getCredits()}
-                            </Td>
-                        </Tr>
-                    );
-                });
-        }
+            const heartClasses = makeClasses({
+                'glyphicon': true,
+                'glyphicon-heart': isUserCourse,
+                'glyphicon-heart-empty': !isUserCourse
+            });
 
+            return (
+                <Tr key={course.getCRN()}>
+                    <Td column='userCourse'
+                        handleClick={this.toggleUserCourseFactory(course)}>
+                        <a className={userClasses}>
+                            <span className={heartClasses} />
+                        </a>
+                    </Td>
+                    <Td column='crn'
+                        handleClick={showCourseFactory(course)}>
+                        {course.getCRN()}
+                    </Td>
+                    <Td column='courseID'
+                        handleClick={showCourseFactory(course)}>
+                        {course.getCourseID()}
+                    </Td>
+                    <Td column='title'
+                        handleClick={showCourseFactory(course)}>
+                        {course.getTitle()}
+                    </Td>
+                    <Td column='instructor'
+                        handleClick={showCourseFactory(course)}>
+                        {course.getInstructor()}
+                    </Td>
+                    <Td column='meetings'
+                        handleClick={showCourseFactory(course)}>
+                        {course.getMeetingsString()}
+                    </Td>
+                    <Td column='distribution'
+                        handleClick={showCourseFactory(course)}>
+                        {course.getDistributionString()}
+                    </Td>
+                    <Td column='enrollment'
+                        handleClick={showCourseFactory(course)}>
+                        {course.getEnrollmentString()}
+                    </Td>
+                    <Td column='credits'
+                        handleClick={showCourseFactory(course)}>
+                        {course.getCredits()}
+                    </Td>
+                </Tr>
+            );
+        });
+    },
+
+    render() {
         const columns = [
             { key: 'userCourse', label: '' },
             { key: 'crn', label: 'CRN' },
@@ -172,7 +171,7 @@ export default React.createClass({
                 <Table ref='courseTable' className='table table-hover course-table'
                        columns={columns} itemsPerPage={50}
                        sortable={true}>
-                    {courses}
+                    {this.renderCourseRows()}
                 </Table>
             </div>
         );

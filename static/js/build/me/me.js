@@ -348,10 +348,10 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
             });
         },
 
-        render: function render() {
+        renderCourseRows: function renderCourseRows() {
             var _this = this;
 
-            var courses = this.state.userCourses.map(function (course) {
+            return this.state.userCourses.map(function (course) {
                 var courseShown = undefined;
                 if (_this.state.currentScheduler === undefined) courseShown = true;else courseShown = _this.state.currentScheduler.getMap()[course.getCRN()];
 
@@ -442,7 +442,24 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
                     )
                 );
             });
+        },
 
+        renderCourseTable: function renderCourseTable() {
+            var columns = [{ key: "shown", label: "" }, { key: "crn", label: "CRN" }, { key: "courseID", label: "Course" }, { key: "title", label: "Title" }, { key: "instructor", label: "Instructor" }, { key: "meetings", label: "Meetings" }, { key: "distribution", label: "Distribution" }, { key: "enrollment", label: "Enrollment" }, { key: "credits", label: "Credits" }, { key: "remove", label: "" }];
+
+            return React.createElement(
+                "div",
+                { className: "table-responsive" },
+                React.createElement(
+                    Table,
+                    { ref: "courseTable", columns: columns,
+                        className: "table table-hover course-table" },
+                    this.renderCourseRows()
+                )
+            );
+        },
+
+        renderCourseCredits: function renderCourseCredits() {
             var _getCreditsShown = this.getCreditsShown();
 
             var _getCreditsShown2 = _slicedToArray(_getCreditsShown, 2);
@@ -463,51 +480,36 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
             var totalLabel = undefined;
             if (totalVary) totalLabel = "Total credits (approximate):";else totalLabel = "Total credits:";
 
-            courses = courses.concat(React.createElement(
-                Tr,
-                { key: "totalCredits" },
+            return React.createElement(
+                "div",
+                { className: "course-credits" },
                 React.createElement(
-                    Td,
-                    { className: "text-right", column: "enrollment" },
-                    React.createElement(
-                        "strong",
-                        null,
-                        totalLabel
-                    )
-                ),
-                React.createElement(
-                    Td,
-                    { column: "credits" },
+                    "p",
+                    null,
+                    totalLabel,
+                    " ",
                     React.createElement(
                         "strong",
                         null,
                         totalCredits
                     )
-                )
-            ), React.createElement(
-                Tr,
-                { key: "creditsShown" },
-                React.createElement(
-                    Td,
-                    { className: "text-right", column: "enrollment" },
-                    React.createElement(
-                        "strong",
-                        null,
-                        shownLabel
-                    )
                 ),
                 React.createElement(
-                    Td,
-                    { column: "credits" },
+                    "p",
+                    null,
+                    shownLabel,
+                    " ",
                     React.createElement(
                         "strong",
                         null,
                         creditsShown
                     )
                 )
-            ));
+            );
+        },
 
-            var columns = [{ key: "shown", label: "" }, { key: "crn", label: "CRN" }, { key: "courseID", label: "Course" }, { key: "title", label: "Title" }, { key: "instructor", label: "Instructor" }, { key: "meetings", label: "Meetings" }, { key: "distribution", label: "Distribution" }, { key: "enrollment", label: "Enrollment" }, { key: "credits", label: "Credits" }, { key: "remove", label: "" }];
+        renderSchedulerTabs: function renderSchedulerTabs() {
+            var _this = this;
 
             var schedulerTabs = this.state.schedulers.map(function (scheduler) {
                 var closeButton = undefined;
@@ -538,45 +540,41 @@ define(["exports", "module", "react", "reactable", "reactBootstrap", "zeroClipbo
             });
 
             return React.createElement(
+                "ul",
+                { className: "nav nav-tabs scheduler-tabs" },
+                schedulerTabs,
+                React.createElement(
+                    "li",
+                    null,
+                    React.createElement(
+                        "a",
+                        { onClick: this.addScheduler },
+                        React.createElement("span", { className: "glyphicon glyphicon-plus" })
+                    )
+                )
+            );
+        },
+
+        render: function render() {
+            return React.createElement(
                 "div",
                 null,
-                this.getAlerts(),
+                this.renderAlerts(),
                 React.createElement(
                     Button,
                     { id: "exportCRNButton",
                         bsStyle: "info", onClick: this.exportScheduler },
                     "Export Current CRNs"
                 ),
-                React.createElement(
-                    "div",
-                    { className: "table-responsive" },
-                    React.createElement(
-                        Table,
-                        { ref: "courseTable", columns: columns,
-                            className: "table table-hover course-table" },
-                        courses
-                    )
-                ),
+                this.renderCourseTable(),
+                this.renderCourseCredits(),
                 React.createElement(
                     Button,
                     { className: "fix-schedule-btn", bsStyle: "info",
                         onClick: this.fixMySchedule },
                     "Fix My Schedule!"
                 ),
-                React.createElement(
-                    "ul",
-                    { className: "nav nav-tabs scheduler-tabs" },
-                    schedulerTabs,
-                    React.createElement(
-                        "li",
-                        null,
-                        React.createElement(
-                            "a",
-                            { onClick: this.addScheduler },
-                            React.createElement("span", { className: "glyphicon glyphicon-plus" })
-                        )
-                    )
-                ),
+                this.renderSchedulerTabs(),
                 React.createElement(SchedulerView, { ref: "schedulerView",
                     courses: this.state.userCourses,
                     scheduler: this.state.currentScheduler,

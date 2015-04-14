@@ -68,9 +68,7 @@ define(["exports", "react", "reactBootstrap", "bootbox", "jquery", "courses/eval
             });
         },
 
-        render: function render() {
-            var _this = this;
-
+        renderInfo: function renderInfo() {
             var course = this.props.course;
 
             var prerequisites = undefined,
@@ -110,182 +108,198 @@ define(["exports", "react", "reactBootstrap", "bootbox", "jquery", "courses/eval
                 course.getRestrictions()
             );
 
-            var courseCharts = undefined;
+            return React.createElement(
+                "div",
+                null,
+                React.createElement(
+                    "p",
+                    null,
+                    React.createElement(
+                        "strong",
+                        null,
+                        "Credits:"
+                    ),
+                    " ",
+                    course.getCredits()
+                ),
+                React.createElement(
+                    "p",
+                    null,
+                    React.createElement(
+                        "strong",
+                        null,
+                        "Distribution:"
+                    ),
+                    " ",
+                    course.getDistributionString()
+                ),
+                React.createElement(
+                    "p",
+                    null,
+                    React.createElement(
+                        "strong",
+                        null,
+                        "Meetings:"
+                    ),
+                    " ",
+                    course.getMeetingsString()
+                ),
+                React.createElement(
+                    "p",
+                    null,
+                    React.createElement(
+                        "strong",
+                        null,
+                        "Location:"
+                    ),
+                    " ",
+                    course.getLocation()
+                ),
+                React.createElement(
+                    "p",
+                    null,
+                    React.createElement(
+                        "strong",
+                        null,
+                        "Enrollment:"
+                    ),
+                    " ",
+                    course.getEnrollmentString()
+                ),
+                React.createElement(
+                    "p",
+                    null,
+                    React.createElement(
+                        "strong",
+                        null,
+                        "Waitlist:"
+                    ),
+                    " ",
+                    course.getWaitlistString()
+                ),
+                prerequisites,
+                corequisites,
+                restrictions,
+                React.createElement(
+                    "p",
+                    null,
+                    course.getDescription()
+                )
+            );
+        },
+
+        renderCourseCharts: function renderCourseCharts() {
+            var _this = this;
+
             if (this.state.courseQuestions === undefined) {
-                courseCharts = "Loading...";
+                return "Loading...";
             } else if (this.state.courseQuestions.length === 0) {
-                courseCharts = "No evaluations found";
-            } else {
-                courseCharts = this.state.courseQuestions.map(function (question, i) {
-                    return React.createElement(EvaluationChart, { key: "courseEvalChart" + i,
-                        title: question.text,
-                        data: question.choices,
-                        type: _this.state.chartType });
-                });
+                return "No evaluations found";
             }
 
-            var courseComments = undefined;
+            return this.state.courseQuestions.map(function (question, i) {
+                return React.createElement(EvaluationChart, { key: "courseEvalChart" + i,
+                    title: question.text,
+                    data: question.choices,
+                    type: _this.state.chartType });
+            });
+        },
+
+        renderCourseComments: function renderCourseComments() {
             if (this.state.courseComments === undefined) {
-                courseComments = "Loading...";
+                return "Loading...";
             } else if (this.state.courseComments.length === 0) {
-                courseComments = "No comments found";
-            } else {
-                courseComments = this.state.courseComments.map(function (comment, i) {
-                    return React.createElement(
-                        "div",
-                        { className: "comment", key: "courseComment" + i },
-                        React.createElement(
-                            "p",
-                            null,
-                            comment.text
-                        ),
-                        React.createElement(
-                            "p",
-                            { className: "comment-date" },
-                            comment.date
-                        )
-                    );
-                });
+                return "No comments found";
             }
 
-            var instructorCharts = undefined;
+            return this.state.courseComments.map(function (comment, i) {
+                return React.createElement(
+                    "div",
+                    { className: "comment", key: "courseComment" + i },
+                    React.createElement(
+                        "p",
+                        null,
+                        comment.text
+                    ),
+                    React.createElement(
+                        "p",
+                        { className: "comment-date" },
+                        comment.date
+                    )
+                );
+            });
+        },
+
+        renderInstructorCharts: function renderInstructorCharts() {
+            var _this = this;
+
             if (this.state.instructorQuestions === undefined) {
-                instructorCharts = "Loading...";
+                return "Loading...";
             } else if (this.state.instructorQuestions.length === 0) {
-                instructorCharts = "No evaluations found";
-            } else {
-                instructorCharts = this.state.instructorQuestions.map(function (question, i) {
-                    return React.createElement(EvaluationChart, { key: "instructorEvalChart" + i,
-                        title: question.text,
-                        data: question.choices,
-                        type: _this.state.chartType });
-                });
+                return "No evaluations found";
             }
 
-            var instructorComments = undefined;
+            return this.state.instructorQuestions.map(function (question, i) {
+                return React.createElement(EvaluationChart, { key: "instructorEvalChart" + i,
+                    title: question.text,
+                    data: question.choices,
+                    type: _this.state.chartType });
+            });
+        },
+
+        renderInstructorComments: function renderInstructorComments() {
             if (this.state.instructorComments === undefined) {
-                instructorComments = "Loading...";
+                return "Loading...";
             } else if (this.state.instructorComments.length === 0) {
-                instructorComments = "No comments found";
-            } else {
-                instructorComments = this.state.instructorComments.map(function (comment, i) {
-                    return React.createElement(
-                        "div",
-                        { className: "comment", key: "instructorComment" + i },
-                        React.createElement(
-                            "p",
-                            null,
-                            comment.text
-                        ),
-                        React.createElement(
-                            "p",
-                            { className: "comment-date" },
-                            comment.date
-                        )
-                    );
-                });
+                return "No comments found";
             }
 
+            return this.state.instructorComments.map(function (comment, i) {
+                return React.createElement(
+                    "div",
+                    { className: "comment", key: "instructorComment" + i },
+                    React.createElement(
+                        "p",
+                        null,
+                        comment.text
+                    ),
+                    React.createElement(
+                        "p",
+                        { className: "comment-date" },
+                        comment.date
+                    )
+                );
+            });
+        },
+
+        render: function render() {
             return React.createElement(
                 TabbedArea,
                 { defaultActiveKey: 1, animation: false },
                 React.createElement(
                     TabPane,
                     { eventKey: 1, tab: "Info" },
-                    React.createElement(
-                        "p",
-                        null,
-                        React.createElement(
-                            "strong",
-                            null,
-                            "Credits:"
-                        ),
-                        " ",
-                        course.getCredits()
-                    ),
-                    React.createElement(
-                        "p",
-                        null,
-                        React.createElement(
-                            "strong",
-                            null,
-                            "Distribution:"
-                        ),
-                        " ",
-                        course.getDistributionString()
-                    ),
-                    React.createElement(
-                        "p",
-                        null,
-                        React.createElement(
-                            "strong",
-                            null,
-                            "Meetings:"
-                        ),
-                        " ",
-                        course.getMeetingsString()
-                    ),
-                    React.createElement(
-                        "p",
-                        null,
-                        React.createElement(
-                            "strong",
-                            null,
-                            "Location:"
-                        ),
-                        " ",
-                        course.getLocation()
-                    ),
-                    React.createElement(
-                        "p",
-                        null,
-                        React.createElement(
-                            "strong",
-                            null,
-                            "Enrollment:"
-                        ),
-                        " ",
-                        course.getEnrollmentString()
-                    ),
-                    React.createElement(
-                        "p",
-                        null,
-                        React.createElement(
-                            "strong",
-                            null,
-                            "Waitlist:"
-                        ),
-                        " ",
-                        course.getWaitlistString()
-                    ),
-                    prerequisites,
-                    corequisites,
-                    restrictions,
-                    React.createElement(
-                        "p",
-                        null,
-                        course.getDescription()
-                    )
+                    this.renderInfo()
                 ),
                 React.createElement(
                     TabPane,
                     { eventKey: 2, tab: "Course Evaluations" },
-                    courseCharts
+                    this.renderCourseCharts()
                 ),
                 React.createElement(
                     TabPane,
                     { eventKey: 3, tab: "Course Comments" },
-                    courseComments
+                    this.renderCourseComments()
                 ),
                 React.createElement(
                     TabPane,
                     { eventKey: 4, tab: "Instructor Evaluations" },
-                    instructorCharts
+                    this.renderInstructorCharts()
                 ),
                 React.createElement(
                     TabPane,
                     { eventKey: 5, tab: "Instructor Comments" },
-                    instructorComments
+                    this.renderInstructorComments()
                 )
             );
         }

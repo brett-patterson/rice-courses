@@ -37,7 +37,7 @@ define(["exports", "module", "react", "reactBootstrap"], function (exports, modu
             };
         },
 
-        getAlerts: function getAlerts() {
+        renderAlerts: function renderAlerts() {
             var _this = this;
 
             return this.state.alerts.map(function (message, index) {

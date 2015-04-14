@@ -26,6 +26,12 @@
   cursor: pointer;
 }
 
+.course-credits {
+  float: right;
+  padding-right: 20px;
+  text-align: right;
+}
+
 .fix-schedule-btn {
   margin-bottom: 10px;
 }

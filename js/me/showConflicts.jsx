@@ -13,11 +13,8 @@ const ConflictsBody = React.createClass({
         });
     },
 
-    render() {
-        const msg = 'We found some conflicts in your schedule. For each ' +
-                    'conflict, please select the course you want to move.';
-
-        let conflicts = this.props.conflicts.map((conflict, i) => {
+    renderConflicts() {
+        return this.props.conflicts.map((conflict, i) => {
             const [courseOne, courseTwo] = conflict;
 
             return (
@@ -38,12 +35,17 @@ const ConflictsBody = React.createClass({
                 </li>
             );
         });
+    },
+
+    render() {
+        const msg = 'We found some conflicts in your schedule. For each ' +
+                    'conflict, please select the course you want to move.';
 
         return (
             <div>
                 <p>{msg}</p>
                 <ol>
-                    {conflicts}
+                    {this.renderConflicts()}
                 </ol>
             </div>
         );

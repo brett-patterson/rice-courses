@@ -107,32 +107,36 @@ export default React.createClass({
         this.props.manager.updateFilter(filter, value);
     },
 
-    render() {
-        let filterButtons = this.props.filters.map((filter, index) => {
+    renderFilterButtons() {
+        return this.props.filters.map((filter, index) => {
             return <FilterButton filter={filter}
                          hue={getHueByIndex(index, this.props.filters.length)}
                          key={`filterBtn${index}`}
                          delegate={this} />;
         });
+    },
 
-        const widgetStyle = {
-            outline: this.state.outline
-        };
-
-        let filterInputs = this.state.currentFilters.map((filter, index) => {
+    renderFilterInputs() {
+        return this.state.currentFilters.map((filter, index) => {
             const id = `filter-${this.state.currentFilters.length}-${index}`;
             return <FilterInput filter={filter} key={id} ref={id}
                                 delegate={this} />;
         });
+    },
+
+    render() {
+        const widgetStyle = {
+            outline: this.state.outline
+        };
 
         return (
             <div>
                 <div className='course-filters'>
-                    {filterButtons}
+                    {this.renderFilterButtons()}
                 </div>
                 <div className='filter-widget' style={widgetStyle}
                      onClick={this.widgetClicked}>
-                    {filterInputs}
+                    {this.renderFilterInputs()}
                     <input ref='input' type='text' className='filter-input'
                            placeholder={this.state.placeholder}
                            value={this.state.text}

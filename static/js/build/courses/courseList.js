@@ -107,20 +107,21 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/co
             }, 0);
         },
 
-        render: function render() {
+        renderCourseRows: function renderCourseRows() {
             var _this = this;
 
-            var courses = undefined;
-            if (this.state.filtered === undefined) courses = React.createElement(
-                Tr,
-                null,
-                React.createElement(
-                    Td,
-                    { column: "userCourse" },
-                    "Loading courses..."
-                )
-            );else {
-                if (this.state.filtered.length === 0) courses = React.createElement(
+            if (this.state.filtered === undefined) {
+                return React.createElement(
+                    Tr,
+                    null,
+                    React.createElement(
+                        Td,
+                        { column: "userCourse" },
+                        "Loading courses..."
+                    )
+                );
+            } else if (this.state.filtered.length === 0) {
+                return React.createElement(
                     Tr,
                     null,
                     React.createElement(
@@ -128,85 +129,87 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/co
                         { column: "userCourse" },
                         "No courses found"
                     )
-                );else courses = this.state.filtered.map(function (course) {
-                    var isUserCourse = _this.isUserCourse(course);
+                );
+            }return this.state.filtered.map(function (course) {
+                var isUserCourse = _this.isUserCourse(course);
 
-                    var userClasses = makeClasses({
-                        "user-course": isUserCourse,
-                        "not-user-course": !isUserCourse
-                    });
-
-                    var heartClasses = makeClasses({
-                        glyphicon: true,
-                        "glyphicon-heart": isUserCourse,
-                        "glyphicon-heart-empty": !isUserCourse
-                    });
-
-                    return React.createElement(
-                        Tr,
-                        { key: course.getCRN() },
-                        React.createElement(
-                            Td,
-                            { column: "userCourse",
-                                handleClick: _this.toggleUserCourseFactory(course) },
-                            React.createElement(
-                                "a",
-                                { className: userClasses },
-                                React.createElement("span", { className: heartClasses })
-                            )
-                        ),
-                        React.createElement(
-                            Td,
-                            { column: "crn",
-                                handleClick: showCourseFactory(course) },
-                            course.getCRN()
-                        ),
-                        React.createElement(
-                            Td,
-                            { column: "courseID",
-                                handleClick: showCourseFactory(course) },
-                            course.getCourseID()
-                        ),
-                        React.createElement(
-                            Td,
-                            { column: "title",
-                                handleClick: showCourseFactory(course) },
-                            course.getTitle()
-                        ),
-                        React.createElement(
-                            Td,
-                            { column: "instructor",
-                                handleClick: showCourseFactory(course) },
-                            course.getInstructor()
-                        ),
-                        React.createElement(
-                            Td,
-                            { column: "meetings",
-                                handleClick: showCourseFactory(course) },
-                            course.getMeetingsString()
-                        ),
-                        React.createElement(
-                            Td,
-                            { column: "distribution",
-                                handleClick: showCourseFactory(course) },
-                            course.getDistributionString()
-                        ),
-                        React.createElement(
-                            Td,
-                            { column: "enrollment",
-                                handleClick: showCourseFactory(course) },
-                            course.getEnrollmentString()
-                        ),
-                        React.createElement(
-                            Td,
-                            { column: "credits",
-                                handleClick: showCourseFactory(course) },
-                            course.getCredits()
-                        )
-                    );
+                var userClasses = makeClasses({
+                    "user-course": isUserCourse,
+                    "not-user-course": !isUserCourse
                 });
-            }
 
+                var heartClasses = makeClasses({
+                    glyphicon: true,
+                    "glyphicon-heart": isUserCourse,
+                    "glyphicon-heart-empty": !isUserCourse
+                });
+
+                return React.createElement(
+                    Tr,
+                    { key: course.getCRN() },
+                    React.createElement(
+                        Td,
+                        { column: "userCourse",
+                            handleClick: _this.toggleUserCourseFactory(course) },
+                        React.createElement(
+                            "a",
+                            { className: userClasses },
+                            React.createElement("span", { className: heartClasses })
+                        )
+                    ),
+                    React.createElement(
+                        Td,
+                        { column: "crn",
+                            handleClick: showCourseFactory(course) },
+                        course.getCRN()
+                    ),
+                    React.createElement(
+                        Td,
+                        { column: "courseID",
+                            handleClick: showCourseFactory(course) },
+                        course.getCourseID()
+                    ),
+                    React.createElement(
+                        Td,
+                        { column: "title",
+                            handleClick: showCourseFactory(course) },
+                        course.getTitle()
+                    ),
+                    React.createElement(
+                        Td,
+                        { column: "instructor",
+                            handleClick: showCourseFactory(course) },
+                        course.getInstructor()
+                    ),
+                    React.createElement(
+                        Td,
+                        { column: "meetings",
+                            handleClick: showCourseFactory(course) },
+                        course.getMeetingsString()
+                    ),
+                    React.createElement(
+                        Td,
+                        { column: "distribution",
+                            handleClick: showCourseFactory(course) },
+                        course.getDistributionString()
+                    ),
+                    React.createElement(
+                        Td,
+                        { column: "enrollment",
+                            handleClick: showCourseFactory(course) },
+                        course.getEnrollmentString()
+                    ),
+                    React.createElement(
+                        Td,
+                        { column: "credits",
+                            handleClick: showCourseFactory(course) },
+                        course.getCredits()
+                    )
+                );
+            });
+        },
+
+        render: function render() {
             var columns = [{ key: "userCourse", label: "" }, { key: "crn", label: "CRN" }, { key: "courseID", label: "Course" }, { key: "title", label: "Title" }, { key: "instructor", label: "Instructor" }, { key: "meetings", label: "Meetings" }, { key: "distribution", label: "Distribution" }, { key: "enrollment", label: "Enrollment" }, { key: "credits", label: "Credits" }];
 
             return React.createElement(
@@ -217,7 +220,7 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/co
                     { ref: "courseTable", className: "table table-hover course-table",
                         columns: columns, itemsPerPage: 50,
                         sortable: true },
-                    courses
+                    this.renderCourseRows()
                 )
             );
         }

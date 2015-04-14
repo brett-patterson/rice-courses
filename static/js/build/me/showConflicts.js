@@ -24,12 +24,10 @@ define(["exports", "module", "react", "bootbox", "courses/course", "util"], func
             });
         },
 
-        render: function render() {
+        renderConflicts: function renderConflicts() {
             var _this = this;
 
-            var msg = "We found some conflicts in your schedule. For each " + "conflict, please select the course you want to move.";
-
-            var conflicts = this.props.conflicts.map(function (conflict, i) {
+            return this.props.conflicts.map(function (conflict, i) {
                 var _conflict = _slicedToArray(conflict, 2);
 
                 var courseOne = _conflict[0];
@@ -58,6 +56,10 @@ define(["exports", "module", "react", "bootbox", "courses/course", "util"], func
                         className: "glyphicon glyphicon-ban-circle clear-btn" })
                 );
             });
+        },
+
+        render: function render() {
+            var msg = "We found some conflicts in your schedule. For each " + "conflict, please select the course you want to move.";
 
             return React.createElement(
                 "div",
@@ -70,7 +72,7 @@ define(["exports", "module", "react", "bootbox", "courses/course", "util"], func
                 React.createElement(
                     "ol",
                     null,
-                    conflicts
+                    this.renderConflicts()
                 )
             );
         }

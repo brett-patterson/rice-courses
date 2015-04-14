@@ -120,21 +120,15 @@ define(["exports", "module", "react"], function (exports, module, _react) {
             this.mouseOverSuggestions = false;
         },
 
-        render: function render() {
+        renderSuggestions: function renderSuggestions(event) {
             var _this = this;
 
-            var virtual = jQuery("<span/>", {
-                text: this.state.value
-            }).hide().appendTo(document.body);
-
-            var style = {
-                marginLeft: 5,
-                width: virtual.width() + 10
-            };
-
-            virtual.remove();
-
             var applicable = this.props.filter.getApplicableSuggestions();
+
+            if (!this.state.showSuggestions || applicable.length === 0) {
+                return undefined;
+            }
+
             var suggestionItems = applicable.map(function (suggestion, i) {
                 var key = "" + applicable.length + "." + i;
                 return React.createElement(
@@ -149,21 +143,30 @@ define(["exports", "module", "react"], function (exports, module, _react) {
                 );
             });
 
-            var suggestions = undefined;
+            return React.createElement(
+                "div",
+                { ref: "suggestions", className: "filter-suggestions",
+                    onMouseEnter: this.onMouseEnter,
+                    onMouseLeave: this.onMouseLeave },
+                React.createElement(
+                    "ul",
+                    null,
+                    suggestionItems
+                )
+            );
+        },
 
-            if (this.state.showSuggestions && suggestionItems.length > 0) {
-                suggestions = React.createElement(
-                    "div",
-                    { ref: "suggestions", className: "filter-suggestions",
-                        onMouseEnter: this.onMouseEnter,
-                        onMouseLeave: this.onMouseLeave },
-                    React.createElement(
-                        "ul",
-                        null,
-                        suggestionItems
-                    )
-                );
-            }
+        render: function render() {
+            var virtual = jQuery("<span/>", {
+                text: this.state.value
+            }).hide().appendTo(document.body);
+
+            var style = {
+                marginLeft: 5,
+                width: virtual.width() + 10
+            };
+
+            virtual.remove();
 
             return React.createElement(
                 "div",
@@ -180,7 +183,7 @@ define(["exports", "module", "react"], function (exports, module, _react) {
                     onClick: this.onInputClick,
                     onFocus: this.onFocus,
                     onBlur: this.onBlur }),
-                suggestions,
+                this.renderSuggestions(),
                 React.createElement(
                     "a",
                     { onClick: this.remove },
