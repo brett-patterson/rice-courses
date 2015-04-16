@@ -1,9 +1,13 @@
-define(["exports", "module"], function (exports, module) {
+define(["exports", "module", "courses/courseFilter"], function (exports, module, _coursesCourseFilter) {
     "use strict";
+
+    var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
     var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
     var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+    var CourseFilter = _interopRequire(_coursesCourseFilter);
 
     var FilterManager = (function () {
         /**
@@ -18,6 +22,7 @@ define(["exports", "module"], function (exports, module) {
 
             this.filters = [];
             this.onFiltersChanged = onFiltersChanged;
+            this.loadFilters();
         }
 
         _createClass(FilterManager, {
@@ -26,12 +31,11 @@ define(["exports", "module"], function (exports, module) {
                 /**
                  * Add a filter.
                  * @param {CourseFilter} filter - The filter to be added
-                 * @param {any} value - The value that `filter` should filter for
                  */
 
-                value: function addFilter(filter, value) {
-                    filter.setValue(value);
+                value: function addFilter(filter) {
                     this.filters.push(filter);
+                    this.saveFilters();
                     this.onFiltersChanged();
                 }
             },
@@ -47,6 +51,7 @@ define(["exports", "module"], function (exports, module) {
 
                     if (index > -1) {
                         this.filters.splice(index, 1);
+                        this.saveFilters();
                         this.onFiltersChanged();
                     }
                 }
@@ -64,8 +69,39 @@ define(["exports", "module"], function (exports, module) {
 
                     if (index > -1) {
                         this.filters[index].setValue(value);
+                        this.saveFilters();
                         this.onFiltersChanged();
                     }
+                }
+            },
+            loadFilters: {
+
+                /**
+                 * Load filters from session storage.
+                 */
+
+                value: function loadFilters() {
+                    var filters = sessionStorage.getItem("filters");
+                    if (filters !== null) {
+                        this.filters = this.filters.concat(CourseFilter.arrayFromJSON(filters));
+                        this.onFiltersChanged();
+                    }
+                }
+            },
+            saveFilters: {
+
+                /**
+                 * Save current filters to session storage.
+                 */
+
+                value: function saveFilters() {
+                    var toSerialize = [];
+
+                    for (var i = 0; i < this.filters.length; i++) {
+                        toSerialize.push(this.filters[i].toJSON());
+                    }
+
+                    sessionStorage.setItem("filters", JSON.stringify(toSerialize));
                 }
             },
             getFilters: {

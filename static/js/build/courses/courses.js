@@ -50,7 +50,9 @@ define(["exports", "module", "react", "courses/filterManager", "courses/filterWi
         },
 
         onFiltersChanged: function onFiltersChanged() {
-            this.refs.courseList.updateFilteredCourses();
+            if (this.refs && this.refs.courseList) {
+                this.refs.courseList.updateFilteredCourses();
+            }
         },
 
         render: function render() {

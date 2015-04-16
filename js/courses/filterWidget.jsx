@@ -17,7 +17,7 @@ export default React.createClass({
             placeholder: 'Add Filters...',
             keywords: {},
             text: '',
-            currentFilters: []
+            currentFilters: this.props.manager.getFilters()
         };
     },
 
@@ -63,7 +63,8 @@ export default React.createClass({
                     this.setState({
                         text: ''
                     }, () => {
-                        this.addFilter(filter, value);
+                        filter.setValue(value);
+                        this.addFilter(filter);
                     });
                 }
             }
@@ -84,7 +85,8 @@ export default React.createClass({
     },
 
     addFilter(filter, value) {
-        this.props.manager.addFilter(filter, value);
+        filter.setValue(value);
+        this.props.manager.addFilter(filter);
 
         this.setState({
             currentFilters: this.props.manager.getFilters()

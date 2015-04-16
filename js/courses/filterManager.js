@@ -1,3 +1,5 @@
+import CourseFilter from 'courses/courseFilter';
+
 export default class FilterManager {
     /**
      * Create a new filter manager.
@@ -6,16 +8,16 @@ export default class FilterManager {
     constructor(onFiltersChanged = () => {}) {
         this.filters = [];
         this.onFiltersChanged = onFiltersChanged;
+        this.loadFilters();
     }
 
     /**
      * Add a filter.
      * @param {CourseFilter} filter - The filter to be added
-     * @param {any} value - The value that `filter` should filter for
      */
-    addFilter(filter, value) {
-        filter.setValue(value);
+    addFilter(filter) {
         this.filters.push(filter);
+        this.saveFilters();
         this.onFiltersChanged();
     }
 
@@ -28,6 +30,7 @@ export default class FilterManager {
 
         if (index > -1) {
             this.filters.splice(index, 1);
+            this.saveFilters();
             this.onFiltersChanged();
         }
     }
@@ -42,8 +45,33 @@ export default class FilterManager {
 
         if (index > -1) {
             this.filters[index].setValue(value);
+            this.saveFilters();
             this.onFiltersChanged();
         }
+    }
+
+    /**
+     * Load filters from session storage.
+     */
+    loadFilters() {
+        const filters = sessionStorage.getItem('filters');
+        if (filters !== null) {
+            this.filters = this.filters.concat(CourseFilter.arrayFromJSON(filters));
+            this.onFiltersChanged();
+        }
+    }
+
+    /**
+     * Save current filters to session storage.
+     */
+    saveFilters() {
+        const toSerialize = [];
+
+        for (let i = 0; i < this.filters.length; i++) {
+            toSerialize.push(this.filters[i].toJSON());
+        }
+
+        sessionStorage.setItem('filters', JSON.stringify(toSerialize));
     }
 
     /**

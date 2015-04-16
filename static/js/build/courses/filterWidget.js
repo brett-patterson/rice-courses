@@ -25,7 +25,7 @@ define(["exports", "module", "react", "courses/filterButton", "courses/filterInp
                 placeholder: "Add Filters...",
                 keywords: {},
                 text: "",
-                currentFilters: []
+                currentFilters: this.props.manager.getFilters()
             };
         },
 
@@ -75,7 +75,8 @@ define(["exports", "module", "react", "courses/filterButton", "courses/filterInp
                             _this.setState({
                                 text: ""
                             }, function () {
-                                _this.addFilter(filter, value);
+                                filter.setValue(value);
+                                _this.addFilter(filter);
                             });
                         }
                     })();
@@ -98,7 +99,8 @@ define(["exports", "module", "react", "courses/filterButton", "courses/filterInp
         addFilter: function addFilter(filter, value) {
             var _this = this;
 
-            this.props.manager.addFilter(filter, value);
+            filter.setValue(value);
+            this.props.manager.addFilter(filter);
 
             this.setState({
                 currentFilters: this.props.manager.getFilters()

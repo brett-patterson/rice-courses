@@ -141,8 +141,68 @@ define(["exports", "module"], function (exports, module) {
                 value: function test(course) {
                     return this.compare(course.filterValue(this.key), this.value);
                 }
+            },
+            toJSON: {
+
+                /**
+                 * Serialize the filter to a JSON string.
+                 * @return {string} The serialized filter
+                 */
+
+                value: function toJSON() {
+                    var obj = {
+                        key: this.key,
+                        name: this.name,
+                        keywords: this.keywords,
+                        value: this.value,
+                        compare: this.compare,
+                        suggestions: this.suggestions
+                    };
+
+                    return JSON.stringify(obj, function (key, value) {
+                        if (typeof value === "function") {
+                            return value.toString();
+                        }
+
+                        return value;
+                    });
+                }
             }
         }, {
+            arrayFromJSON: {
+
+                /**
+                 * Reconstruct an array of CourseFilter objects from a JSON string.
+                 * @param {string} json - The JSON string to parse
+                 * @return {array<CourseFilter>} The reconstructed CourseFilter objects
+                 */
+
+                value: function arrayFromJSON(jsonString) {
+                    var objList = JSON.parse(jsonString);
+
+                    return objList.map(function (objJSON) {
+                        var obj = JSON.parse(objJSON, function (key, value) {
+                            if (value && typeof value === "string" && value.substr(0, 8) === "function") {
+                                var startArgs = value.indexOf("(") + 1;
+                                var endArgs = value.indexOf(")");
+                                var startBody = value.indexOf("{") + 1;
+                                var endBody = value.lastIndexOf("}");
+
+                                return new Function(value.substring(startArgs, endArgs), value.substring(startBody, endBody));
+                            }
+
+                            return value;
+                        });
+
+                        var keyIndex = obj.keywords.indexOf(obj.key);
+                        if (keyIndex > -1) {
+                            obj.keywords.splice(keyIndex, 1);
+                        }
+
+                        return new CourseFilter(obj.key, obj.name, obj.keywords, obj.value, obj.compare, obj.suggestions);
+                    });
+                }
+            },
             contains: {
 
                 /**

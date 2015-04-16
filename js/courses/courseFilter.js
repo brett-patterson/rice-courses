@@ -95,9 +95,66 @@ export default class CourseFilter {
      * @param {Course} course - The course to test
      * @return {boolean} Whether the course passes the filter
      */
-     test(course) {
+    test(course) {
         return this.compare(course.filterValue(this.key), this.value);
-     }
+    }
+
+    /**
+     * Serialize the filter to a JSON string.
+     * @return {string} The serialized filter
+     */
+    toJSON() {
+        const obj = {
+            key: this.key,
+            name: this.name,
+            keywords: this.keywords,
+            value: this.value,
+            compare: this.compare,
+            suggestions: this.suggestions
+        };
+
+        return JSON.stringify(obj, (key, value) => {
+            if (typeof value === 'function') {
+                return value.toString();
+            }
+
+            return value;
+        });
+    }
+
+     /**
+      * Reconstruct an array of CourseFilter objects from a JSON string.
+      * @param {string} json - The JSON string to parse
+      * @return {array<CourseFilter>} The reconstructed CourseFilter objects
+      */
+    static arrayFromJSON(jsonString) {
+        const objList = JSON.parse(jsonString);
+
+        return objList.map(objJSON => {
+            const obj = JSON.parse(objJSON, (key, value) => {
+                if (value && typeof value === 'string' &&
+                    value.substr(0, 8) === 'function') {
+                    const startArgs = value.indexOf('(') + 1;
+                    const endArgs = value.indexOf(')');
+                    const startBody = value.indexOf('{') + 1;
+                    const endBody = value.lastIndexOf('}');
+
+                    return new Function(value.substring(startArgs, endArgs),
+                                        value.substring(startBody, endBody));
+                }
+
+                return value;
+            });
+
+            const keyIndex = obj.keywords.indexOf(obj.key);
+            if (keyIndex > -1) {
+                obj.keywords.splice(keyIndex, 1);
+            }
+
+            return new CourseFilter(obj.key, obj.name, obj.keywords, obj.value,
+                                    obj.compare, obj.suggestions);
+        });
+    }
 
     /**
      * A string comparison function that checks for containment (ignores case).

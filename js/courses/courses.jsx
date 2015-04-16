@@ -30,7 +30,6 @@ const FILTERS = [
         })
 ];
 
-
 export default React.createClass({
     getInitialState() {
         return {
@@ -43,7 +42,9 @@ export default React.createClass({
     },
 
     onFiltersChanged() {
-        this.refs.courseList.updateFilteredCourses();
+        if (this.refs && this.refs.courseList) {
+            this.refs.courseList.updateFilteredCourses();
+        }
     },
 
     render() {
