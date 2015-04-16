@@ -22,7 +22,7 @@ define(["exports", "module", "moment", "util"], function (exports, module, _mome
     };
 
     var Course = (function () {
-        function Course(crn, subject, number, section, title, instructor, description, meetings, location, credits, distribution, enrollment, maxEnrollment, waitlist, maxWaitlist, prerequisites, corequisites, restrictions) {
+        function Course(crn, subject, number, section, title, instructor, description, meetings, location, credits, distribution, enrollment, maxEnrollment, waitlist, maxWaitlist, prerequisites, corequisites, restrictions, crossListed) {
             _classCallCheck(this, Course);
 
             this.crn = crn;
@@ -43,6 +43,7 @@ define(["exports", "module", "moment", "util"], function (exports, module, _mome
             this.prerequisites = prerequisites;
             this.corequisites = corequisites;
             this.restrictions = restrictions;
+            this.crossListed = crossListed;
 
             this.filterMapping = {
                 distribution: "" + this.getDistributionString() + " " + this.distribution,
@@ -231,11 +232,22 @@ define(["exports", "module", "moment", "util"], function (exports, module, _mome
                 value: function getRestrictions() {
                     return this.restrictions;
                 }
+            },
+            getCrossListed: {
+                value: function getCrossListed() {
+                    return this.crossListed;
+                }
             }
         }, {
             fromJSON: {
                 value: function fromJSON(j) {
-                    return new Course(j.crn, j.subject, j.course_number, j.section, j.title, j.instructor, j.description, j.meetings, j.location, j.credits, j.distribution, j.enrollment, j.max_enrollment, j.waitlist, j.max_waitlist, j.prerequisites, j.corequisites, j.restrictions);
+                    var crossListed = [];
+
+                    if (j.cross_list_group !== undefined) crossListed = j.cross_list_group.map(function (courseJSON) {
+                        return Course.fromJSON(courseJSON);
+                    });
+
+                    return new Course(j.crn, j.subject, j.course_number, j.section, j.title, j.instructor, j.description, j.meetings, j.location, j.credits, j.distribution, j.enrollment, j.max_enrollment, j.waitlist, j.max_waitlist, j.prerequisites, j.corequisites, j.restrictions, crossListed);
                 }
             },
             all: {

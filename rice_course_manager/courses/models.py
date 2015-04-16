@@ -125,6 +125,10 @@ class Course(models.Model):
     # Any corequisite courses required for this course.
     corequisites = models.TextField(default='')
 
+    # Two letter string representing the group of courses cross-listed
+    # together
+    cross_list_group = models.CharField(default='', max_length=2)
+
     # The name of the instructor for this course.
     instructor = models.CharField(max_length=200, default='')
 
@@ -138,11 +142,11 @@ class Course(models.Model):
         """
         return '%s %i %s' % (self.subject, self.course_number, self.section)
 
-    def json(self):
+    def json(self, cross_list=True):
         """ Convert the course to a JSON-serializable dictionary.
 
         """
-        return {
+        result = {
             'subject': self.subject,
             'course_number': self.course_number,
             'title': self.title,
@@ -162,6 +166,12 @@ class Course(models.Model):
             'instructor': self.instructor,
             'crn': self.crn
         }
+
+        if cross_list:
+            result['cross_list_group'] = [c.json(cross_list=False)
+                                          for c in self.cross_listed_group()]
+
+        return result
 
     @classmethod
     def from_json(cls, json_obj):
@@ -187,13 +197,26 @@ class Course(models.Model):
         try_set(json_obj, 'corequisites', self)
         try_set(json_obj, 'instructor', self)
         try_set(json_obj, 'crn', self)
+        try_set(json_obj, 'cross_list_group', self)
 
         if ('meeting_days' in json_obj and 'start_time' in json_obj and
-            'end_time' in json_obj):
+                'end_time' in json_obj):
             meetings = '%s %s-%s' % (json_obj['meeting_days'],
                                      json_obj['start_time'],
                                      json_obj['end_time'])
 
-            self.meetings = parse_meetings(meetings);
+            self.meetings = parse_meetings(meetings)
 
         return self
+
+    def cross_listed_group(self):
+        """ Get the list of other courses that are in the same cross-list
+        group.
+
+        """
+        print self.cross_list_group
+        if self.cross_list_group == '':
+            return []
+
+        group = Course.objects.filter(cross_list_group=self.cross_list_group)
+        return group.exclude(crn=self.crn)

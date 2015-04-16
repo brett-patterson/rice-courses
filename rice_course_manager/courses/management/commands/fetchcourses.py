@@ -22,6 +22,7 @@ ATTRIBUTE_MAP = {
     'major-restrictions': 'restrictions',
     'pre-requisites': 'prerequisites',
     'co-requisites': 'corequisites',
+    'xlst-group': 'cross_list_group'
 }
 
 

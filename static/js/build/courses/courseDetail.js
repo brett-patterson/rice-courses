@@ -73,7 +73,8 @@ define(["exports", "react", "reactBootstrap", "bootbox", "jquery", "courses/eval
 
             var prerequisites = undefined,
                 corequisites = undefined,
-                restrictions = undefined;
+                restrictions = undefined,
+                crossList = undefined;
             if (course.getPrerequisites().length > 0) prerequisites = React.createElement(
                 "p",
                 null,
@@ -106,6 +107,18 @@ define(["exports", "react", "reactBootstrap", "bootbox", "jquery", "courses/eval
                 ),
                 " ",
                 course.getRestrictions()
+            );
+            if (course.getCrossListed().length > 0) crossList = React.createElement(
+                "p",
+                null,
+                React.createElement(
+                    "strong",
+                    null,
+                    "Cross Listed: "
+                ),
+                course.getCrossListed().map(function (crossCourse) {
+                    return crossCourse.getCourseID();
+                })
             );
 
             return React.createElement(
@@ -191,6 +204,7 @@ define(["exports", "react", "reactBootstrap", "bootbox", "jquery", "courses/eval
                 prerequisites,
                 corequisites,
                 restrictions,
+                crossList,
                 React.createElement(
                     "p",
                     null,

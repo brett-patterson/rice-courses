@@ -51,13 +51,20 @@ const CourseDetailBody = React.createClass({
     renderInfo() {
         const course = this.props.course;
 
-        let prerequisites, corequisites, restrictions;
+        let prerequisites, corequisites, restrictions, crossList;
         if (course.getPrerequisites().length > 0)
             prerequisites = <p><strong>Prerequisites:</strong> {course.getPrerequisites()}</p>;
         if (course.getCorequisites().length > 0)
             corequisites = <p><strong>Corequisites:</strong> {course.getCorequisites()}</p>;
         if (course.getRestrictions().length > 0)
             restrictions = <p><strong>Restrictions:</strong> {course.getRestrictions()}</p>;
+        if (course.getCrossListed().length > 0)
+            crossList = (
+                <p><strong>Cross Listed: </strong>
+                {course.getCrossListed().map(crossCourse => {
+                    return crossCourse.getCourseID();
+                })}</p>
+            );
 
         return (
             <div>
@@ -71,6 +78,7 @@ const CourseDetailBody = React.createClass({
                 {prerequisites}
                 {corequisites}
                 {restrictions}
+                {crossList}
                 <p>{course.getDescription()}</p>
             </div>
         );

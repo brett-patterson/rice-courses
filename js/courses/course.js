@@ -14,7 +14,7 @@ export default class Course {
     constructor(crn, subject, number, section, title, instructor, description,
                 meetings, location, credits, distribution, enrollment,
                 maxEnrollment, waitlist, maxWaitlist, prerequisites,
-                corequisites, restrictions) {
+                corequisites, restrictions, crossListed) {
         this.crn = crn;
         this.subject = subject;
         this.number = number;
@@ -33,6 +33,7 @@ export default class Course {
         this.prerequisites = prerequisites;
         this.corequisites = corequisites;
         this.restrictions = restrictions;
+        this.crossListed = crossListed;
 
         this.filterMapping = {
             distribution: `${this.getDistributionString()} ${this.distribution}`,
@@ -42,12 +43,19 @@ export default class Course {
     }
 
     static fromJSON(j) {
+        let crossListed = [];
+
+        if (j.cross_list_group !== undefined)
+            crossListed = j.cross_list_group.map(courseJSON => {
+                return Course.fromJSON(courseJSON);
+            });
+
         return new Course(j.crn, j.subject, j.course_number, j.section,
                           j.title, j.instructor, j.description, j.meetings,
                           j.location, j.credits, j.distribution,
                           j.enrollment, j.max_enrollment, j.waitlist,
                           j.max_waitlist, j.prerequisites, j.corequisites,
-                          j.restrictions);
+                          j.restrictions, crossListed);
     }
 
     static all(cb) {
@@ -212,5 +220,9 @@ export default class Course {
 
     getRestrictions() {
         return this.restrictions;
+    }
+
+    getCrossListed() {
+        return this.crossListed;
     }
 }
