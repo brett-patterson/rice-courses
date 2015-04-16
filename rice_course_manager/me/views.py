@@ -162,9 +162,11 @@ def export_scheduler(request):
     if s_id is not None:
         scheduler = Scheduler.objects.get(pk=s_id)
         show_map = scheduler.show_map()
-        crns = [course.crn for course in request.user.userprofile.courses.all()
-                if show_map[course.crn]]
-        return HttpResponse('<br/>'.join(crns))
+        courses = [course.json() for course in
+                   request.user.userprofile.courses.all()
+                   if show_map[course.crn]]
+        return HttpResponse(json.dumps(courses),
+                            content_type='application/json')
     else:
         return HttpResponse(json.dumps({'status': 'error'}),
                             content_type='application/json')

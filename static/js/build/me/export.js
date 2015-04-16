@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "bootbox", "util"], function (exports, module, _react, _bootbox, _util) {
+define(["exports", "module", "react", "bootbox", "courses/course", "util"], function (exports, module, _react, _bootbox, _coursesCourse, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -8,6 +8,8 @@ define(["exports", "module", "react", "bootbox", "util"], function (exports, mod
     var React = _interopRequire(_react);
 
     var Bootbox = _interopRequire(_bootbox);
+
+    var Course = _interopRequire(_coursesCourse);
 
     var ajaxCSRF = _util.ajaxCSRF;
 
@@ -24,8 +26,35 @@ define(["exports", "module", "react", "bootbox", "util"], function (exports, mod
                     id: this.props.scheduler.id
                 }
             }).done(function (data) {
-                jQuery(React.findDOMNode(_this.refs.content)).html(data);
+                var courses = data.map(function (courseJSON) {
+                    var course = Course.fromJSON(courseJSON);
+                    var crn = course.getCRN();
+                    var crnInput = React.createElement("input", { type: "text", className: "text-center",
+                        value: crn, maxLength: 5, readOnly: true,
+                        onClick: _this.selectCRN });
+                    return React.createElement(
+                        "p",
+                        { key: crn },
+                        React.createElement(
+                            "strong",
+                            null,
+                            course.getCourseID()
+                        ),
+                        " ",
+                        crnInput
+                    );
+                });
+
+                React.render(React.createElement(
+                    "div",
+                    null,
+                    courses
+                ), React.findDOMNode(_this.refs.content));
             });
+        },
+
+        selectCRN: function selectCRN(event) {
+            event.target.select();
         },
 
         render: function render() {

@@ -1,6 +1,7 @@
 import React from 'react';
 import Bootbox from 'bootbox';
 
+import Course from 'courses/course';
 import {ajaxCSRF} from 'util';
 
 
@@ -13,8 +14,26 @@ const ExportBody = React.createClass({
                 id: this.props.scheduler.id
             }
         }).done(data => {
-            jQuery(React.findDOMNode(this.refs.content)).html(data);
+            let courses = data.map(courseJSON => {
+                const course = Course.fromJSON(courseJSON);
+                const crn = course.getCRN();
+                const crnInput = <input type='text' className='text-center'
+                                        value={crn} maxLength={5} readOnly
+                                        onClick={this.selectCRN} />;
+                return (
+                    <p key={crn}>
+                        <strong>{course.getCourseID()}</strong> {crnInput}
+                    </p>
+                );
+            });
+
+            React.render(<div>{courses}</div>,
+                         React.findDOMNode(this.refs.content));
         });
+    },
+
+    selectCRN(event) {
+        event.target.select();
     },
 
     render() {
