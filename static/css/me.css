@@ -22,7 +22,7 @@
   color: #e09b24;
 }
 
-.course-table td:hover {
+.course-table td {
   cursor: pointer;
 }
 

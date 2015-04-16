@@ -13,12 +13,11 @@
 }
 
 /* COURSE LIST */
-.course-table td:hover {
+.course-table td {
   cursor: pointer;
 }
 
 .course-table th:hover {
-  cursor: pointer;
   text-decoration: underline;
 }
 
