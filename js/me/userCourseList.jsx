@@ -233,15 +233,15 @@ export default React.createClass({
     },
 
     renderCourseCredits() {
-        const [totalCredits, totalLabel, totalDist] = this.getTotalCredits();
         const [creditsShown, shownLabel, shownDist] = this.getCreditsShown();
+        const [totalCredits, totalLabel, totalDist] = this.getTotalCredits();
 
         return (
             <div className='course-credits'>
-                <p>{totalLabel} <strong>{totalCredits}</strong><br/>
-                    <Badge>{totalDist}</Badge></p>
-                <p>{shownLabel} <strong>{creditsShown}</strong><br/>
-                    <Badge>{shownDist}</Badge></p>
+                <div>{shownLabel} <strong>{creditsShown}</strong><br/>
+                    <Badge>{shownDist}</Badge></div>
+                <div>{totalLabel} <strong>{totalCredits}</strong><br/>
+                    <Badge>{totalDist}</Badge></div>
             </div>
         );
     },

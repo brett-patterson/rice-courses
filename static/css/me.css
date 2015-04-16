@@ -27,9 +27,12 @@
 }
 
 .course-credits {
-  float: right;
-  padding-right: 20px;
   text-align: right;
+}
+
+.course-credits > div {
+  display: inline-block;
+  margin-right: 20px;
 }
 
 .fix-schedule-btn {

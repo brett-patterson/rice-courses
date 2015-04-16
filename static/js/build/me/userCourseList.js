@@ -286,14 +286,6 @@ define(["exports", "module", "react", "reactBootstrap", "reactable", "zeroClipbo
         },
 
         renderCourseCredits: function renderCourseCredits() {
-            var _getTotalCredits = this.getTotalCredits();
-
-            var _getTotalCredits2 = _slicedToArray(_getTotalCredits, 3);
-
-            var totalCredits = _getTotalCredits2[0];
-            var totalLabel = _getTotalCredits2[1];
-            var totalDist = _getTotalCredits2[2];
-
             var _getCreditsShown = this.getCreditsShown();
 
             var _getCreditsShown2 = _slicedToArray(_getCreditsShown, 3);
@@ -302,28 +294,19 @@ define(["exports", "module", "react", "reactBootstrap", "reactable", "zeroClipbo
             var shownLabel = _getCreditsShown2[1];
             var shownDist = _getCreditsShown2[2];
 
+            var _getTotalCredits = this.getTotalCredits();
+
+            var _getTotalCredits2 = _slicedToArray(_getTotalCredits, 3);
+
+            var totalCredits = _getTotalCredits2[0];
+            var totalLabel = _getTotalCredits2[1];
+            var totalDist = _getTotalCredits2[2];
+
             return React.createElement(
                 "div",
                 { className: "course-credits" },
                 React.createElement(
-                    "p",
-                    null,
-                    totalLabel,
-                    " ",
-                    React.createElement(
-                        "strong",
-                        null,
-                        totalCredits
-                    ),
-                    React.createElement("br", null),
-                    React.createElement(
-                        Badge,
-                        null,
-                        totalDist
-                    )
-                ),
-                React.createElement(
-                    "p",
+                    "div",
                     null,
                     shownLabel,
                     " ",
@@ -337,6 +320,23 @@ define(["exports", "module", "react", "reactBootstrap", "reactable", "zeroClipbo
                         Badge,
                         null,
                         shownDist
+                    )
+                ),
+                React.createElement(
+                    "div",
+                    null,
+                    totalLabel,
+                    " ",
+                    React.createElement(
+                        "strong",
+                        null,
+                        totalCredits
+                    ),
+                    React.createElement("br", null),
+                    React.createElement(
+                        Badge,
+                        null,
+                        totalDist
                     )
                 )
             );
