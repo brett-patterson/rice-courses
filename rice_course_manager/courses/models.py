@@ -214,7 +214,6 @@ class Course(models.Model):
         group.
 
         """
-        print self.cross_list_group
         if self.cross_list_group == '':
             return []
 
