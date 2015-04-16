@@ -117,6 +117,17 @@ define(["exports", "react", "reactBootstrap", "bootbox", "jquery", "courses/eval
                     React.createElement(
                         "strong",
                         null,
+                        "CRN:"
+                    ),
+                    " ",
+                    course.getCRN()
+                ),
+                React.createElement(
+                    "p",
+                    null,
+                    React.createElement(
+                        "strong",
+                        null,
                         "Credits:"
                     ),
                     " ",

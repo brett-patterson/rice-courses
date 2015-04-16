@@ -61,6 +61,7 @@ const CourseDetailBody = React.createClass({
 
         return (
             <div>
+                <p><strong>CRN:</strong> {course.getCRN()}</p>
                 <p><strong>Credits:</strong> {course.getCredits()}</p>
                 <p><strong>Distribution:</strong> {course.getDistributionString()}</p>
                 <p><strong>Meetings:</strong> {course.getMeetingsString()}</p>
