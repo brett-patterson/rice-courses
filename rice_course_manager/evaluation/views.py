@@ -1,8 +1,5 @@
-import json
-
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 
 from courses.models import Course
 from evaluation import get_course_evaluation, get_instructor_evaluation
@@ -52,15 +49,12 @@ def course_evaluation(request):
     """
     crn = request.POST.get('crn')
 
-    if crn:
+    if crn is not None:
         # return HttpResponse(json.dumps(evaluation_to_json('c', crn)),
         #                     content_type='application/json')
-        return HttpResponse('[]', content_type='application/json')
+        return JsonResponse([], safe=False)
 
-    else:
-        msg = 'Must specify crn'
-        return HttpResponse(json.dumps({'error': msg}),
-                            content_type='application/json')
+    return JsonResponse({'error': 'No CRN specified'}, status=400)
 
 
 def instructor_evaluation(request):
@@ -69,12 +63,9 @@ def instructor_evaluation(request):
     """
     crn = request.POST.get('crn')
 
-    if crn:
+    if crn is not None:
         # return HttpResponse(json.dumps(evaluation_to_json('i', crn)),
         #                     content_type='application/json')
-        return HttpResponse('[]', content_type='application/json')
+        return JsonResponse([], safe=False)
 
-    else:
-        msg = 'Must specify crn'
-        return HttpResponse(json.dumps({'error': msg}),
-                            content_type='application/json')
+    return JsonResponse({'error': 'No CRN specified'}, status=400)

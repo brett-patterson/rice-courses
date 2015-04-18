@@ -1,6 +1,4 @@
-import json
-
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render
 
 from django_cas.decorators import login_required
@@ -26,8 +24,7 @@ def courses(request):
 
     """
     course_list = request.user.userprofile.courses.all()
-    return HttpResponse(json.dumps([c.json() for c in course_list]),
-                        content_type='application/json')
+    return JsonResponse([c.json() for c in course_list], safe=False)
 
 
 @login_required(login_url='/login/')
@@ -37,7 +34,7 @@ def add_course(request):
     """
     crn = request.POST.get('crn')
 
-    if crn:
+    if crn is not None:
         course = Course.objects.get(crn=crn)
 
         profile = request.user.userprofile
@@ -46,11 +43,9 @@ def add_course(request):
         for scheduler in Scheduler.objects.filter(user_profile=profile):
             scheduler.set_shown(course, True)
 
-        return HttpResponse(json.dumps({'status': 'success'}),
-                            content_type='application/json')
-    else:
-        return HttpResponse(json.dumps({'status': 'error'}),
-                            content_type='application/json')
+        return JsonResponse({})
+
+    return JsonResponse({'error': 'No CRN specified'}, status=400)
 
 
 @login_required(login_url='/login/')
@@ -60,15 +55,13 @@ def remove_course(request):
     """
     crn = request.POST.get('crn')
 
-    if crn:
+    if crn is not None:
         course = Course.objects.get(crn=crn)
         request.user.userprofile.courses.remove(course)
 
-        return HttpResponse(json.dumps({'status': 'success'}),
-                            content_type='application/json')
-    else:
-        return HttpResponse(json.dumps({'status': 'error'}),
-                            content_type='application/json')
+        return JsonResponse({})
+
+    return JsonResponse({'error': 'No CRN specified'}, status=400)
 
 
 def overlap(course_one, course_two):
@@ -90,10 +83,10 @@ def overlap(course_one, course_two):
     for interval_one in course_one.meetings:
         for interval_two in course_two.meetings:
             if (interval_two.start < interval_one.start < interval_two.end or
-                interval_two.start < interval_one.end < interval_two.end or
-                interval_one.start == interval_two.start or
-                interval_one.start == interval_two.end or
-                interval_one.end == interval_two.start):
+                    interval_two.start < interval_one.end < interval_two.end or
+                    interval_one.start == interval_two.start or
+                    interval_one.start == interval_two.end or
+                    interval_one.end == interval_two.start):
                 return True
 
     return False
@@ -106,7 +99,7 @@ def suggest_alternate(request):
     """
     crn = request.POST.get('crn')
 
-    if crn:
+    if crn is not None:
         course = Course.objects.get(crn=crn)
 
         alternates = Course.objects.filter(subject=course.subject,
@@ -130,14 +123,9 @@ def suggest_alternate(request):
             if ok:
                 result.append(alternate.json())
 
-        return HttpResponse(json.dumps({
-            'course': course.json(),
-            'alternates': result
-            }), content_type='application/json')
+        return JsonResponse({'course': course.json(), 'alternates': result})
 
-    else:
-        return HttpResponse(json.dumps({'error': 'Must specify crn'}),
-                            content_type='application/json')
+    return JsonResponse({'error': 'No CRN specified'}, status=400)
 
 
 @login_required(login_url='/login/')
@@ -146,10 +134,10 @@ def schedulers(request):
 
     """
     profile = request.user.userprofile
-    schedulers = [s.json() for s in Scheduler.objects.filter(user_profile=profile)]
+    schedulers = [s.json()
+                  for s in Scheduler.objects.filter(user_profile=profile)]
 
-    return HttpResponse(json.dumps(schedulers),
-                        content_type='application/json')
+    return JsonResponse(schedulers, safe=False)
 
 
 @login_required(login_url='/login/')
@@ -165,11 +153,10 @@ def export_scheduler(request):
         courses = [course.json() for course in
                    request.user.userprofile.courses.all()
                    if show_map[course.crn]]
-        return HttpResponse(json.dumps(courses),
-                            content_type='application/json')
-    else:
-        return HttpResponse(json.dumps({'status': 'error'}),
-                            content_type='application/json')
+
+        return JsonResponse(courses, safe=False)
+
+    return JsonResponse({'error': 'No CRN specified'}, status=400)
 
 
 @login_required(login_url='/login/')
@@ -179,15 +166,11 @@ def add_scheduler(request):
     """
     name = request.POST.get('name')
 
-    if name:
+    if name is not None:
         scheduler = request.user.userprofile.create_scheduler(name)
-        return HttpResponse(json.dumps({
-            'status': 'success',
-            'scheduler': scheduler.json()
-            }), content_type='application/json')
-    else:
-        return HttpResponse(json.dumps({'status': 'error'}),
-                            content_type='application/json')
+        return JsonResponse({'scheduler': scheduler})
+
+    return JsonResponse({'error': 'No name specified'}, status=400)
 
 
 @login_required(login_url='/login/')
@@ -199,11 +182,9 @@ def remove_scheduler(request):
 
     if s_id is not None:
         Scheduler.objects.get(pk=s_id).delete()
-        return HttpResponse(json.dumps({'status': 'success'}),
-                            content_type='application/json')
-    else:
-        return HttpResponse(json.dumps({'status': 'error'}),
-                            content_type='application/json')
+        return JsonResponse({})
+
+    return JsonResponse({'error': 'No ID specified'}, status=400)
 
 
 @login_required(login_url='/login/')
@@ -215,16 +196,18 @@ def set_course_shown(request):
     crn = request.POST.get('crn')
     shown = request.POST.get('shown')
 
-    if s_id is not None and crn and shown is not None:
-        scheduler = Scheduler.objects.get(pk=s_id)
-        scheduler.set_shown(Course.objects.get(crn=crn),
-                            shown == 'true')
-        return HttpResponse(json.dumps({'status': 'success'}),
-                            content_type='application/json')
+    if s_id is None:
+        return JsonResponse({'error': 'No ID specified'}, status=400)
 
-    else:
-        return HttpResponse(json.dumps({'status': 'error'}),
-                            content_type='application/json')
+    if crn is None:
+        return JsonResponse({'error': 'No CRN specified'}, status=400)
+
+    if shown is None:
+        return JsonResponse({'error': 'No shown flag specified'}, status=400)
+
+    scheduler = Scheduler.objects.get(pk=s_id)
+    scheduler.set_shown(Course.objects.get(crn=crn), shown == 'true')
+    return JsonResponse({})
 
 
 @login_required(login_url='/login/')
@@ -235,16 +218,15 @@ def remove_scheduler_course(request):
     s_id = request.POST.get('id')
     crn = request.POST.get('crn')
 
-    if s_id is not None and crn is not None:
-        scheduler = Scheduler.objects.get(pk=s_id)
-        scheduler.remove_course(Course.objects.get(crn=crn))
+    if s_id is None:
+        return JsonResponse({'error': 'No ID specified'}, status=400)
 
-        return HttpResponse(json.dumps({'status': 'success'}),
-                            content_type='application/json')
+    if crn is None:
+        return JsonResponse({'error': 'No CRN specified'}, status=400)
 
-    else:
-        return HttpResponse(json.dumps({'status': 'error'}),
-                            content_type='application/json')
+    scheduler = Scheduler.objects.get(pk=s_id)
+    scheduler.remove_course(Course.objects.get(crn=crn))
+    return JsonResponse({})
 
 
 @login_required(login_url='/login/')
@@ -255,16 +237,16 @@ def set_scheduler_shown(request):
     s_id = request.POST.get('id')
     shown = request.POST.get('shown')
 
-    if s_id is not None and shown is not None:
-        scheduler = Scheduler.objects.get(pk=s_id)
-        scheduler.shown = shown == 'true'
-        scheduler.save()
-        return HttpResponse(json.dumps({'status': 'success'}),
-                            content_type='application/json')
+    if s_id is None:
+        return JsonResponse({'error': 'No ID specified'}, status=400)
 
-    else:
-        return HttpResponse(json.dumps({'status': 'error'}),
-                            content_type='application/json')
+    if shown is None:
+        return JsonResponse({'error': 'No shown flag specified'}, status=400)
+
+    scheduler = Scheduler.objects.get(pk=s_id)
+    scheduler.shown = shown == 'true'
+    scheduler.save()
+    return JsonResponse({})
 
 
 @login_required(login_url='/login/')
@@ -275,12 +257,13 @@ def rename_scheduler(request):
     s_id = request.POST.get('id')
     name = request.POST.get('name')
 
-    if s_id is not None and name:
-        scheduler = Scheduler.objects.get(pk=s_id)
-        scheduler.name = name
-        scheduler.save()
-        return HttpResponse(json.dumps({'status': 'success'}),
-                            content_type='application/json')
-    else:
-        return HttpResponse(json.dumps({'status': 'error'}),
-                            content_type='application/json')
+    if s_id is None:
+        return JsonResponse({'error': 'No ID specified'}, status=400)
+
+    if name is None:
+        return JsonResponse({'error': 'No name specified'}, status=400)
+
+    scheduler = Scheduler.objects.get(pk=s_id)
+    scheduler.name = name
+    scheduler.save()
+    return JsonResponse({})

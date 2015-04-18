@@ -1,6 +1,4 @@
-import json
-
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render
 
 from django_cas.decorators import login_required
@@ -25,8 +23,7 @@ def all(request):
     """ Returns a list of all courses as JSON objects.
 
     """
-    return HttpResponse(json.dumps([c.json() for c in Course.objects.all()]),
-                        content_type='application/json')
+    return JsonResponse([c.json() for c in Course.objects.all()], safe=False)
 
 
 @login_required(login_url='/login/')
@@ -37,15 +34,15 @@ def get_sections(request):
     subj = request.POST.get('subject')
     num = request.POST.get('number')
 
-    if subj is not None and num is not None:
-        filtered = Course.objects.filter(subject=subj, course_number=num)
-        courses = [c.json() for c in filtered]
-        return HttpResponse(json.dumps(courses),
-                            content_type='application/json')
+    if subj is None:
+        return JsonResponse({'error': 'No subject specified'}, status=400)
 
-    msg = 'Must specify subject and number'
-    return HttpResponse(json.dumps({'error': msg}),
-                        content_type='application/json')
+    if num is None:
+        return JsonResponse({'error': 'No course number specified'},
+                            status=400)
+
+    filtered = Course.objects.filter(subject=subj, course_number=num)
+    return JsonResponse([c.json() for c in filtered], safe=False)
 
 
 @login_required(login_url='/login/')
@@ -55,4 +52,4 @@ def get_subjects(request):
     """
     subjects = sorted(map(lambda x: x['subject'],
                           Course.objects.values('subject').distinct()))
-    return HttpResponse(json.dumps(subjects), content_type='application/json')
+    return JsonResponse(subjects, safe=False)
