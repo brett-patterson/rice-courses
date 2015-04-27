@@ -1,0 +1,45 @@
+.planner table {
+    border: 1px solid #ddd;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.planner th {
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.planner-slot-major {
+    border-bottom: 1px dotted #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+}
+
+.planner-slot-minor {
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-top: 1px dotted #ddd;
+}
+
+.planner-axis-time {
+    text-align: center;
+}
+
+.planner-am-pm {
+    font-variant: small-caps;
+}
+
+.planner-event-overlay {
+    position: relative;
+}
+
+.planner-event {
+    border: 1px solid #000;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    padding: 5px;
+    position: absolute;
+}

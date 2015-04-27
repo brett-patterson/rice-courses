@@ -2,12 +2,11 @@ extends base
 - load static
 
 block head
-    link(type='text/css' rel='stylesheet'
-         href="{% static 'lib/fullcalendar/dist/fullcalendar.css' %}")
-    link(type='text/css' rel='stylesheet'
+    link(type='text/css', rel='stylesheet',
          href="{% static 'css/courseDetail.css' %}")
-    link(type='text/css' rel='stylesheet'
-         href="{% static 'css/me.css' %}")
+    link(type='text/css', rel='stylesheet', href="{% static 'css/me.css' %}")
+    link(type='text/css', rel='stylesheet',
+         href="{% static 'css/planner.css' %}")
 
 block content
     #meContent
