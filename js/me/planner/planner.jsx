@@ -12,7 +12,10 @@ export default React.createClass({
             slotHeight: 25,
             eventInsetPercent: 0.4,
             timeDisplayFormat: 'hh:mm A',
-            onEventClick: () => {}
+            onEventClick: () => {},
+            onEventDragStart: () => {},
+            onEventDragCancel: () => {},
+            onEventDrop: () => {}
         };
     },
 
@@ -24,6 +27,10 @@ export default React.createClass({
 
     componentWillReceiveProps(nextProps) {
         this.fetchEvents(nextProps.events);
+    },
+
+    updateEvents() {
+        this.fetchEvents(this.props.events);
     },
 
     fetchEvents(source) {
@@ -83,6 +90,18 @@ export default React.createClass({
         };
     },
 
+    onEventDragStart(event) {
+        this.props.onEventDragStart(event);
+    },
+
+    onEventDragCancel(event) {
+        this.props.onEventDragCancel(event);
+    },
+
+    onEventDrop(oldEvent, newEvent) {
+        this.props.onEventDrop(oldEvent, newEvent);
+    },
+
     renderEvents() {
         const eventWidth = this.getSlotWidthPercent() -
                            2 * this.props.eventInsetPercent;
@@ -106,7 +125,7 @@ export default React.createClass({
             return [
                 <div className='planner-event-underlay' style={overlayStyle} />,
                 <Event key={event.id} className='planner-event'
-                       event={event} style={eventStyle}
+                       event={event} style={eventStyle} planner={this}
                        timeDisplayFormat={this.props.timeDisplayFormat}
                        onClick={this.onEventClickHandler(event)} />
             ];

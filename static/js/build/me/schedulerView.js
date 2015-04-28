@@ -91,7 +91,7 @@ define(["exports", "module", "react", "me/planner/planner", "courses/course", "c
             }
         },
 
-        onEventClick: function onEventClick(event) {
+        eventClick: function eventClick(event) {
             showCourseDetail(event.course);
         },
 
@@ -105,45 +105,30 @@ define(["exports", "module", "react", "me/planner/planner", "courses/course", "c
             });
         },
 
-        eventDrop: function eventDrop(event, delta, revert) {
-            var newCourse = undefined;
+        eventDragCancel: function eventDragCancel(event) {
+            this.setState({
+                alternates: []
+            });
+        },
 
-            var offsetEvent = {
-                start: event.start.add(delta._milliseconds, "ms"),
-                end: event.end.add(delta._milliseconds, "ms")
-            };
-
-            alternateLoop: for (var i = 0; i < this.state.alternates.length; i++) {
-                var altMeetings = this.state.alternates[i].getMeetings();
-
-                for (var j = 0; j < altMeetings.length; j++) {
-                    var meeting = altMeetings[j];
-
-                    if (eventOverlap(offsetEvent, meeting)) {
-                        newCourse = this.state.alternates[i];
-                        break alternateLoop;
-                    }
-                }
-            }
-
+        eventDrop: function eventDrop(oldEvent, newEvent) {
             this.setState({
                 alternates: []
             });
 
-            if (newCourse !== undefined) {
-                this.props.courseDelegate.replaceSection(event.course, newCourse);
-            } else {
-                revert();
-            }
+            this.props.courseDelegate.replaceSection(oldEvent.course, newEvent.course);
         },
 
-        componentDidUpdate: function componentDidUpdate(nextProps, nextState) {},
+        componentDidUpdate: function componentDidUpdate(nextProps, nextState) {
+            this.refs.planner.updateEvents();
+        },
 
         render: function render() {
-            return React.createElement(Planner, { events: this.getEvents,
-                onEventClick: this.onEventClick });
+            return React.createElement(Planner, { ref: "planner", events: this.getEvents,
+                onEventClick: this.eventClick,
+                onEventDragStart: this.eventDragStart,
+                onEventDragCancel: this.eventDragCancel,
+                onEventDrop: this.eventDrop });
         }
     });
 });
-
-// Update events

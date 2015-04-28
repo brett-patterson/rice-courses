@@ -116,6 +116,14 @@ export default class Course {
         return this.crn;
     }
 
+    getSubject() {
+        return this.subject;
+    }
+
+    getNumber() {
+        return this.number;
+    }
+
     getCourseID() {
         return `${this.subject} ${this.number} ${this.section}`;
     }

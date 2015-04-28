@@ -19,7 +19,10 @@ define(["exports", "module", "react", "me/planner/event"], function (exports, mo
                 slotHeight: 25,
                 eventInsetPercent: 0.4,
                 timeDisplayFormat: "hh:mm A",
-                onEventClick: function () {}
+                onEventClick: function () {},
+                onEventDragStart: function () {},
+                onEventDragCancel: function () {},
+                onEventDrop: function () {}
             };
         },
 
@@ -31,6 +34,10 @@ define(["exports", "module", "react", "me/planner/event"], function (exports, mo
 
         componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
             this.fetchEvents(nextProps.events);
+        },
+
+        updateEvents: function updateEvents() {
+            this.fetchEvents(this.props.events);
         },
 
         fetchEvents: function fetchEvents(source) {
@@ -91,6 +98,18 @@ define(["exports", "module", "react", "me/planner/event"], function (exports, mo
             };
         },
 
+        onEventDragStart: function onEventDragStart(event) {
+            this.props.onEventDragStart(event);
+        },
+
+        onEventDragCancel: function onEventDragCancel(event) {
+            this.props.onEventDragCancel(event);
+        },
+
+        onEventDrop: function onEventDrop(oldEvent, newEvent) {
+            this.props.onEventDrop(oldEvent, newEvent);
+        },
+
         renderEvents: function renderEvents() {
             var _this = this;
 
@@ -113,7 +132,7 @@ define(["exports", "module", "react", "me/planner/event"], function (exports, mo
                 };
 
                 return [React.createElement("div", { className: "planner-event-underlay", style: overlayStyle }), React.createElement(Event, { key: event.id, className: "planner-event",
-                    event: event, style: eventStyle,
+                    event: event, style: eventStyle, planner: _this,
                     timeDisplayFormat: _this.props.timeDisplayFormat,
                     onClick: _this.onEventClickHandler(event) })];
             });

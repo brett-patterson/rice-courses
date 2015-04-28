@@ -76,7 +76,7 @@ export default React.createClass({
         }
     },
 
-    onEventClick(event) {
+    eventClick(event) {
         showCourseDetail(event.course);
     },
 
@@ -88,45 +88,30 @@ export default React.createClass({
         });
     },
 
-    eventDrop(event, delta, revert) {
-        let newCourse;
+    eventDragCancel(event) {
+        this.setState({
+            alternates: []
+        });
+    },
 
-        let offsetEvent = {
-            start: event.start.add(delta._milliseconds, 'ms'),
-            end: event.end.add(delta._milliseconds, 'ms')
-        };
-
-        alternateLoop:
-        for (let i = 0; i < this.state.alternates.length; i++) {
-            const altMeetings = this.state.alternates[i].getMeetings();
-
-            for (let j = 0; j < altMeetings.length; j++) {
-                const meeting = altMeetings[j];
-
-                if (eventOverlap(offsetEvent, meeting)) {
-                    newCourse = this.state.alternates[i];
-                    break alternateLoop;
-                }
-            }
-        }
-
+    eventDrop(oldEvent, newEvent) {
         this.setState({
             alternates: []
         });
 
-        if (newCourse !== undefined) {
-            this.props.courseDelegate.replaceSection(event.course, newCourse);                    
-        } else {
-            revert();
-        }
+        this.props.courseDelegate.replaceSection(oldEvent.course,
+                                                 newEvent.course);                    
     },
 
     componentDidUpdate(nextProps, nextState) {
-        // Update events
+        this.refs.planner.updateEvents();
     },
 
     render() {
-        return <Planner events={this.getEvents}
-                        onEventClick={this.onEventClick} />;
+        return <Planner ref='planner' events={this.getEvents}
+                        onEventClick={this.eventClick}
+                        onEventDragStart={this.eventDragStart}
+                        onEventDragCancel={this.eventDragCancel}
+                        onEventDrop={this.eventDrop} />;
     }
 });

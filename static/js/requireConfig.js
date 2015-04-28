@@ -11,7 +11,7 @@ require.config({
         react: "../../lib/react/react-with-addons",
         reactBootstrap: "../../lib/react-bootstrap/react-bootstrap",
         reactable: "../../lib/reactable/build/reactable",
-        reactDND: "../../lib/react-dnd/dist/ReactDND.min",
+        reactDnd: "../../lib/react-dnd/dist/ReactDND.min",
         tutorialize: "../../lib/tutorialize/dist/js/tutorialize",
         zeroClipboard: "../../lib/zeroclipboard/dist/ZeroClipboard"
     },
