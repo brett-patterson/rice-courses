@@ -9,7 +9,7 @@ export default React.createClass({
             endHour: 20,
             timeWidthPercent: 3,
             slotHeight: 25,
-            eventInsetPercent: 0,
+            eventInsetPercent: 0.4,
             timeDisplayFormat: 'hh:mm A',
             onEventClick: () => {}
         };
@@ -102,8 +102,8 @@ export default React.createClass({
                 <div key={event.id} className='planner-event'
                      style={eventStyle}
                      onClick={this.onEventClickHandler(event)}>
+                    <small>{`${eventStart} - ${eventEnd}`}</small><br/>
                     {event.title}
-                    {`${eventStart} - ${eventEnd}`}
                 </div>
             );
         });
@@ -111,12 +111,16 @@ export default React.createClass({
 
     renderHeaderRows() {
         const headers = this.props.days.map((day, i) => {
-            return <th width={`${this.getSlotWidthPercent()}%`}
-                       height={this.props.slotHeight}
+            return <th height={this.props.slotHeight}
                        key={`plannerHead${i}`}>{day}</th>;
         });
 
-        return <tr><th></th>{headers}</tr>;
+        return (
+            <tr>
+                <th width={`${this.props.timeWidthPercent}%`}></th>
+                {headers}
+            </tr>
+        );
     },
 
     renderFillerRows(major=false) {
@@ -131,11 +135,10 @@ export default React.createClass({
         let rows = [];
 
         for (let i = this.props.startHour; i <= this.props.endHour; i++) {
-            const amPM = i / 12 === 0 ? 'am' : 'pm';
+            const amPM = Math.floor(i / 12) === 0 ? 'am' : 'pm';
             rows.push(
                 <tr key={`plannerTime${i}-1`}>
                     <td className='planner-axis-time planner-slot-major'
-                        width={`${this.props.timeWidthPercent}%`}
                         height={this.props.slotHeight}>
                         {this.militaryTo12Hour(i)}
                         <span className='planner-am-pm'>{amPM}</span>
@@ -144,7 +147,6 @@ export default React.createClass({
                 </tr>,
                 <tr key={`plannerTime${i}-2`}>
                     <td className='planner-axis-time planner-slot-minor'
-                        width={`${this.props.timeWidthPercent}%`}
                         height={this.props.slotHeight}></td>
                     {this.renderFillerRows()}
                 </tr>

@@ -1,6 +1,7 @@
 .planner table {
     border: 1px solid #ddd;
     border-collapse: collapse;
+    table-layout: fixed;
     width: 100%;
 }
 
@@ -40,6 +41,6 @@
     border-radius: 5px;
     color: white;
     cursor: pointer;
-    padding: 5px;
+    padding-left: 5px;
     position: absolute;
 }

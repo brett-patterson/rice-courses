@@ -15,7 +15,7 @@ define(["exports", "module", "react"], function (exports, module, _react) {
                 endHour: 20,
                 timeWidthPercent: 3,
                 slotHeight: 25,
-                eventInsetPercent: 0,
+                eventInsetPercent: 0.4,
                 timeDisplayFormat: "hh:mm A",
                 onEventClick: function () {}
             };
@@ -111,8 +111,13 @@ define(["exports", "module", "react"], function (exports, module, _react) {
                     { key: event.id, className: "planner-event",
                         style: eventStyle,
                         onClick: _this.onEventClickHandler(event) },
-                    event.title,
-                    "" + eventStart + " - " + eventEnd
+                    React.createElement(
+                        "small",
+                        null,
+                        "" + eventStart + " - " + eventEnd
+                    ),
+                    React.createElement("br", null),
+                    event.title
                 );
             });
         },
@@ -123,8 +128,7 @@ define(["exports", "module", "react"], function (exports, module, _react) {
             var headers = this.props.days.map(function (day, i) {
                 return React.createElement(
                     "th",
-                    { width: "" + _this.getSlotWidthPercent() + "%",
-                        height: _this.props.slotHeight,
+                    { height: _this.props.slotHeight,
                         key: "plannerHead" + i },
                     day
                 );
@@ -133,7 +137,7 @@ define(["exports", "module", "react"], function (exports, module, _react) {
             return React.createElement(
                 "tr",
                 null,
-                React.createElement("th", null),
+                React.createElement("th", { width: "" + this.props.timeWidthPercent + "%" }),
                 headers
             );
         },
@@ -154,14 +158,13 @@ define(["exports", "module", "react"], function (exports, module, _react) {
             var rows = [];
 
             for (var i = this.props.startHour; i <= this.props.endHour; i++) {
-                var amPM = i / 12 === 0 ? "am" : "pm";
+                var amPM = Math.floor(i / 12) === 0 ? "am" : "pm";
                 rows.push(React.createElement(
                     "tr",
                     { key: "plannerTime" + i + "-1" },
                     React.createElement(
                         "td",
                         { className: "planner-axis-time planner-slot-major",
-                            width: "" + this.props.timeWidthPercent + "%",
                             height: this.props.slotHeight },
                         this.militaryTo12Hour(i),
                         React.createElement(
@@ -175,7 +178,6 @@ define(["exports", "module", "react"], function (exports, module, _react) {
                     "tr",
                     { key: "plannerTime" + i + "-2" },
                     React.createElement("td", { className: "planner-axis-time planner-slot-minor",
-                        width: "" + this.props.timeWidthPercent + "%",
                         height: this.props.slotHeight }),
                     this.renderFillerRows()
                 ));
