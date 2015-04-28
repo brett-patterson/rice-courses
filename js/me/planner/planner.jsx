@@ -1,4 +1,5 @@
 import React from 'react';
+import Event from 'me/planner/event';
 
 
 export default React.createClass({
@@ -95,17 +96,20 @@ export default React.createClass({
                 width: `${eventWidth}%`
             };
 
-            const eventStart = event.start.format(this.props.timeDisplayFormat);
-            const eventEnd = event.end.format(this.props.timeDisplayFormat);
+            const overlayStyle = {
+                height: eventStyle.height,
+                left: eventStyle.left,
+                top: eventStyle.top,
+                width: eventStyle.width
+            };
 
-            return (
-                <div key={event.id} className='planner-event'
-                     style={eventStyle}
-                     onClick={this.onEventClickHandler(event)}>
-                    <small>{`${eventStart} - ${eventEnd}`}</small><br/>
-                    {event.title}
-                </div>
-            );
+            return [
+                <div className='planner-event-underlay' style={overlayStyle} />,
+                <Event key={event.id} className='planner-event'
+                       event={event} style={eventStyle}
+                       timeDisplayFormat={this.props.timeDisplayFormat}
+                       onClick={this.onEventClickHandler(event)} />
+            ];
         });
     },
 
@@ -159,7 +163,7 @@ export default React.createClass({
     render() {        
         return (
             <div className='planner'>
-                <div className='planner-event-overlay'>
+                <div className='planner-overlay'>
                     {this.renderEvents()}
                 </div>
                 <table>

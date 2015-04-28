@@ -1,9 +1,11 @@
-define(["exports", "module", "react"], function (exports, module, _react) {
+define(["exports", "module", "react", "me/planner/event"], function (exports, module, _react, _mePlannerEvent) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
     var React = _interopRequire(_react);
+
+    var Event = _interopRequire(_mePlannerEvent);
 
     module.exports = React.createClass({
         displayName: "planner",
@@ -103,22 +105,17 @@ define(["exports", "module", "react"], function (exports, module, _react) {
                     width: "" + eventWidth + "%"
                 };
 
-                var eventStart = event.start.format(_this.props.timeDisplayFormat);
-                var eventEnd = event.end.format(_this.props.timeDisplayFormat);
+                var overlayStyle = {
+                    height: eventStyle.height,
+                    left: eventStyle.left,
+                    top: eventStyle.top,
+                    width: eventStyle.width
+                };
 
-                return React.createElement(
-                    "div",
-                    { key: event.id, className: "planner-event",
-                        style: eventStyle,
-                        onClick: _this.onEventClickHandler(event) },
-                    React.createElement(
-                        "small",
-                        null,
-                        "" + eventStart + " - " + eventEnd
-                    ),
-                    React.createElement("br", null),
-                    event.title
-                );
+                return [React.createElement("div", { className: "planner-event-underlay", style: overlayStyle }), React.createElement(Event, { key: event.id, className: "planner-event",
+                    event: event, style: eventStyle,
+                    timeDisplayFormat: _this.props.timeDisplayFormat,
+                    onClick: _this.onEventClickHandler(event) })];
             });
         },
 
@@ -192,7 +189,7 @@ define(["exports", "module", "react"], function (exports, module, _react) {
                 { className: "planner" },
                 React.createElement(
                     "div",
-                    { className: "planner-event-overlay" },
+                    { className: "planner-overlay" },
                     this.renderEvents()
                 ),
                 React.createElement(
