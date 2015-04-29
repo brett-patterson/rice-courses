@@ -33,6 +33,7 @@
 .course-credits > div {
   display: inline-block;
   margin-right: 20px;
+  text-align: center;
 }
 
 .fix-schedule-btn {
