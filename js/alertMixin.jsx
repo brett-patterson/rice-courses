@@ -1,5 +1,6 @@
 import React from 'react';
 import {Alert} from 'reactBootstrap';
+import {indexOf} from 'util';
 
 
 export default {
@@ -12,14 +13,16 @@ export default {
     addAlert(html, style, timeout=3000) {
         this.setState(React.addons.update(this.state, {
             alerts: {
-                $push: [{ html, style, timeout }]
+                $push: [{ html, style, timeout, id: Date.now() }]
             }
         }));
     },
 
     handleAlertDismissFactory(message) {
         return event => {
-            const index = this.state.alerts.indexOf(message);
+            const index = indexOf(this.state.alerts, message.id, message => {
+                return message.id;
+            });
 
             if (index > -1)
                 this.setState(React.addons.update(this.state, {
@@ -31,15 +34,17 @@ export default {
     },
 
     renderAlerts() {
-        return this.state.alerts.map((message, index) => {
+        const alerts = this.state.alerts.map((message, index) => {
             return (
-                <Alert key={index}
-                       bsStyle={message.style}
-                       dismissAfter={message.timeout}
-                       onDismiss={this.handleAlertDismissFactory(message)}>
-                    <span dangerouslySetInnerHTML={{ __html: message.html }} />
-                </Alert>
+                    <Alert key={message.id}
+                           bsStyle={message.style}
+                           dismissAfter={message.timeout}
+                           onDismiss={this.handleAlertDismissFactory(message)}>
+                        <span dangerouslySetInnerHTML={{ __html: message.html }} />
+                    </Alert>
             );
         });
+
+        return <div className='alert-container'>{alerts}</div>;
     }
 };
