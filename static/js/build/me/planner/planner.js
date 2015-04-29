@@ -115,13 +115,42 @@ define(["exports", "module", "react", "me/planner/event"], function (exports, mo
 
             var eventWidth = this.getSlotWidthPercent() - 2 * this.props.eventInsetPercent;
 
+            var eventsAtSameTime = {};
+
+            for (var i = 0; i < this.state.events.length; i++) {
+                var _event = this.state.events[i];
+                eventsAtSameTime[_event.id] = [_event];
+
+                for (var j = 0; j < this.state.events.length; j++) {
+                    var other = this.state.events[j];
+
+                    if (_event !== other && (_event.start >= other.start && _event.start <= other.end || _event.end >= other.end && _event.end <= other.end)) {
+                        eventsAtSameTime[_event.id].push(other);
+                    }
+                }
+
+                eventsAtSameTime[_event.id].sort(function (a, b) {
+                    if (a.id < b.id) {
+                        return -1;
+                    } else if (a.id === b.id) {
+                        return 0;
+                    } else {
+                        return 1;
+                    }
+                });
+            }
+
             return this.state.events.map(function (event) {
+                var sameTime = eventsAtSameTime[event.id];
+                var width = eventWidth / sameTime.length;
+                var offset = width * sameTime.indexOf(event);
+
                 var eventStyle = {
                     backgroundColor: event.color,
                     height: _this.getHeightForEvent(event),
-                    left: "" + _this.getLeftPercentForEvent(event) + "%",
+                    left: "" + (_this.getLeftPercentForEvent(event) + offset) + "%",
                     top: _this.getTopForEvent(event),
-                    width: "" + eventWidth + "%"
+                    width: "" + width + "%"
                 };
 
                 var overlayStyle = {

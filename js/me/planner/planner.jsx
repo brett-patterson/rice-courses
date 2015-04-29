@@ -106,13 +106,44 @@ export default React.createClass({
         const eventWidth = this.getSlotWidthPercent() -
                            2 * this.props.eventInsetPercent;
 
+        let eventsAtSameTime = {};
+
+        for (let i = 0; i < this.state.events.length; i++) {
+            const event = this.state.events[i];
+            eventsAtSameTime[event.id] = [event];
+
+            for (let j = 0; j < this.state.events.length; j++) {
+                const other = this.state.events[j];
+
+                if (event !== other &&
+                    (event.start >= other.start && event.start <= other.end ||
+                    event.end >= other.end && event.end <= other.end)) {
+                    eventsAtSameTime[event.id].push(other);
+                }
+            }
+
+            eventsAtSameTime[event.id].sort((a, b) => {
+                if (a.id < b.id) {
+                    return -1;
+                } else if (a.id === b.id) {
+                    return 0;
+                } else {
+                    return 1;
+                }
+            });
+        }
+
         return this.state.events.map(event => {
+            const sameTime = eventsAtSameTime[event.id];
+            const width = eventWidth / sameTime.length;
+            const offset = width * sameTime.indexOf(event);
+
             const eventStyle = {
                 backgroundColor: event.color,
                 height: this.getHeightForEvent(event),
-                left: `${this.getLeftPercentForEvent(event)}%`,
+                left: `${this.getLeftPercentForEvent(event) + offset}%`,
                 top: this.getTopForEvent(event),
-                width: `${eventWidth}%`
+                width: `${width}%`
             };
 
             const overlayStyle = {
