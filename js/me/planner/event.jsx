@@ -51,8 +51,8 @@ export default React.createClass({
             <div {...this.props} className='planner-event'
                  {...this.dragSourceFor('plannerEvent')}
                  {...this.dropTargetFor('plannerEvent')}>
-                <small>{`${eventStart} - ${eventEnd}`}</small><br/>
-                {event.title}
+                {event.title}<br/>
+                <small>{`${eventStart} - ${eventEnd}`}</small>
             </div>
         );
     }

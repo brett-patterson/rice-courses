@@ -58,13 +58,13 @@ define(["exports", "module", "react", "reactDnd"], function (exports, module, _r
                 "div",
                 _extends({}, this.props, { className: "planner-event"
                 }, this.dragSourceFor("plannerEvent"), this.dropTargetFor("plannerEvent")),
+                event.title,
+                React.createElement("br", null),
                 React.createElement(
                     "small",
                     null,
                     "" + eventStart + " - " + eventEnd
-                ),
-                React.createElement("br", null),
-                event.title
+                )
             );
         }
     });
