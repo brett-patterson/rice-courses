@@ -1,14 +1,9 @@
-define(["exports", "jquery"], function (exports, _jquery) {
+define(["exports"], function (exports) {
     "use strict";
-
-    var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
     Object.defineProperty(exports, "__esModule", {
         value: true
     });
-
-    var jQuery = _interopRequire(_jquery);
-
     /**
      * A modified indexOf function with an optional key function.
      * @param {array} array - The array to search through
@@ -215,5 +210,37 @@ define(["exports", "jquery"], function (exports, _jquery) {
 
         return jQuery.ajax(requestConfig);
     };
+
     exports.ajaxCSRF = ajaxCSRF;
+    /**
+     * A custom React PropTypes validator that checks that the prop value
+     * is an object with the given properties.
+     * @param {array} propertyNames - The names of the functions to check for
+     * @param {boolean} required - Whether or not the prop should be required
+     * @return {function} The React Prop Type validation function
+     */
+    var propTypeHas = function (propertyNames) {
+        var required = arguments[1] === undefined ? true : arguments[1];
+
+        return function (props, propName, componentName) {
+            var prop = props[propName];
+
+            if (required && (prop === undefined || prop === null)) {
+                return new Error("Must specify non-null prop: " + propName + ".");
+            }
+
+            if (typeof prop !== "object") {
+                return new Error("" + propName + " must be an object.");
+            }
+
+            for (var i = 0; i < propertyNames.length; i++) {
+                var property = propertyNames[i];
+                if (prop[property] === undefined) {
+                    var msg = "" + propName + " must have a " + property + " property.";
+                    return new Error(msg);
+                }
+            }
+        };
+    };
+    exports.propTypeHas = propTypeHas;
 });

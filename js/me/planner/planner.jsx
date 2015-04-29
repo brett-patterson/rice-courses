@@ -4,8 +4,27 @@ import {eventOverlap} from 'util';
 
 
 export default React.createClass({
+    propTypes: {
+        eventSource: React.PropTypes.oneOfType([
+            React.PropTypes.array,
+            React.PropTypes.func
+        ]),
+        days: React.PropTypes.array,
+        startHour: React.PropTypes.number,
+        endHour: React.PropTypes.number,
+        timeWidthPercent: React.PropTypes.number,
+        slotHeight: React.PropTypes.number,
+        eventInsetPercent: React.PropTypes.number,
+        timeDisplayFormat: React.PropTypes.string,
+        onEventClick: React.PropTypes.func,
+        onEventDragStart: React.PropTypes.func,
+        onEventDragCancel: React.PropTypes.func,
+        onEventDrop: React.PropTypes.func
+    },
+
     getDefaultProps() {
         return {
+            eventSource: [],
             days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
             startHour: 8,
             endHour: 20,
@@ -27,11 +46,11 @@ export default React.createClass({
     },
 
     componentWillReceiveProps(nextProps) {
-        this.fetchEvents(nextProps.events);
+        this.fetchEvents(nextProps.eventSource);
     },
 
     updateEvents() {
-        this.fetchEvents(this.props.events);
+        this.fetchEvents(this.props.eventSource);
     },
 
     fetchEvents(source) {

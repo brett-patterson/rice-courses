@@ -2,16 +2,21 @@ import React from 'react';
 import Bootbox from 'bootbox';
 
 import Course from 'courses/course';
+import Scheduler from 'me/scheduler';
 import {ajaxCSRF} from 'util';
 
 
 const ExportBody = React.createClass({
+    propTypes: {
+        scheduler: React.PropTypes.instanceOf(Scheduler).isRequired
+    },
+
     componentDidMount() {
         ajaxCSRF({
             url: '/me/api/scheduler/export/',
             method: 'POST',
             data: {
-                id: this.props.scheduler.id
+                id: this.props.scheduler.getID()
             }
         }).done(data => {
             let courses = data.map(courseJSON => {

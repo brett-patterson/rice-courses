@@ -11,8 +11,24 @@ define(["exports", "module", "react", "me/planner/event", "util"], function (exp
     module.exports = React.createClass({
         displayName: "planner",
 
+        propTypes: {
+            eventSource: React.PropTypes.oneOfType([React.PropTypes.array, React.PropTypes.func]),
+            days: React.PropTypes.array,
+            startHour: React.PropTypes.number,
+            endHour: React.PropTypes.number,
+            timeWidthPercent: React.PropTypes.number,
+            slotHeight: React.PropTypes.number,
+            eventInsetPercent: React.PropTypes.number,
+            timeDisplayFormat: React.PropTypes.string,
+            onEventClick: React.PropTypes.func,
+            onEventDragStart: React.PropTypes.func,
+            onEventDragCancel: React.PropTypes.func,
+            onEventDrop: React.PropTypes.func
+        },
+
         getDefaultProps: function getDefaultProps() {
             return {
+                eventSource: [],
                 days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
                 startHour: 8,
                 endHour: 20,
@@ -34,11 +50,11 @@ define(["exports", "module", "react", "me/planner/event", "util"], function (exp
         },
 
         componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-            this.fetchEvents(nextProps.events);
+            this.fetchEvents(nextProps.eventSource);
         },
 
         updateEvents: function updateEvents() {
-            this.fetchEvents(this.props.events);
+            this.fetchEvents(this.props.eventSource);
         },
 
         fetchEvents: function fetchEvents(source) {

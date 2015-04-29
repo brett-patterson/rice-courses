@@ -1,4 +1,4 @@
-define(["exports", "react", "reactBootstrap", "bootbox", "jquery", "courses/detail/evaluationChart", "util"], function (exports, _react, _reactBootstrap, _bootbox, _jquery, _coursesDetailEvaluationChart, _util) {
+define(["exports", "react", "reactBootstrap", "bootbox", "jquery", "courses/course", "courses/detail/evaluationChart", "util"], function (exports, _react, _reactBootstrap, _bootbox, _jquery, _coursesCourse, _coursesDetailEvaluationChart, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -18,6 +18,8 @@ define(["exports", "react", "reactBootstrap", "bootbox", "jquery", "courses/deta
 
     var jQuery = _interopRequire(_jquery);
 
+    var Course = _interopRequire(_coursesCourse);
+
     var EvaluationChart = _interopRequire(_coursesDetailEvaluationChart);
 
     var makeClasses = _util.makeClasses;
@@ -25,6 +27,10 @@ define(["exports", "react", "reactBootstrap", "bootbox", "jquery", "courses/deta
 
     var CourseDetailBody = React.createClass({
         displayName: "CourseDetailBody",
+
+        propTypes: {
+            course: React.PropTypes.instanceOf(Course).isRequired
+        },
 
         getInitialState: function getInitialState() {
             return {
@@ -43,7 +49,7 @@ define(["exports", "react", "reactBootstrap", "bootbox", "jquery", "courses/deta
                 url: "/evaluation/api/course/",
                 method: "POST",
                 data: {
-                    crn: this.props.course.crn
+                    crn: this.props.course.getCRN()
                 },
                 responseType: "json"
             }).done(function (result) {
@@ -57,7 +63,7 @@ define(["exports", "react", "reactBootstrap", "bootbox", "jquery", "courses/deta
                 url: "/evaluation/api/instructor/",
                 method: "POST",
                 data: {
-                    crn: this.props.course.crn
+                    crn: this.props.course.getCRN()
                 },
                 responseType: "json"
             }).done(function (result) {

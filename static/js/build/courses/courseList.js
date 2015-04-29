@@ -17,8 +17,13 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/de
 
     var makeClasses = _util.makeClasses;
     var ajaxCSRF = _util.ajaxCSRF;
+    var propTypeHas = _util.propTypeHas;
     module.exports = React.createClass({
         displayName: "courseList",
+
+        propTypes: {
+            filterDelegate: propTypeHas(["filter"])
+        },
 
         getInitialState: function getInitialState() {
             return {

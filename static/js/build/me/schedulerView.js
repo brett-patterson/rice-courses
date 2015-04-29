@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "me/planner/planner", "courses/course", "courses/userCourses", "courses/detail/courseDetail", "util"], function (exports, module, _react, _mePlannerPlanner, _coursesCourse, _coursesUserCourses, _coursesDetailCourseDetail, _util) {
+define(["exports", "module", "react", "me/planner/planner", "courses/course", "me/scheduler", "courses/userCourses", "courses/detail/courseDetail", "util"], function (exports, module, _react, _mePlannerPlanner, _coursesCourse, _meScheduler, _coursesUserCourses, _coursesDetailCourseDetail, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -11,19 +11,34 @@ define(["exports", "module", "react", "me/planner/planner", "courses/course", "c
 
     var Course = _interopRequire(_coursesCourse);
 
+    var Scheduler = _interopRequire(_meScheduler);
+
     var UserCourses = _interopRequire(_coursesUserCourses);
 
     var showCourseDetail = _coursesDetailCourseDetail.showCourseDetail;
     var eventOverlap = _util.eventOverlap;
     var getHueByIndex = _util.getHueByIndex;
     var hsvToRgb = _util.hsvToRgb;
+    var propTypeHas = _util.propTypeHas;
     module.exports = React.createClass({
         displayName: "schedulerView",
+
+        propTypes: {
+            scheduler: React.PropTypes.instanceOf(Scheduler),
+            courses: React.PropTypes.array,
+            courseDelegate: propTypeHas(["replaceSection"])
+        },
+
+        getDefaultProps: function getDefaultProps() {
+            return {
+                courses: []
+            };
+        },
 
         getInitialState: function getInitialState() {
             return {
                 scheduler: this.props.scheduler,
-                courses: this.props.courses || [],
+                courses: this.props.courses,
                 alternates: []
             };
         },
@@ -128,7 +143,7 @@ define(["exports", "module", "react", "me/planner/planner", "courses/course", "c
         },
 
         render: function render() {
-            return React.createElement(Planner, { ref: "planner", events: this.getEvents,
+            return React.createElement(Planner, { ref: "planner", eventSource: this.getEvents,
                 onEventClick: this.eventClick,
                 onEventDragStart: this.eventDragStart,
                 onEventDragCancel: this.eventDragCancel,

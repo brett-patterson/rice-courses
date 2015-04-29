@@ -1,12 +1,20 @@
-define(["exports", "module", "react"], function (exports, module, _react) {
+define(["exports", "module", "react", "courses/filter/courseFilter", "util"], function (exports, module, _react, _coursesFilterCourseFilter, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
     var React = _interopRequire(_react);
 
+    var CourseFilter = _interopRequire(_coursesFilterCourseFilter);
+
+    var propTypeHas = _util.propTypeHas;
     module.exports = React.createClass({
         displayName: "filterInput",
+
+        propTypes: {
+            filter: React.PropTypes.instanceOf(CourseFilter).isRequired,
+            delegate: propTypeHas(["removeFilter", "updateFilter"])
+        },
 
         getInitialState: function getInitialState() {
             this.mouseOverSuggestions = false;

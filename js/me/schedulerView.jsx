@@ -2,16 +2,29 @@ import React from 'react';
 
 import Planner from 'me/planner/planner';
 import Course from 'courses/course';
+import Scheduler from 'me/scheduler';
 import UserCourses from 'courses/userCourses';
 import {showCourseDetail} from 'courses/detail/courseDetail';
-import {eventOverlap, getHueByIndex, hsvToRgb} from 'util';
+import {eventOverlap, getHueByIndex, hsvToRgb, propTypeHas} from 'util';
 
 
 export default React.createClass({
+    propTypes: {
+        scheduler: React.PropTypes.instanceOf(Scheduler),
+        courses: React.PropTypes.array,
+        courseDelegate: propTypeHas(['replaceSection'])
+    },
+
+    getDefaultProps() {
+        return {
+            courses: []
+        };
+    },
+
     getInitialState() {
         return {
             scheduler: this.props.scheduler,
-            courses: this.props.courses || [],
+            courses: this.props.courses,
             alternates: []
         };
     },
@@ -111,7 +124,7 @@ export default React.createClass({
     },
 
     render() {
-        return <Planner ref='planner' events={this.getEvents}
+        return <Planner ref='planner' eventSource={this.getEvents}
                         onEventClick={this.eventClick}
                         onEventDragStart={this.eventDragStart}
                         onEventDragCancel={this.eventDragCancel}

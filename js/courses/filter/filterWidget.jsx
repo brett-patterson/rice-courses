@@ -2,12 +2,20 @@ import React from 'react';
 
 import FilterButton from 'courses/filter/filterButton';
 import FilterInput from 'courses/filter/filterInput';
+import FilterManager from 'courses/filter/filterManager';
 import {getHueByIndex} from 'util';
 
 export default React.createClass({
+    propTypes: {
+        key: React.PropTypes.string,
+        filters: React.PropTypes.array,
+        manager: React.PropTypes.instanceOf(FilterManager).isRequired
+    },
+
     getDefaultProps() {
         return {
-            key: ':'
+            key: ':',
+            filters: []
         };
     },
 

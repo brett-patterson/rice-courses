@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "courses/filter/filterButton", "courses/filter/filterInput", "util"], function (exports, module, _react, _coursesFilterFilterButton, _coursesFilterFilterInput, _util) {
+define(["exports", "module", "react", "courses/filter/filterButton", "courses/filter/filterInput", "courses/filter/filterManager", "util"], function (exports, module, _react, _coursesFilterFilterButton, _coursesFilterFilterInput, _coursesFilterFilterManager, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -9,13 +9,22 @@ define(["exports", "module", "react", "courses/filter/filterButton", "courses/fi
 
     var FilterInput = _interopRequire(_coursesFilterFilterInput);
 
+    var FilterManager = _interopRequire(_coursesFilterFilterManager);
+
     var getHueByIndex = _util.getHueByIndex;
     module.exports = React.createClass({
         displayName: "filterWidget",
 
+        propTypes: {
+            key: React.PropTypes.string,
+            filters: React.PropTypes.array,
+            manager: React.PropTypes.instanceOf(FilterManager).isRequired
+        },
+
         getDefaultProps: function getDefaultProps() {
             return {
-                key: ":"
+                key: ":",
+                filters: []
             };
         },
 

@@ -14,6 +14,18 @@ define(["exports", "module", "react", "reactDnd", "util"], function (exports, mo
 
         mixins: [DragDropMixin],
 
+        propTypes: {
+            event: React.PropTypes.object.isRequired,
+            planner: React.PropTypes.object.isRequired,
+            timeDisplayFormat: React.PropTypes.string
+        },
+
+        getDefaultProps: function getDefaultProps() {
+            return {
+                timeDisplayFormat: "hh:mm A"
+            };
+        },
+
         getInitialState: function getInitialState() {
             return {
                 dropHovered: false

@@ -1,9 +1,15 @@
 import React from 'react';
 import {Button} from 'reactBootstrap';
 
-import {hsvToRgb, rgbToHex} from 'util';
+import CourseFilter from 'courses/filter/courseFilter';
+import {hsvToRgb, rgbToHex, propTypeHas} from 'util';
 
 export default React.createClass({
+    propTypes: {
+        filter: React.PropTypes.instanceOf(CourseFilter).isRequired,
+        delegate: propTypeHas(['addFilter'])
+    },
+
     /**
      * Get the appropriate color for the filter button.
      * @param {number} h - The hue for the color

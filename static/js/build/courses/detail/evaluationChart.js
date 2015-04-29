@@ -10,6 +10,16 @@ define(["exports", "module", "react", "highcharts"], function (exports, module, 
     module.exports = React.createClass({
         displayName: "evaluationChart",
 
+        propTypes: {
+            data: React.PropTypes.array
+        },
+
+        getDefaultProps: function getDefaultProps() {
+            return {
+                data: []
+            };
+        },
+
         componentDidMount: function componentDidMount() {
             var data = this.props.data.map(function (datum) {
                 return [datum.prompt, datum.percent];

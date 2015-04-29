@@ -6,6 +6,16 @@ import {ajaxCSRF} from 'util';
 
 
 const ConflictsBody = React.createClass({
+    propTypes: {
+        conflicts: React.PropTypes.array
+    },
+
+    getDefaultProps() {
+        return {
+            conflicts: []
+        };
+    },
+
     onClearClicked(event) {
         jQuery(event.target).siblings().find('label').each((i, label) => {
             jQuery(label).removeClass('active').find('input')

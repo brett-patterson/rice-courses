@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "bootbox", "courses/course", "util"], function (exports, module, _react, _bootbox, _coursesCourse, _util) {
+define(["exports", "module", "react", "bootbox", "courses/course", "me/scheduler", "util"], function (exports, module, _react, _bootbox, _coursesCourse, _meScheduler, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -11,10 +11,16 @@ define(["exports", "module", "react", "bootbox", "courses/course", "util"], func
 
     var Course = _interopRequire(_coursesCourse);
 
+    var Scheduler = _interopRequire(_meScheduler);
+
     var ajaxCSRF = _util.ajaxCSRF;
 
     var ExportBody = React.createClass({
         displayName: "ExportBody",
+
+        propTypes: {
+            scheduler: React.PropTypes.instanceOf(Scheduler).isRequired
+        },
 
         componentDidMount: function componentDidMount() {
             var _this = this;
@@ -23,7 +29,7 @@ define(["exports", "module", "react", "bootbox", "courses/course", "util"], func
                 url: "/me/api/scheduler/export/",
                 method: "POST",
                 data: {
-                    id: this.props.scheduler.id
+                    id: this.props.scheduler.getID()
                 }
             }).done(function (data) {
                 var courses = data.map(function (courseJSON) {

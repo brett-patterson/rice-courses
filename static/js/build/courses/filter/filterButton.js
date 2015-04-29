@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "reactBootstrap", "util"], function (exports, module, _react, _reactBootstrap, _util) {
+define(["exports", "module", "react", "reactBootstrap", "courses/filter/courseFilter", "util"], function (exports, module, _react, _reactBootstrap, _coursesFilterCourseFilter, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -8,10 +8,19 @@ define(["exports", "module", "react", "reactBootstrap", "util"], function (expor
     var React = _interopRequire(_react);
 
     var Button = _reactBootstrap.Button;
+
+    var CourseFilter = _interopRequire(_coursesFilterCourseFilter);
+
     var hsvToRgb = _util.hsvToRgb;
     var rgbToHex = _util.rgbToHex;
+    var propTypeHas = _util.propTypeHas;
     module.exports = React.createClass({
         displayName: "filterButton",
+
+        propTypes: {
+            filter: React.PropTypes.instanceOf(CourseFilter).isRequired,
+            delegate: propTypeHas(["addFilter"])
+        },
 
         /**
          * Get the appropriate color for the filter button.

@@ -3,6 +3,16 @@ import Highcharts from 'highcharts';
 
 
 export default React.createClass({
+    propTypes: {
+        data: React.PropTypes.array
+    },
+
+    getDefaultProps() {
+        return {
+            data: []
+        };
+    },
+
     componentDidMount() {
         let data = this.props.data.map(datum => {
             return [datum.prompt, datum.percent];

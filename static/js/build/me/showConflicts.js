@@ -18,6 +18,16 @@ define(["exports", "module", "react", "bootbox", "courses/course", "util"], func
     var ConflictsBody = React.createClass({
         displayName: "ConflictsBody",
 
+        propTypes: {
+            conflicts: React.PropTypes.array
+        },
+
+        getDefaultProps: function getDefaultProps() {
+            return {
+                conflicts: []
+            };
+        },
+
         onClearClicked: function onClearClicked(event) {
             jQuery(event.target).siblings().find("label").each(function (i, label) {
                 jQuery(label).removeClass("active").find("input").prop("checked", false);

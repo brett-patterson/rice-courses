@@ -1,5 +1,3 @@
-import jQuery from 'jquery';
-
 /**
  * A modified indexOf function with an optional key function.
  * @param {array} array - The array to search through
@@ -201,4 +199,33 @@ export const ajaxCSRF = config => {
     });
 
     return jQuery.ajax(requestConfig);
+};
+
+/**
+ * A custom React PropTypes validator that checks that the prop value
+ * is an object with the given properties.
+ * @param {array} propertyNames - The names of the functions to check for
+ * @param {boolean} required - Whether or not the prop should be required
+ * @return {function} The React Prop Type validation function
+ */
+export const propTypeHas = (propertyNames, required=true) => {
+    return (props, propName, componentName) => {
+        const prop = props[propName];
+
+        if (required && (prop === undefined || prop === null)) {
+            return new Error(`Must specify non-null prop: ${propName}.`);
+        }
+
+        if (typeof prop !== 'object') {
+            return new Error(`${propName} must be an object.`);
+        }
+
+        for (let i = 0; i < propertyNames.length; i++) {
+            const property = propertyNames[i];
+            if (prop[property] === undefined) {
+                const msg = `${propName} must have a ${property} property.`;
+                return new Error(msg);
+            }
+        }
+    };
 };

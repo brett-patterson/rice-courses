@@ -4,9 +4,13 @@ import {Table, Tr, Td} from 'reactable';
 import Course from 'courses/course';
 import {showCourseFactory} from 'courses/detail/courseDetail';
 import UserCourses from 'courses/userCourses';
-import {makeClasses, ajaxCSRF} from 'util';
+import {makeClasses, ajaxCSRF, propTypeHas} from 'util';
 
 export default React.createClass({
+    propTypes: {
+        filterDelegate: propTypeHas(['filter'])
+    },
+
     getInitialState() {
         return {
             courses: undefined,

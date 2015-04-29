@@ -1,7 +1,14 @@
 import React from 'react';
+import CourseFilter from 'courses/filter/courseFilter';
+import {propTypeHas} from 'util';
 
 
 export default React.createClass({
+    propTypes: {
+        filter: React.PropTypes.instanceOf(CourseFilter).isRequired,
+        delegate: propTypeHas(['removeFilter', 'updateFilter'])
+    },
+
     getInitialState() {
         this.mouseOverSuggestions = false;
 

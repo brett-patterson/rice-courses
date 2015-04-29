@@ -6,6 +6,18 @@ import {makeClasses} from 'util';
 export default React.createClass({
     mixins: [DragDropMixin],
 
+    propTypes: {
+        event: React.PropTypes.object.isRequired,
+        planner: React.PropTypes.object.isRequired,
+        timeDisplayFormat: React.PropTypes.string
+    },
+
+    getDefaultProps() {
+        return {
+            timeDisplayFormat: 'hh:mm A'
+        };
+    },
+
     getInitialState() {
         return {
             dropHovered: false

@@ -3,11 +3,25 @@ import {Badge} from 'reactBootstrap';
 import {Table, Tr, Td} from 'reactable';
 import ZeroClipboard from 'zeroClipboard';
 
+import Scheduler from 'me/scheduler';
+import Course from 'courses/course';
 import {showCourseFactory} from 'courses/detail/courseDetail';
-import {makeClasses} from 'util';
+import {makeClasses, propTypeHas} from 'util';
 
 
 export default React.createClass({
+    propTypes: {
+        scheduler: React.PropTypes.instanceOf(Scheduler),
+        delegate: propTypeHas(['forceUpdate', 'removeUserCourse', 'addAlert']),
+        courses: React.PropTypes.arrayOf(React.PropTypes.instanceOf(Course))
+    },
+
+    getDefaultProps() {
+        return {
+            courses: []
+        };
+    },
+
     componentDidUpdate(prevProps, prevState) {
         jQuery('.copy-btn').each((index, button) => {
             this.clip = new ZeroClipboard(button);

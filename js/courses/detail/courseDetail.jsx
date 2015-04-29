@@ -3,11 +3,16 @@ import {TabbedArea, TabPane} from 'reactBootstrap';
 import Bootbox from 'bootbox';
 import jQuery from 'jquery';
 
+import Course from 'courses/course';
 import EvaluationChart from 'courses/detail/evaluationChart';
 import {makeClasses, ajaxCSRF} from 'util';
 
 
 const CourseDetailBody = React.createClass({
+    propTypes: {
+        course: React.PropTypes.instanceOf(Course).isRequired
+    },
+
     getInitialState() {
         return {
             courseQuestions: undefined,
@@ -23,7 +28,7 @@ const CourseDetailBody = React.createClass({
             url: '/evaluation/api/course/',
             method: 'POST',
             data: {
-                crn: this.props.course.crn
+                crn: this.props.course.getCRN()
             },
             responseType: 'json'
         }).done(result => {
@@ -37,7 +42,7 @@ const CourseDetailBody = React.createClass({
             url: '/evaluation/api/instructor/',
             method: 'POST',
             data: {
-                crn: this.props.course.crn
+                crn: this.props.course.getCRN()
             },
             responseType: 'json'
         }).done(result => {
