@@ -3,7 +3,7 @@ import {TabbedArea, TabPane} from 'reactBootstrap';
 import Bootbox from 'bootbox';
 import jQuery from 'jquery';
 
-import EvaluationChart from 'courses/evaluationChart';
+import EvaluationChart from 'courses/detail/evaluationChart';
 import {makeClasses, ajaxCSRF} from 'util';
 
 

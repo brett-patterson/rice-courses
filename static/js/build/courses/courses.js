@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "courses/filterManager", "courses/filterWidget", "courses/courseFilter", "courses/courseList", "util"], function (exports, module, _react, _coursesFilterManager, _coursesFilterWidget, _coursesCourseFilter, _coursesCourseList, _util) {
+define(["exports", "module", "react", "courses/filter/filterManager", "courses/filter/filterWidget", "courses/filter/courseFilter", "courses/courseList", "util"], function (exports, module, _react, _coursesFilterFilterManager, _coursesFilterFilterWidget, _coursesFilterCourseFilter, _coursesCourseList, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -7,11 +7,11 @@ define(["exports", "module", "react", "courses/filterManager", "courses/filterWi
 
     var React = _interopRequire(_react);
 
-    var FilterManager = _interopRequire(_coursesFilterManager);
+    var FilterManager = _interopRequire(_coursesFilterFilterManager);
 
-    var FilterWidget = _interopRequire(_coursesFilterWidget);
+    var FilterWidget = _interopRequire(_coursesFilterFilterWidget);
 
-    var CourseFilter = _interopRequire(_coursesCourseFilter);
+    var CourseFilter = _interopRequire(_coursesFilterCourseFilter);
 
     var CourseList = _interopRequire(_coursesCourseList);
 

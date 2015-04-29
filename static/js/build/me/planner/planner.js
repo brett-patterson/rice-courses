@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "me/planner/event"], function (exports, module, _react, _mePlannerEvent) {
+define(["exports", "module", "react", "me/planner/event", "util"], function (exports, module, _react, _mePlannerEvent, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -7,6 +7,7 @@ define(["exports", "module", "react", "me/planner/event"], function (exports, mo
 
     var Event = _interopRequire(_mePlannerEvent);
 
+    var eventOverlap = _util.eventOverlap;
     module.exports = React.createClass({
         displayName: "planner",
 
@@ -124,7 +125,7 @@ define(["exports", "module", "react", "me/planner/event"], function (exports, mo
                 for (var j = 0; j < this.state.events.length; j++) {
                     var other = this.state.events[j];
 
-                    if (_event !== other && (_event.start >= other.start && _event.start <= other.end || _event.end >= other.end && _event.end <= other.end)) {
+                    if (_event !== other && eventOverlap(_event, other)) {
                         eventsAtSameTime[_event.id].push(other);
                     }
                 }

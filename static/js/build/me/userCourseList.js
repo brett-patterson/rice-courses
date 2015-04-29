@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "reactBootstrap", "reactable", "zeroClipboard", "courses/courseDetail", "util"], function (exports, module, _react, _reactBootstrap, _reactable, _zeroClipboard, _coursesCourseDetail, _util) {
+define(["exports", "module", "react", "reactBootstrap", "reactable", "zeroClipboard", "courses/detail/courseDetail", "util"], function (exports, module, _react, _reactBootstrap, _reactable, _zeroClipboard, _coursesDetailCourseDetail, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -14,7 +14,7 @@ define(["exports", "module", "react", "reactBootstrap", "reactable", "zeroClipbo
 
     var ZeroClipboard = _interopRequire(_zeroClipboard);
 
-    var showCourseFactory = _coursesCourseDetail.showCourseFactory;
+    var showCourseFactory = _coursesDetailCourseDetail.showCourseFactory;
     var makeClasses = _util.makeClasses;
     module.exports = React.createClass({
         displayName: "userCourseList",

@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "me/planner/planner", "courses/course", "courses/userCourses", "courses/courseDetail", "util"], function (exports, module, _react, _mePlannerPlanner, _coursesCourse, _coursesUserCourses, _coursesCourseDetail, _util) {
+define(["exports", "module", "react", "me/planner/planner", "courses/course", "courses/userCourses", "courses/detail/courseDetail", "util"], function (exports, module, _react, _mePlannerPlanner, _coursesCourse, _coursesUserCourses, _coursesDetailCourseDetail, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -13,7 +13,7 @@ define(["exports", "module", "react", "me/planner/planner", "courses/course", "c
 
     var UserCourses = _interopRequire(_coursesUserCourses);
 
-    var showCourseDetail = _coursesCourseDetail.showCourseDetail;
+    var showCourseDetail = _coursesDetailCourseDetail.showCourseDetail;
     var eventOverlap = _util.eventOverlap;
     var getHueByIndex = _util.getHueByIndex;
     var hsvToRgb = _util.hsvToRgb;

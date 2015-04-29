@@ -1,5 +1,6 @@
 import React from 'react';
 import Event from 'me/planner/event';
+import {eventOverlap} from 'util';
 
 
 export default React.createClass({
@@ -115,9 +116,7 @@ export default React.createClass({
             for (let j = 0; j < this.state.events.length; j++) {
                 const other = this.state.events[j];
 
-                if (event !== other &&
-                    (event.start >= other.start && event.start <= other.end ||
-                    event.end >= other.end && event.end <= other.end)) {
+                if (event !== other && eventOverlap(event, other)) {
                     eventsAtSameTime[event.id].push(other);
                 }
             }

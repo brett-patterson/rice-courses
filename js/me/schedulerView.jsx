@@ -3,7 +3,7 @@ import React from 'react';
 import Planner from 'me/planner/planner';
 import Course from 'courses/course';
 import UserCourses from 'courses/userCourses';
-import {showCourseDetail} from 'courses/courseDetail';
+import {showCourseDetail} from 'courses/detail/courseDetail';
 import {eventOverlap, getHueByIndex, hsvToRgb} from 'util';
 
 

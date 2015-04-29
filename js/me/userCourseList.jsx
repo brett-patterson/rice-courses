@@ -3,7 +3,7 @@ import {Badge} from 'reactBootstrap';
 import {Table, Tr, Td} from 'reactable';
 import ZeroClipboard from 'zeroClipboard';
 
-import {showCourseFactory} from 'courses/courseDetail';
+import {showCourseFactory} from 'courses/detail/courseDetail';
 import {makeClasses} from 'util';
 
 

@@ -1,4 +1,4 @@
-import CourseFilter from 'courses/courseFilter';
+import CourseFilter from 'courses/filter/courseFilter';
 
 export default class FilterManager {
     /**

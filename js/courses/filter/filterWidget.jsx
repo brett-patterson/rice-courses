@@ -1,7 +1,7 @@
 import React from 'react';
 
-import FilterButton from 'courses/filterButton';
-import FilterInput from 'courses/filterInput';
+import FilterButton from 'courses/filter/filterButton';
+import FilterInput from 'courses/filter/filterInput';
 import {getHueByIndex} from 'util';
 
 export default React.createClass({

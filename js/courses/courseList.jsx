@@ -2,7 +2,7 @@ import React from 'react';
 import {Table, Tr, Td} from 'reactable';
 
 import Course from 'courses/course';
-import {showCourseFactory} from 'courses/courseDetail';
+import {showCourseFactory} from 'courses/detail/courseDetail';
 import UserCourses from 'courses/userCourses';
 import {makeClasses, ajaxCSRF} from 'util';
 

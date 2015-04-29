@@ -1,8 +1,8 @@
 import React from 'react';
 
-import FilterManager from 'courses/filterManager';
-import FilterWidget from 'courses/filterWidget';
-import CourseFilter from 'courses/courseFilter';
+import FilterManager from 'courses/filter/filterManager';
+import FilterWidget from 'courses/filter/filterWidget';
+import CourseFilter from 'courses/filter/courseFilter';
 import CourseList from 'courses/courseList';
 import {ajaxCSRF} from 'util';
 
