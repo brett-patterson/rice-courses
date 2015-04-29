@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "reactDnd"], function (exports, module, _react, _reactDnd) {
+define(["exports", "module", "react", "reactDnd", "util"], function (exports, module, _react, _reactDnd, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -8,10 +8,17 @@ define(["exports", "module", "react", "reactDnd"], function (exports, module, _r
     var React = _interopRequire(_react);
 
     var DragDropMixin = _reactDnd.DragDropMixin;
+    var makeClasses = _util.makeClasses;
     module.exports = React.createClass({
         displayName: "event",
 
         mixins: [DragDropMixin],
+
+        getInitialState: function getInitialState() {
+            return {
+                dropHovered: false
+            };
+        },
 
         statics: {
             configureDragDrop: function configureDragDrop(register) {
@@ -42,7 +49,19 @@ define(["exports", "module", "react", "reactDnd"], function (exports, module, _r
                             var one = component.props.event.course;
                             var two = event.course;
 
-                            return one.getSubject() === two.getSubject() && one.getNumber() === two.getNumber();
+                            return one.getSubject() === two.getSubject() && one.getNumber() === two.getNumber() && one.getSection() !== two.getSection();
+                        },
+
+                        enter: function enter(component, event) {
+                            component.setState({
+                                dropHovered: true
+                            });
+                        },
+
+                        leave: function leave(component, event) {
+                            component.setState({
+                                dropHovered: false
+                            });
                         }
                     }
                 });
@@ -54,9 +73,20 @@ define(["exports", "module", "react", "reactDnd"], function (exports, module, _r
             var eventStart = event.start.format(this.props.timeDisplayFormat);
             var eventEnd = event.end.format(this.props.timeDisplayFormat);
 
+            var classes = {
+                "planner-event": true,
+                "planner-event-drop-hover": this.state.dropHovered
+            };
+
+            if (event.classes !== undefined) {
+                for (var i = 0; i < event.classes.length; i++) {
+                    classes[event.classes[i]] = true;
+                }
+            }
+
             return React.createElement(
                 "div",
-                _extends({}, this.props, { className: "planner-event"
+                _extends({}, this.props, { className: makeClasses(classes)
                 }, this.dragSourceFor("plannerEvent"), this.dropTargetFor("plannerEvent")),
                 event.title,
                 React.createElement("br", null),

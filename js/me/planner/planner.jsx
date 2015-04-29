@@ -155,7 +155,7 @@ export default React.createClass({
 
             return [
                 <div className='planner-event-underlay' style={overlayStyle} />,
-                <Event key={event.id} className='planner-event'
+                <Event key={event.id}
                        event={event} style={eventStyle} planner={this}
                        timeDisplayFormat={this.props.timeDisplayFormat}
                        onClick={this.onEventClickHandler(event)} />

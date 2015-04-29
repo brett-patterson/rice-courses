@@ -117,6 +117,11 @@ define(["exports", "module", "moment", "util"], function (exports, module, _mome
                     return this.number;
                 }
             },
+            getSection: {
+                value: function getSection() {
+                    return this.section;
+                }
+            },
             getCourseID: {
                 value: function getCourseID() {
                     return "" + this.subject + " " + this.number + " " + this.section;

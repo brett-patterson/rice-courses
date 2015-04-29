@@ -1,8 +1,16 @@
 import React from 'react';
 import {DragDropMixin} from 'reactDnd';
+import {makeClasses} from 'util';
+
 
 export default React.createClass({
     mixins: [DragDropMixin],
+
+    getInitialState() {
+        return {
+            dropHovered: false
+        };
+    },
 
     statics: {
         configureDragDrop(register) {
@@ -35,7 +43,20 @@ export default React.createClass({
                         const two = event.course;
 
                         return (one.getSubject() === two.getSubject() &&
-                                one.getNumber() === two.getNumber());
+                                one.getNumber() === two.getNumber() &&
+                                one.getSection() !== two.getSection());
+                    },
+
+                    enter(component, event) {
+                        component.setState({
+                            dropHovered: true
+                        });
+                    },
+
+                    leave(component, event) {
+                        component.setState({
+                            dropHovered: false
+                        });
                     }
                 }
             });
@@ -47,8 +68,19 @@ export default React.createClass({
         const eventStart = event.start.format(this.props.timeDisplayFormat);
         const eventEnd = event.end.format(this.props.timeDisplayFormat);
 
+        const classes = {
+            'planner-event': true,
+            'planner-event-drop-hover': this.state.dropHovered
+        };
+
+        if (event.classes !== undefined) {
+            for (let i = 0; i < event.classes.length; i++) {
+                classes[event.classes[i]] = true;
+            }
+        }
+
         return (
-            <div {...this.props} className='planner-event'
+            <div {...this.props} className={makeClasses(classes)}
                  {...this.dragSourceFor('plannerEvent')}
                  {...this.dropTargetFor('plannerEvent')}>
                 {event.title}<br/>

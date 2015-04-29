@@ -124,6 +124,10 @@ export default class Course {
         return this.number;
     }
 
+    getSection() {
+        return this.section;
+    }
+
     getCourseID() {
         return `${this.subject} ${this.number} ${this.section}`;
     }

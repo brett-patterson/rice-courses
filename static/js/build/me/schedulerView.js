@@ -35,7 +35,7 @@ define(["exports", "module", "react", "me/planner/planner", "courses/course", "c
             });
         },
 
-        eventsForCourse: function eventsForCourse(course, color) {
+        eventsForCourse: function eventsForCourse(course, color, classes) {
             return course.meetings.map(function (date, i) {
                 return {
                     id: "" + course.getCRN() + "-" + i,
@@ -43,7 +43,8 @@ define(["exports", "module", "react", "me/planner/planner", "courses/course", "c
                     start: date.start,
                     end: date.end,
                     course: course,
-                    color: color
+                    color: color,
+                    classes: classes
                 };
             });
         },
@@ -66,23 +67,26 @@ define(["exports", "module", "react", "me/planner/planner", "courses/course", "c
                     var g = _hsvToRgb2[1];
                     var b = _hsvToRgb2[2];
 
-                    var alpha = undefined;
+                    var alpha = undefined,
+                        classes = undefined;
                     if (this.state.alternates.length > 0) {
-                        alpha = 0.4;
+                        alpha = 0.25;
+                        classes = ["course-event-muted"];
                     } else {
                         alpha = 1;
+                        classes = [];
                     }
 
                     var color = "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
 
-                    if (map[course.getCRN()]) events = events.concat(this.eventsForCourse(course, color));
+                    if (map[course.getCRN()]) events = events.concat(this.eventsForCourse(course, color, classes));
                 }
 
                 for (var j = 0; j < this.state.alternates.length; j++) {
                     var alt = this.state.alternates[j];
                     var altEvents = this.eventsForCourse(alt);
                     for (var k = 0; k < altEvents.length; k++) {
-                        altEvents[k].color = "green";
+                        altEvents[k].classes = ["course-event-alternate"];
                     }
                     events = events.concat(altEvents);
                 }

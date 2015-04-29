@@ -75,3 +75,11 @@
   color: #b81e23;
   text-decoration: none;
 }
+
+.course-event-muted {
+  border: none !important;
+}
+
+.course-event-alternate {
+  background-color: rgba(19, 100, 0, 0.7);
+}

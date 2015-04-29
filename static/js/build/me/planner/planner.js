@@ -160,7 +160,7 @@ define(["exports", "module", "react", "me/planner/event"], function (exports, mo
                     width: eventStyle.width
                 };
 
-                return [React.createElement("div", { className: "planner-event-underlay", style: overlayStyle }), React.createElement(Event, { key: event.id, className: "planner-event",
+                return [React.createElement("div", { className: "planner-event-underlay", style: overlayStyle }), React.createElement(Event, { key: event.id,
                     event: event, style: eventStyle, planner: _this,
                     timeDisplayFormat: _this.props.timeDisplayFormat,
                     onClick: _this.onEventClickHandler(event) })];

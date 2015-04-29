@@ -23,7 +23,7 @@ export default React.createClass({
         });
     },
 
-    eventsForCourse(course, color) {
+    eventsForCourse(course, color, classes) {
         return course.meetings.map((date, i) => {
             return {
                 id: `${course.getCRN()}-${i}`,
@@ -31,7 +31,8 @@ export default React.createClass({
                 start: date.start,
                 end: date.end,
                 course: course,
-                color
+                color,
+                classes
             };
         });
     },
@@ -50,24 +51,26 @@ export default React.createClass({
                 const hue = getHueByIndex(i, this.state.courses.length);
                 const [r, g, b] = hsvToRgb(hue, 1, 0.65);
 
-                let alpha;
+                let alpha, classes;
                 if (this.state.alternates.length > 0) {
-                    alpha = 0.4;
+                    alpha = 0.25;
+                    classes = ['course-event-muted'];
                 } else {
                     alpha = 1;
+                    classes = [];
                 }
 
                 const color = `rgba(${r},${g},${b},${alpha})`;
 
                 if (map[course.getCRN()])
-                    events = events.concat(this.eventsForCourse(course, color));
+                    events = events.concat(this.eventsForCourse(course, color, classes));
             }
 
             for (let j = 0; j < this.state.alternates.length; j++) {
                 const alt = this.state.alternates[j];
                 const altEvents = this.eventsForCourse(alt);
                 for (let k = 0; k < altEvents.length; k++) {
-                    altEvents[k].color = 'green';
+                    altEvents[k].classes = ['course-event-alternate'];
                 }
                 events = events.concat(altEvents);
             }

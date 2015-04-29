@@ -52,3 +52,7 @@
 .planner-event-underlay {
     background-color: #fff;
 }
+
+.planner-event-drop-hover {
+    background-color: #136400 !important;
+}
