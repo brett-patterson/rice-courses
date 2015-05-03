@@ -58,16 +58,32 @@ export default class Course {
                           j.restrictions, crossListed);
     }
 
-    static all(cb) {
+    static get(cb, filters=[], page=-1) {
+        let data = {
+            filters: JSON.stringify(filters)
+        };
+
+        if (page >= 0) {
+            data.page = page;
+        }
+
+        if (courseRequest !== null) {
+            courseRequest.abort();
+        }
+
         ajaxCSRF({
-            url: '/courses/api/all/',
+            url: '/courses/api/courses/',
             method: 'POST',
-            dataType: 'json'
+            dataType: 'json',
+            data
         }).done(result => {
-            if (cb)
-                cb(result.map(data => {
+            if (cb) {
+                result.courses = result.courses.map(data => {
                     return Course.fromJSON(data);
-                }));
+                });
+
+                cb(result);
+            }
         });
     }
 

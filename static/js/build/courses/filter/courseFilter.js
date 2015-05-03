@@ -13,7 +13,6 @@ define(["exports", "module"], function (exports, module) {
          * @param {array} keywords - An array of string keywords that all denote
          *  the filter
          * @param {any} value - The value to filter for
-         * @param {function} compare - A function that takes two values and returns
          * @param {array or function} - An array of value suggestions or an function
          *  that takes a callback used to provide the suggestions
          *  a boolean that is the result of a comparison between the two
@@ -24,8 +23,7 @@ define(["exports", "module"], function (exports, module) {
 
             var keywords = arguments[2] === undefined ? [] : arguments[2];
             var value = arguments[3] === undefined ? "" : arguments[3];
-            var compare = arguments[4] === undefined ? CourseFilter.contains : arguments[4];
-            var suggestions = arguments[5] === undefined ? [] : arguments[5];
+            var suggestions = arguments[4] === undefined ? [] : arguments[4];
 
             _classCallCheck(this, CourseFilter);
 
@@ -36,7 +34,6 @@ define(["exports", "module"], function (exports, module) {
             this.keywords.push(key);
 
             this.value = value;
-            this.compare = compare;
 
             if (typeof suggestions === "function") {
                 this.suggestions = [];
@@ -130,18 +127,6 @@ define(["exports", "module"], function (exports, module) {
                     });
                 }
             },
-            test: {
-
-                /**
-                 * Test whether a Course passes through the filter
-                 * @param {Course} course - The course to test
-                 * @return {boolean} Whether the course passes the filter
-                 */
-
-                value: function test(course) {
-                    return this.compare(course.filterValue(this.key), this.value);
-                }
-            },
             toJSON: {
 
                 /**
@@ -150,21 +135,12 @@ define(["exports", "module"], function (exports, module) {
                  */
 
                 value: function toJSON() {
-                    var obj = {
+                    return JSON.stringify({
                         key: this.key,
                         name: this.name,
                         keywords: this.keywords,
                         value: this.value,
-                        compare: this.compare,
                         suggestions: this.suggestions
-                    };
-
-                    return JSON.stringify(obj, function (key, value) {
-                        if (typeof value === "function") {
-                            return value.toString();
-                        }
-
-                        return value;
                     });
                 }
             }
@@ -181,55 +157,14 @@ define(["exports", "module"], function (exports, module) {
                     var objList = JSON.parse(jsonString);
 
                     return objList.map(function (objJSON) {
-                        var obj = JSON.parse(objJSON, function (key, value) {
-                            if (value && typeof value === "string" && value.substr(0, 8) === "function") {
-                                var startArgs = value.indexOf("(") + 1;
-                                var endArgs = value.indexOf(")");
-                                var startBody = value.indexOf("{") + 1;
-                                var endBody = value.lastIndexOf("}");
-
-                                return new Function(value.substring(startArgs, endArgs), value.substring(startBody, endBody));
-                            }
-
-                            return value;
-                        });
-
+                        var obj = JSON.parse(objJSON);
                         var keyIndex = obj.keywords.indexOf(obj.key);
                         if (keyIndex > -1) {
                             obj.keywords.splice(keyIndex, 1);
                         }
 
-                        return new CourseFilter(obj.key, obj.name, obj.keywords, obj.value, obj.compare, obj.suggestions);
+                        return new CourseFilter(obj.key, obj.name, obj.keywords, obj.value, obj.suggestions);
                     });
-                }
-            },
-            contains: {
-
-                /**
-                 * A string comparison function that checks for containment (ignores case).
-                 * @param {string} one - The string to look inside of
-                 * @param {string} two - The string to check for
-                 * @return {boolean} Whether `one` contains `two`
-                 */
-
-                value: function contains(one, two) {
-                    var haystack = String(one).toLowerCase();
-                    var needle = two.toLowerCase();
-                    return haystack.indexOf(needle) > -1;
-                }
-            },
-            exact: {
-
-                /**
-                 * A factory that returns a function which filters courses based on
-                 * an exact match.
-                 * @param {string} field - The course field to filter on
-                 * @param {any} value - The value to filter for
-                 * @return {function} The filtering function
-                 */
-
-                value: function exact(one, two) {
-                    return String(one).toLowerCase() === String(two).toLowerCase();
                 }
             }
         });

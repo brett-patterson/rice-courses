@@ -21,6 +21,8 @@ define(["exports", "module", "moment", "util"], function (exports, module, _mome
         Friday: "F"
     };
 
+    var courseRequest = null;
+
     var Course = (function () {
         function Course(crn, subject, number, section, title, instructor, description, meetings, location, credits, distribution, enrollment, maxEnrollment, waitlist, maxWaitlist, prerequisites, corequisites, restrictions, crossListed) {
             _classCallCheck(this, Course);
@@ -265,16 +267,40 @@ define(["exports", "module", "moment", "util"], function (exports, module, _mome
                     return new Course(j.crn, j.subject, j.course_number, j.section, j.title, j.instructor, j.description, j.meetings, j.location, j.credits, j.distribution, j.enrollment, j.max_enrollment, j.waitlist, j.max_waitlist, j.prerequisites, j.corequisites, j.restrictions, crossListed);
                 }
             },
-            all: {
-                value: function all(cb) {
-                    ajaxCSRF({
-                        url: "/courses/api/all/",
+            get: {
+                value: function get(cb) {
+                    var filters = arguments[1] === undefined ? [] : arguments[1];
+                    var page = arguments[2] === undefined ? -1 : arguments[2];
+
+                    var data = {
+                        filters: JSON.stringify(filters)
+                    };
+
+                    if (page >= 0) {
+                        data.page = page;
+                    }
+
+                    if (courseRequest !== null) {
+                        courseRequest.abort();
+                    }
+
+                    console.log("making request");
+                    courseRequest = ajaxCSRF({
+                        url: "/courses/api/courses/",
                         method: "POST",
-                        dataType: "json"
+                        dataType: "json",
+                        data: data
                     }).done(function (result) {
-                        if (cb) cb(result.map(function (data) {
-                            return Course.fromJSON(data);
-                        }));
+                        console.log("request done");
+                        courseRequest = null;
+
+                        if (cb) {
+                            result.courses = result.courses.map(function (data) {
+                                return Course.fromJSON(data);
+                            });
+
+                            cb(result);
+                        }
                     });
                 }
             }

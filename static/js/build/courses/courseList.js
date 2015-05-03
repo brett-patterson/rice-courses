@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "reactable", "courses/course", "courses/detail/courseDetail", "courses/userCourses", "util"], function (exports, module, _react, _reactable, _coursesCourse, _coursesDetailCourseDetail, _coursesUserCourses, _util) {
+define(["exports", "module", "react", "reactable", "courses/course", "courses/detail/courseDetail", "courses/userCourses", "courses/filter/filterManager", "util"], function (exports, module, _react, _reactable, _coursesCourse, _coursesDetailCourseDetail, _coursesUserCourses, _coursesFilterFilterManager, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -15,6 +15,8 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/de
 
     var UserCourses = _interopRequire(_coursesUserCourses);
 
+    var FilterManager = _interopRequire(_coursesFilterFilterManager);
+
     var makeClasses = _util.makeClasses;
     var ajaxCSRF = _util.ajaxCSRF;
     var propTypeHas = _util.propTypeHas;
@@ -22,14 +24,14 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/de
         displayName: "courseList",
 
         propTypes: {
-            filterDelegate: propTypeHas(["filter"])
+            filterManager: React.PropTypes.instanceOf(FilterManager).isRequired
         },
 
         getInitialState: function getInitialState() {
             return {
                 courses: undefined,
                 userCourses: [],
-                filtered: undefined
+                page: 0
             };
         },
 
@@ -50,11 +52,11 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/de
         fetchCourses: function fetchCourses() {
             var _this = this;
 
-            Course.all(function (courses) {
+            Course.get(function (data) {
                 _this.setState({
-                    courses: courses
-                }, _this.updateFilteredCourses);
-            });
+                    courses: data.courses
+                });
+            }, this.props.filterManager.getFiltersForServer(), this.state.page);
         },
 
         fetchUserCourses: function fetchUserCourses(callback) {
@@ -102,20 +104,10 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/de
             };
         },
 
-        updateFilteredCourses: function updateFilteredCourses() {
-            var _this = this;
-
-            if (this.state.courses !== undefined) setTimeout(function () {
-                _this.setState({
-                    filtered: _this.props.filterDelegate.filter(_this.state.courses)
-                });
-            }, 0);
-        },
-
         renderCourseRows: function renderCourseRows() {
             var _this = this;
 
-            if (this.state.filtered === undefined) {
+            if (this.state.courses === undefined) {
                 return React.createElement(
                     Tr,
                     null,
@@ -125,7 +117,7 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/de
                         "Loading courses..."
                     )
                 );
-            } else if (this.state.filtered.length === 0) {
+            } else if (this.state.courses.length === 0) {
                 return React.createElement(
                     Tr,
                     null,
@@ -135,7 +127,7 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/de
                         "No courses found"
                     )
                 );
-            }return this.state.filtered.map(function (course) {
+            }return this.state.courses.map(function (course) {
                 var isUserCourse = _this.isUserCourse(course);
 
                 var userClasses = makeClasses({
@@ -229,8 +221,7 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/de
                 React.createElement(
                     Table,
                     { ref: "courseTable", className: "table table-hover course-table",
-                        columns: columns, itemsPerPage: 50,
-                        sortable: true },
+                        columns: columns, sortable: true },
                     this.renderCourseRows()
                 )
             );

@@ -83,27 +83,12 @@ export default class FilterManager {
     }
 
     /**
-     * Filter a list of objects.
-     * @param {array} objects - An array of objects to be filtered
-     * @return {array} All objects in `objects` that pass all filters
+     * Get all filters to be sent server-side.
+     * @return {array} An array of filters in the format of [key, value]
      */
-    filter(objects) {
-        let result = [];
-
-        for (let i = 0; i < objects.length; i++) {
-            const obj = objects[i];
-            let ok = true;
-
-            for (let j = 0; j < this.filters.length; j++) {
-                ok = ok && this.filters[j].test(obj);
-                if (!ok)
-                    break;
-            }
-
-            if (ok)
-                result.push(obj);
-        }
-
-        return result;
+    getFiltersForServer() {
+        return this.filters.map(filter => {
+            return [filter.getKey(), filter.getValue()];
+        });
     }
 }

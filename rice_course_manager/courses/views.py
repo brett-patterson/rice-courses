@@ -1,8 +1,13 @@
+import json
+import math
+
+from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import render
 
 from django_cas.decorators import login_required
 
+from courses.filters import filter_courses
 from courses.models import Course
 
 
@@ -19,11 +24,39 @@ def index(request):
 
 
 @login_required(login_url='/login/')
-def all(request):
+def courses(request):
     """ Returns a list of all courses as JSON objects.
 
     """
-    return JsonResponse([c.json() for c in Course.objects.all()], safe=False)
+    filtersJson = request.POST.get('filters')
+    page = request.POST.get('page')
+
+    if filtersJson is None:
+        filters = []
+    else:
+        try:
+            filters = json.loads(filtersJson)
+        except ValueError:
+            return JsonResponse({'error': 'Improperly formatted filters'},
+                                status=400)
+
+    if page is None:
+        return JsonResponse([c.json() for c in Course.objects.all()],
+                            status=400)
+
+    all_courses = Course.objects.order_by('subject', 'course_number',
+                                          'section')
+    filtered_courses = filter_courses(all_courses, filters)
+    pages = int(math.ceil(len(filtered_courses) / settings.COURSE_PAGE_LENGTH))
+
+    page = int(page)
+    start = settings.COURSE_PAGE_LENGTH * page
+    end = settings.COURSE_PAGE_LENGTH * (page + 1)
+
+    return JsonResponse({
+        'courses': [c.json() for c in filtered_courses[start:end]],
+        'pages': pages
+        }, safe=False)
 
 
 @login_required(login_url='/login/')

@@ -29,8 +29,9 @@ else:
 # Website specific settings
 
 EVAL_DATE_FORMAT = '%m/%d/%Y %I:%M %p'
-HELP_DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(BASE_DIR), 'data/help'))
-
+HELP_DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(BASE_DIR),
+                                             'data/help'))
+COURSE_PAGE_LENGTH = 30
 
 # Application definition
 

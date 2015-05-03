@@ -3,8 +3,6 @@ define(["exports", "module", "react", "courses/filter/filterManager", "courses/f
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-    var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
-
     var React = _interopRequire(_react);
 
     var FilterManager = _interopRequire(_coursesFilterFilterManager);
@@ -17,7 +15,7 @@ define(["exports", "module", "react", "courses/filter/filterManager", "courses/f
 
     var ajaxCSRF = _util.ajaxCSRF;
 
-    var FILTERS = [new CourseFilter("crn", "CRN"), new CourseFilter("courseID", "Course", ["course"], "", CourseFilter.contains, function (callback) {
+    var FILTERS = [new CourseFilter("crn", "CRN"), new CourseFilter("courseID", "Course", ["course"], "", function (callback) {
         ajaxCSRF({
             url: "/courses/api/subjects/",
             method: "POST",
@@ -25,16 +23,7 @@ define(["exports", "module", "react", "courses/filter/filterManager", "courses/f
         }).done(function (result) {
             callback(result);
         });
-    }), new CourseFilter("title", "Title"), new CourseFilter("instructor", "Instructor"), new CourseFilter("meetings", "Meetings", ["meeting"]), new CourseFilter("credits", "Credits"), new CourseFilter("distribution", "Distribution", ["dist"], "", function (one, two) {
-        var _one$split = one.split(" ");
-
-        var _one$split2 = _slicedToArray(_one$split, 2);
-
-        var roman = _one$split2[0];
-        var integer = _one$split2[1];
-
-        return roman.toLowerCase() === two.toLowerCase() || integer.toLowerCase() == two.toLowerCase();
-    })];
+    }), new CourseFilter("title", "Title"), new CourseFilter("instructor", "Instructor"), new CourseFilter("meetings", "Meetings", ["meeting"]), new CourseFilter("credits", "Credits"), new CourseFilter("distribution", "Distribution", ["dist"], "")];
 
     module.exports = React.createClass({
         displayName: "courses",
@@ -45,13 +34,9 @@ define(["exports", "module", "react", "courses/filter/filterManager", "courses/f
             };
         },
 
-        filter: function filter(objects) {
-            return this.state.manager.filter(objects);
-        },
-
         onFiltersChanged: function onFiltersChanged() {
             if (this.refs && this.refs.courseList) {
-                this.refs.courseList.updateFilteredCourses();
+                this.refs.courseList.fetchCourses();
             }
         },
 
@@ -60,7 +45,7 @@ define(["exports", "module", "react", "courses/filter/filterManager", "courses/f
                 "div",
                 null,
                 React.createElement(FilterWidget, { manager: this.state.manager, filters: FILTERS }),
-                React.createElement(CourseList, { ref: "courseList", filterDelegate: this })
+                React.createElement(CourseList, { ref: "courseList", filterManager: this.state.manager })
             );
         }
     });

@@ -115,30 +115,17 @@ define(["exports", "module", "courses/filter/courseFilter"], function (exports, 
                     return this.filters;
                 }
             },
-            filter: {
+            getFiltersForServer: {
 
                 /**
-                 * Filter a list of objects.
-                 * @param {array} objects - An array of objects to be filtered
-                 * @return {array} All objects in `objects` that pass all filters
+                 * Get all filters to be sent server-side.
+                 * @return {array} An array of filters in the format of [key, value]
                  */
 
-                value: function filter(objects) {
-                    var result = [];
-
-                    for (var i = 0; i < objects.length; i++) {
-                        var obj = objects[i];
-                        var ok = true;
-
-                        for (var j = 0; j < this.filters.length; j++) {
-                            ok = ok && this.filters[j].test(obj);
-                            if (!ok) break;
-                        }
-
-                        if (ok) result.push(obj);
-                    }
-
-                    return result;
+                value: function getFiltersForServer() {
+                    return this.filters.map(function (filter) {
+                        return [filter.getKey(), filter.getValue()];
+                    });
                 }
             }
         });

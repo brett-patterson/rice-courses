@@ -10,7 +10,7 @@ import {ajaxCSRF} from 'util';
 const FILTERS = [
     new CourseFilter('crn', 'CRN'),
     new CourseFilter('courseID', 'Course', ['course'], '',
-                     CourseFilter.contains, callback => {
+                     callback => {
                         ajaxCSRF({
                             url: '/courses/api/subjects/',
                             method: 'POST',
@@ -23,11 +23,7 @@ const FILTERS = [
     new CourseFilter('instructor', 'Instructor'),
     new CourseFilter('meetings', 'Meetings', ['meeting']),
     new CourseFilter('credits', 'Credits'),
-    new CourseFilter('distribution', 'Distribution', ['dist'], '', (one, two) => {
-        const [roman, integer] = one.split(' ');
-        return (roman.toLowerCase() === two.toLowerCase() ||
-                integer.toLowerCase() == two.toLowerCase());
-        })
+    new CourseFilter('distribution', 'Distribution', ['dist'], '')
 ];
 
 export default React.createClass({
@@ -37,13 +33,9 @@ export default React.createClass({
         };
     },
 
-    filter(objects) {
-        return this.state.manager.filter(objects);
-    },
-
     onFiltersChanged() {
         if (this.refs && this.refs.courseList) {
-            this.refs.courseList.updateFilteredCourses();
+            this.refs.courseList.fetchCourses();
         }
     },
 
@@ -51,7 +43,7 @@ export default React.createClass({
         return (
             <div>
                 <FilterWidget manager={this.state.manager} filters={FILTERS} />
-                <CourseList ref='courseList' filterDelegate={this} />
+                <CourseList ref='courseList' filterManager={this.state.manager} />
             </div>
         );
     }

@@ -4,18 +4,19 @@ import {Table, Tr, Td} from 'reactable';
 import Course from 'courses/course';
 import {showCourseFactory} from 'courses/detail/courseDetail';
 import UserCourses from 'courses/userCourses';
+import FilterManager from 'courses/filter/filterManager';
 import {makeClasses, ajaxCSRF, propTypeHas} from 'util';
 
 export default React.createClass({
     propTypes: {
-        filterDelegate: propTypeHas(['filter'])
+        filterManager: React.PropTypes.instanceOf(FilterManager).isRequired
     },
 
     getInitialState() {
         return {
             courses: undefined,
             userCourses: [],
-            filtered: undefined
+            page: 0
         };
     },
 
@@ -34,11 +35,11 @@ export default React.createClass({
     },
 
     fetchCourses() {
-        Course.all(courses => {
+        Course.get(data => {
             this.setState({
-                courses
-            }, this.updateFilteredCourses);
-        });
+                courses: data.courses
+            });
+        }, this.props.filterManager.getFiltersForServer(), this.state.page);
     },
 
     fetchUserCourses(callback) {
@@ -83,22 +84,13 @@ export default React.createClass({
         };
     },
 
-    updateFilteredCourses() {
-        if (this.state.courses !== undefined)
-            setTimeout(() => {
-                this.setState({
-                    filtered: this.props.filterDelegate.filter(this.state.courses)
-                });
-            }, 0);
-    },
-
     renderCourseRows() {
-        if (this.state.filtered === undefined)
+        if (this.state.courses === undefined)
             return <Tr><Td column='userCourse'>Loading courses...</Td></Tr>;
-        else if (this.state.filtered.length === 0)
+        else if (this.state.courses.length === 0)
             return <Tr><Td column='userCourse'>No courses found</Td></Tr>;
 
-        return this.state.filtered.map(course => {
+        return this.state.courses.map(course => {
             const isUserCourse = this.isUserCourse(course);
 
             const userClasses = makeClasses({
@@ -179,8 +171,7 @@ export default React.createClass({
         return (
             <div className='table-responsive'>
                 <Table ref='courseTable' className='table table-hover course-table'
-                       columns={columns} itemsPerPage={50}
-                       sortable={true}>
+                       columns={columns} sortable={true}>
                     {this.renderCourseRows()}
                 </Table>
             </div>

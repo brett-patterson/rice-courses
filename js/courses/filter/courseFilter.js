@@ -6,13 +6,11 @@ export default class CourseFilter {
      * @param {array} keywords - An array of string keywords that all denote
      *  the filter
      * @param {any} value - The value to filter for
-     * @param {function} compare - A function that takes two values and returns
      * @param {array or function} - An array of value suggestions or an function
      *  that takes a callback used to provide the suggestions
      *  a boolean that is the result of a comparison between the two
      */
-    constructor(key, name, keywords=[], value='', compare=CourseFilter.contains,
-                suggestions=[]) {
+    constructor(key, name, keywords=[], value='', suggestions=[]) {
         this.key = key;
         this.name = name;
 
@@ -20,7 +18,6 @@ export default class CourseFilter {
         this.keywords.push(key);
 
         this.value = value;
-        this.compare = compare;
 
         if (typeof suggestions === 'function') {
             this.suggestions = [];
@@ -91,34 +88,16 @@ export default class CourseFilter {
     }
 
     /**
-     * Test whether a Course passes through the filter
-     * @param {Course} course - The course to test
-     * @return {boolean} Whether the course passes the filter
-     */
-    test(course) {
-        return this.compare(course.filterValue(this.key), this.value);
-    }
-
-    /**
      * Serialize the filter to a JSON string.
      * @return {string} The serialized filter
      */
     toJSON() {
-        const obj = {
+        return JSON.stringify({
             key: this.key,
             name: this.name,
             keywords: this.keywords,
             value: this.value,
-            compare: this.compare,
             suggestions: this.suggestions
-        };
-
-        return JSON.stringify(obj, (key, value) => {
-            if (typeof value === 'function') {
-                return value.toString();
-            }
-
-            return value;
         });
     }
 
@@ -131,51 +110,14 @@ export default class CourseFilter {
         const objList = JSON.parse(jsonString);
 
         return objList.map(objJSON => {
-            const obj = JSON.parse(objJSON, (key, value) => {
-                if (value && typeof value === 'string' &&
-                    value.substr(0, 8) === 'function') {
-                    const startArgs = value.indexOf('(') + 1;
-                    const endArgs = value.indexOf(')');
-                    const startBody = value.indexOf('{') + 1;
-                    const endBody = value.lastIndexOf('}');
-
-                    return new Function(value.substring(startArgs, endArgs),
-                                        value.substring(startBody, endBody));
-                }
-
-                return value;
-            });
-
+            const obj = JSON.parse(objJSON);
             const keyIndex = obj.keywords.indexOf(obj.key);
             if (keyIndex > -1) {
                 obj.keywords.splice(keyIndex, 1);
             }
 
             return new CourseFilter(obj.key, obj.name, obj.keywords, obj.value,
-                                    obj.compare, obj.suggestions);
+                                    obj.suggestions);
         });
-    }
-
-    /**
-     * A string comparison function that checks for containment (ignores case).
-     * @param {string} one - The string to look inside of
-     * @param {string} two - The string to check for
-     * @return {boolean} Whether `one` contains `two`
-     */
-    static contains(one, two) {
-        const haystack = String(one).toLowerCase();
-        const needle = two.toLowerCase();
-        return haystack.indexOf(needle) > -1;
-    }
-
-    /**
-     * A factory that returns a function which filters courses based on
-     * an exact match.
-     * @param {string} field - The course field to filter on
-     * @param {any} value - The value to filter for
-     * @return {function} The filtering function
-     */
-    static exact(one, two) {
-        return String(one).toLowerCase() === String(two).toLowerCase();
     }
 }

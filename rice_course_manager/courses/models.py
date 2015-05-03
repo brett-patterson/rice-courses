@@ -136,6 +136,9 @@ class Course(models.Model):
     crn = models.CharField(max_length=5, primary_key=True)
 
     def __repr__(self):
+        return self.course_id()
+
+    def course_id(self):
         """ Represent each course by its subject and course number.
         E.g. MATH 101
 
