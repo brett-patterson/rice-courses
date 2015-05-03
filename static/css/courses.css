@@ -39,15 +39,11 @@
   padding-bottom: 5px;
 }
 
-.reactable-pagination {
+.course-pagination {
   text-align: center;
 }
 
-.reactable-pagination tr:hover {
-  background-color: transparent !important;
-}
-
-.reactable-page-button {
+.course-page-button {
   border-bottom: 1px solid #aaa;
   border-left: 1px solid #aaa;
   border-top: 1px solid #aaa;
@@ -59,25 +55,25 @@
   width: 25px;
 }
 
-.reactable-page-button:first-child {
+.course-page-button:first-child {
   border-left: 1px solid #aaa;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
 }
 
-.reactable-page-button:last-child {
+.course-page-button:last-child {
   border-right: 1px solid #aaa;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 }
 
-.reactable-page-button:hover {
+.course-page-button:hover {
   text-decoration: none;
   color: #333;
   background-color: #ddd;
 }
 
-.reactable-current-page {
+.course-current-page {
   background-color: #ddd;
   cursor: default;
 }

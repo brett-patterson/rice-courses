@@ -31,7 +31,8 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/de
             return {
                 courses: undefined,
                 userCourses: [],
-                page: 0
+                page: 0,
+                totalPages: 0
             };
         },
 
@@ -54,7 +55,8 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/de
 
             Course.get(function (data) {
                 _this.setState({
-                    courses: data.courses
+                    courses: data.courses,
+                    totalPages: data.pages
                 });
             }, this.props.filterManager.getFiltersForServer(), this.state.page);
         },
@@ -101,6 +103,16 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/de
 
                     UserCourses.add(course);
                 }
+            };
+        },
+
+        onPageClickHandler: function onPageClickHandler(page) {
+            var _this = this;
+
+            return function (event) {
+                _this.setState({
+                    page: page
+                }, _this.fetchCourses);
             };
         },
 
@@ -212,6 +224,30 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/de
             });
         },
 
+        renderPagination: function renderPagination() {
+            var pages = [];
+
+            for (var i = 0; i < this.state.totalPages; i++) {
+                var classes = makeClasses({
+                    "course-page-button": true,
+                    "course-current-page": i == this.state.page
+                });
+
+                pages.push(React.createElement(
+                    "a",
+                    { className: classes, key: "coursePage" + i,
+                        onClick: this.onPageClickHandler(i) },
+                    i
+                ));
+            }
+
+            return React.createElement(
+                "div",
+                { className: "course-pagination" },
+                pages
+            );
+        },
+
         render: function render() {
             var columns = [{ key: "userCourse", label: "" }, { key: "crn", label: "CRN" }, { key: "courseID", label: "Course" }, { key: "title", label: "Title" }, { key: "instructor", label: "Instructor" }, { key: "meetings", label: "Meetings" }, { key: "distribution", label: "Distribution" }, { key: "enrollment", label: "Enrollment" }, { key: "credits", label: "Credits" }];
 
@@ -223,7 +259,8 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/de
                     { ref: "courseTable", className: "table table-hover course-table",
                         columns: columns, sortable: true },
                     this.renderCourseRows()
-                )
+                ),
+                this.renderPagination()
             );
         }
     });

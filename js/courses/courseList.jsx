@@ -16,7 +16,8 @@ export default React.createClass({
         return {
             courses: undefined,
             userCourses: [],
-            page: 0
+            page: 0,
+            totalPages: 0
         };
     },
 
@@ -37,7 +38,8 @@ export default React.createClass({
     fetchCourses() {
         Course.get(data => {
             this.setState({
-                courses: data.courses
+                courses: data.courses,
+                totalPages: data.pages
             });
         }, this.props.filterManager.getFiltersForServer(), this.state.page);
     },
@@ -81,6 +83,14 @@ export default React.createClass({
 
                 UserCourses.add(course);
             }
+        };
+    },
+
+    onPageClickHandler(page) {
+        return event => {
+            this.setState({
+                page
+            }, this.fetchCourses);
         };
     },
 
@@ -155,6 +165,30 @@ export default React.createClass({
         });
     },
 
+    renderPagination() {
+        let pages = [];
+
+        for (let i = 0; i < this.state.totalPages; i++) {
+            const classes = makeClasses({
+                'course-page-button': true,
+                'course-current-page': i == this.state.page
+            });
+
+            pages.push(
+                <a className={classes} key={`coursePage${i}`}
+                   onClick={this.onPageClickHandler(i)}>
+                    {i}
+                </a>
+            );
+        }
+
+        return (
+            <div className='course-pagination'>
+                {pages}
+            </div>
+        );
+    },
+
     render() {
         const columns = [
             { key: 'userCourse', label: '' },
@@ -174,6 +208,7 @@ export default React.createClass({
                        columns={columns} sortable={true}>
                     {this.renderCourseRows()}
                 </Table>
+                {this.renderPagination()}
             </div>
         );
     }
