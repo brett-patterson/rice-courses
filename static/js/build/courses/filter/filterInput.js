@@ -8,12 +8,22 @@ define(["exports", "module", "react", "courses/filter/courseFilter", "util"], fu
     var CourseFilter = _interopRequire(_coursesFilterCourseFilter);
 
     var propTypeHas = _util.propTypeHas;
+
+    var updateTimerId = null;
+
     module.exports = React.createClass({
         displayName: "filterInput",
 
         propTypes: {
             filter: React.PropTypes.instanceOf(CourseFilter).isRequired,
-            delegate: propTypeHas(["removeFilter", "updateFilter"])
+            delegate: propTypeHas(["removeFilter", "updateFilter"]),
+            filterUpdateDelay: React.PropTypes.number
+        },
+
+        getDefaultProps: function getDefaultProps() {
+            return {
+                filterUpdateDelay: 500
+            };
         },
 
         getInitialState: function getInitialState() {
@@ -74,10 +84,15 @@ define(["exports", "module", "react", "courses/filter/courseFilter", "util"], fu
         },
 
         setValue: function setValue(value) {
-            this.props.delegate.updateFilter(this.props.filter, value);
+            var _this = this;
 
             this.setState({
                 value: value
+            }, function () {
+                clearTimeout(updateTimerId);
+                updateTimerId = setTimeout(function () {
+                    _this.props.delegate.updateFilter(_this.props.filter, _this.state.value);
+                }, _this.props.filterUpdateDelay);
             });
         },
 

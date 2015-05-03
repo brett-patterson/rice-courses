@@ -2,11 +2,19 @@ import React from 'react';
 import CourseFilter from 'courses/filter/courseFilter';
 import {propTypeHas} from 'util';
 
+let updateTimerId = null;
 
 export default React.createClass({
     propTypes: {
         filter: React.PropTypes.instanceOf(CourseFilter).isRequired,
-        delegate: propTypeHas(['removeFilter', 'updateFilter'])
+        delegate: propTypeHas(['removeFilter', 'updateFilter']),
+        filterUpdateDelay: React.PropTypes.number
+    },
+
+    getDefaultProps() {
+        return {
+            filterUpdateDelay: 500
+        };
     },
 
     getInitialState() {
@@ -67,10 +75,13 @@ export default React.createClass({
     },
 
     setValue(value) {
-        this.props.delegate.updateFilter(this.props.filter, value);
-
         this.setState({
             value
+        }, () => {
+            clearTimeout(updateTimerId);
+            updateTimerId = setTimeout(() => {
+                this.props.delegate.updateFilter(this.props.filter, this.state.value);
+            }, this.props.filterUpdateDelay);
         });
     },
 
