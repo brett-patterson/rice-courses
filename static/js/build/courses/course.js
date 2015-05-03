@@ -21,8 +21,6 @@ define(["exports", "module", "moment", "util"], function (exports, module, _mome
         Friday: "F"
     };
 
-    var courseRequest = null;
-
     var Course = (function () {
         function Course(crn, subject, number, section, title, instructor, description, meetings, location, credits, distribution, enrollment, maxEnrollment, waitlist, maxWaitlist, prerequisites, corequisites, restrictions, crossListed) {
             _classCallCheck(this, Course);
@@ -280,20 +278,12 @@ define(["exports", "module", "moment", "util"], function (exports, module, _mome
                         data.page = page;
                     }
 
-                    if (courseRequest !== null) {
-                        courseRequest.abort();
-                    }
-
-                    console.log("making request");
-                    courseRequest = ajaxCSRF({
+                    ajaxCSRF({
                         url: "/courses/api/courses/",
                         method: "POST",
                         dataType: "json",
                         data: data
                     }).done(function (result) {
-                        console.log("request done");
-                        courseRequest = null;
-
                         if (cb) {
                             result.courses = result.courses.map(function (data) {
                                 return Course.fromJSON(data);

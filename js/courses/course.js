@@ -67,10 +67,6 @@ export default class Course {
             data.page = page;
         }
 
-        if (courseRequest !== null) {
-            courseRequest.abort();
-        }
-
         ajaxCSRF({
             url: '/courses/api/courses/',
             method: 'POST',
