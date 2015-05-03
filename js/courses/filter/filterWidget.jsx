@@ -64,15 +64,13 @@ export default React.createClass({
 
             if (index > -1) {
                 const field = text.substring(0, index).toLowerCase();
-                const value = text.substring(index + 1);
                 const filter = this.state.keywords[field];
 
                 if (field.length > 0 && filter !== undefined) {
                     this.setState({
                         text: ''
                     }, () => {
-                        filter.setValue(value);
-                        this.addFilter(filter);
+                        this.addFilter(filter, '');
                     });
                 }
             }

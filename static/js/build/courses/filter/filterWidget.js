@@ -77,15 +77,13 @@ define(["exports", "module", "react", "courses/filter/filterButton", "courses/fi
                 if (index > -1) {
                     (function () {
                         var field = text.substring(0, index).toLowerCase();
-                        var value = text.substring(index + 1);
                         var filter = _this.state.keywords[field];
 
                         if (field.length > 0 && filter !== undefined) {
                             _this.setState({
                                 text: ""
                             }, function () {
-                                filter.setValue(value);
-                                _this.addFilter(filter);
+                                _this.addFilter(filter, "");
                             });
                         }
                     })();
