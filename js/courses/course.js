@@ -58,13 +58,17 @@ export default class Course {
                           j.restrictions, crossListed);
     }
 
-    static get(cb, filters=[], page=-1) {
+    static get(cb, filters=[], page=-1, order=null) {
         let data = {
             filters: JSON.stringify(filters)
         };
 
         if (page >= 0) {
             data.page = page;
+        }
+
+        if (order !== null) {
+            data.order = order;
         }
 
         ajaxCSRF({

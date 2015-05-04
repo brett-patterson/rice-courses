@@ -1,5 +1,4 @@
 import React from 'react';
-import {Table, Tr, Td} from 'reactable';
 
 import Course from 'courses/course';
 import {showCourseFactory} from 'courses/detail/courseDetail';
@@ -17,7 +16,8 @@ export default React.createClass({
             courses: undefined,
             userCourses: [],
             page: 0,
-            totalPages: 0
+            totalPages: 0,
+            order: 'courseID'
         };
     },
 
@@ -26,22 +26,14 @@ export default React.createClass({
         this.fetchUserCourses();
     },
 
-    componentDidMount() {
-        this.refs.courseTable.setState({
-            currentSort: {
-                column: 'courseID',
-                direction: 1
-            }
-        });
-    },
-
     fetchCourses() {
         Course.get(data => {
             this.setState({
                 courses: data.courses,
                 totalPages: data.pages
             });
-        }, this.props.filterManager.getFiltersForServer(), this.state.page);
+        }, this.props.filterManager.getFiltersForServer(), this.state.page,
+           this.state.order);
     },
 
     fetchUserCourses(callback) {
@@ -94,11 +86,70 @@ export default React.createClass({
         };
     },
 
+    onHeaderClickHandler(order) {
+        return event => {
+            if (this.state.order == order && order.startsWith('-')) {
+                order = order.substring(1);
+            } else if (this.state.order == order) {
+                order = `-${order}`;
+            }
+
+            this.setState({
+                order
+            }, this.fetchCourses);
+
+            let target = jQuery(event.target);
+
+            target.siblings('th').removeClass('sort-asc').removeClass('sort-desc');
+
+            if (target.hasClass('sort-asc')) {
+                target.removeClass('sort-asc').addClass('sort-desc');
+            } else {
+                target.removeClass('sort-desc').addClass('sort-asc');
+            }
+        };
+    },
+
+    renderCourseHeaders() {
+        const columns = [
+            ['crn', 'CRN'],
+            ['courseID', 'Course'],
+            ['title', 'Title'],
+            ['instructor', 'Instructor'],
+            ['meetings', 'Meetings'],
+            ['distribution', 'Distribution'],
+            ['enrollment', 'Enrollment'],
+            ['credits', 'Credits']
+        ];
+
+        const headers = columns.map(column => {
+            const [key, name] = column;
+            const classes = makeClasses({
+                'sort-asc': this.state.order.substring(1) === key,
+                'sort-desc': this.state.order === key
+            });
+
+            return (
+                <th onClick={this.onHeaderClickHandler(key)}
+                    className={classes} key={key}>
+                    {name}
+                </th>
+            );
+        });
+
+        return (
+            <tr>
+                <th></th>
+                {headers}
+            </tr>
+        );
+    },
+
     renderCourseRows() {
         if (this.state.courses === undefined)
-            return <Tr><Td column='userCourse'>Loading courses...</Td></Tr>;
+            return <tr><td column='userCourse'>Loading courses...</td></tr>;
         else if (this.state.courses.length === 0)
-            return <Tr><Td column='userCourse'>No courses found</Td></Tr>;
+            return <tr><td column='userCourse'>No courses found</td></tr>;
 
         return this.state.courses.map(course => {
             const isUserCourse = this.isUserCourse(course);
@@ -121,46 +172,46 @@ export default React.createClass({
             });
 
             return (
-                <Tr key={course.getCRN()}>
-                    <Td column='userCourse'
+                <tr key={course.getCRN()}>
+                    <td column='userCourse'
                         handleClick={this.toggleUserCourseFactory(course)}>
                         <a className={userClasses}>
                             <span className={heartClasses} />
                         </a>
-                    </Td>
-                    <Td column='crn'
+                    </td>
+                    <td column='crn'
                         handleClick={showCourseFactory(course)}>
                         {course.getCRN()}
-                    </Td>
-                    <Td column='courseID'
+                    </td>
+                    <td column='courseID'
                         handleClick={showCourseFactory(course)}>
                         {course.getCourseID()}
-                    </Td>
-                    <Td column='title'
+                    </td>
+                    <td column='title'
                         handleClick={showCourseFactory(course)}>
                         {course.getTitle()}
-                    </Td>
-                    <Td column='instructor'
+                    </td>
+                    <td column='instructor'
                         handleClick={showCourseFactory(course)}>
                         {course.getInstructor()}
-                    </Td>
-                    <Td column='meetings'
+                    </td>
+                    <td column='meetings'
                         handleClick={showCourseFactory(course)}>
                         {course.getMeetingsString()}
-                    </Td>
-                    <Td column='distribution'
+                    </td>
+                    <td column='distribution'
                         handleClick={showCourseFactory(course)}>
                         {course.getDistributionString()}
-                    </Td>
-                    <Td column='enrollment' className={enrollClasses}
+                    </td>
+                    <td column='enrollment' className={enrollClasses}
                         handleClick={showCourseFactory(course)}>
                         {course.getEnrollmentString()}
-                    </Td>
-                    <Td column='credits'
+                    </td>
+                    <td column='credits'
                         handleClick={showCourseFactory(course)}>
                         {course.getCredits()}
-                    </Td>
-                </Tr>
+                    </td>
+                </tr>
             );
         });
     },
@@ -190,24 +241,16 @@ export default React.createClass({
     },
 
     render() {
-        const columns = [
-            { key: 'userCourse', label: '' },
-            { key: 'crn', label: 'CRN' },
-            { key: 'courseID', label: 'Course' },
-            { key: 'title', label: 'Title' },
-            { key: 'instructor', label: 'Instructor' },
-            { key: 'meetings', label: 'Meetings' },
-            { key: 'distribution', label: 'Distribution' },
-            { key: 'enrollment', label: 'Enrollment' },
-            { key: 'credits', label: 'Credits' }
-        ];
-
         return (
             <div className='table-responsive'>
-                <Table ref='courseTable' className='table table-hover course-table'
-                       columns={columns} sortable={true}>
-                    {this.renderCourseRows()}
-                </Table>
+                <table className='table table-hover course-table'>
+                    <thead>
+                        {this.renderCourseHeaders()}
+                    </thead>
+                    <tbody>
+                        {this.renderCourseRows()}
+                    </tbody>
+                </table>
                 {this.renderPagination()}
             </div>
         );

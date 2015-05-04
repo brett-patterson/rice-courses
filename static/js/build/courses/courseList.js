@@ -1,13 +1,11 @@
-define(["exports", "module", "react", "reactable", "courses/course", "courses/detail/courseDetail", "courses/userCourses", "courses/filter/filterManager", "util"], function (exports, module, _react, _reactable, _coursesCourse, _coursesDetailCourseDetail, _coursesUserCourses, _coursesFilterFilterManager, _util) {
+define(["exports", "module", "react", "courses/course", "courses/detail/courseDetail", "courses/userCourses", "courses/filter/filterManager", "util"], function (exports, module, _react, _coursesCourse, _coursesDetailCourseDetail, _coursesUserCourses, _coursesFilterFilterManager, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-    var React = _interopRequire(_react);
+    var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
 
-    var Table = _reactable.Table;
-    var Tr = _reactable.Tr;
-    var Td = _reactable.Td;
+    var React = _interopRequire(_react);
 
     var Course = _interopRequire(_coursesCourse);
 
@@ -32,22 +30,14 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/de
                 courses: undefined,
                 userCourses: [],
                 page: 0,
-                totalPages: 0
+                totalPages: 0,
+                order: "courseID"
             };
         },
 
         componentWillMount: function componentWillMount() {
             this.fetchCourses();
             this.fetchUserCourses();
-        },
-
-        componentDidMount: function componentDidMount() {
-            this.refs.courseTable.setState({
-                currentSort: {
-                    column: "courseID",
-                    direction: 1
-                }
-            });
         },
 
         fetchCourses: function fetchCourses() {
@@ -58,7 +48,7 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/de
                     courses: data.courses,
                     totalPages: data.pages
                 });
-            }, this.props.filterManager.getFiltersForServer(), this.state.page);
+            }, this.props.filterManager.getFiltersForServer(), this.state.page, this.state.order);
         },
 
         fetchUserCourses: function fetchUserCourses(callback) {
@@ -116,25 +106,83 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/de
             };
         },
 
+        onHeaderClickHandler: function onHeaderClickHandler(order) {
+            var _this = this;
+
+            return function (event) {
+                if (_this.state.order == order && order.startsWith("-")) {
+                    order = order.substring(1);
+                } else if (_this.state.order == order) {
+                    order = "-" + order;
+                }
+
+                _this.setState({
+                    order: order
+                }, _this.fetchCourses);
+
+                var target = jQuery(event.target);
+
+                target.siblings("th").removeClass("sort-asc").removeClass("sort-desc");
+
+                if (target.hasClass("sort-asc")) {
+                    target.removeClass("sort-asc").addClass("sort-desc");
+                } else {
+                    target.removeClass("sort-desc").addClass("sort-asc");
+                }
+            };
+        },
+
+        renderCourseHeaders: function renderCourseHeaders() {
+            var _this = this;
+
+            var columns = [["crn", "CRN"], ["courseID", "Course"], ["title", "Title"], ["instructor", "Instructor"], ["meetings", "Meetings"], ["distribution", "Distribution"], ["enrollment", "Enrollment"], ["credits", "Credits"]];
+
+            var headers = columns.map(function (column) {
+                var _column = _slicedToArray(column, 2);
+
+                var key = _column[0];
+                var name = _column[1];
+
+                var classes = makeClasses({
+                    "sort-asc": _this.state.order.substring(1) === key,
+                    "sort-desc": _this.state.order === key
+                });
+
+                return React.createElement(
+                    "th",
+                    { onClick: _this.onHeaderClickHandler(key),
+                        className: classes, key: key },
+                    name
+                );
+            });
+
+            return React.createElement(
+                "tr",
+                null,
+                React.createElement("th", null),
+                headers
+            );
+        },
+
         renderCourseRows: function renderCourseRows() {
             var _this = this;
 
             if (this.state.courses === undefined) {
                 return React.createElement(
-                    Tr,
+                    "tr",
                     null,
                     React.createElement(
-                        Td,
+                        "td",
                         { column: "userCourse" },
                         "Loading courses..."
                     )
                 );
             } else if (this.state.courses.length === 0) {
                 return React.createElement(
-                    Tr,
+                    "tr",
                     null,
                     React.createElement(
-                        Td,
+                        "td",
                         { column: "userCourse" },
                         "No courses found"
                     )
@@ -160,10 +208,10 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/de
                 });
 
                 return React.createElement(
-                    Tr,
+                    "tr",
                     { key: course.getCRN() },
                     React.createElement(
-                        Td,
+                        "td",
                         { column: "userCourse",
                             handleClick: _this.toggleUserCourseFactory(course) },
                         React.createElement(
@@ -173,49 +221,49 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/de
                         )
                     ),
                     React.createElement(
-                        Td,
+                        "td",
                         { column: "crn",
                             handleClick: showCourseFactory(course) },
                         course.getCRN()
                     ),
                     React.createElement(
-                        Td,
+                        "td",
                         { column: "courseID",
                             handleClick: showCourseFactory(course) },
                         course.getCourseID()
                     ),
                     React.createElement(
-                        Td,
+                        "td",
                         { column: "title",
                             handleClick: showCourseFactory(course) },
                         course.getTitle()
                     ),
                     React.createElement(
-                        Td,
+                        "td",
                         { column: "instructor",
                             handleClick: showCourseFactory(course) },
                         course.getInstructor()
                     ),
                     React.createElement(
-                        Td,
+                        "td",
                         { column: "meetings",
                             handleClick: showCourseFactory(course) },
                         course.getMeetingsString()
                     ),
                     React.createElement(
-                        Td,
+                        "td",
                         { column: "distribution",
                             handleClick: showCourseFactory(course) },
                         course.getDistributionString()
                     ),
                     React.createElement(
-                        Td,
+                        "td",
                         { column: "enrollment", className: enrollClasses,
                             handleClick: showCourseFactory(course) },
                         course.getEnrollmentString()
                     ),
                     React.createElement(
-                        Td,
+                        "td",
                         { column: "credits",
                             handleClick: showCourseFactory(course) },
                         course.getCredits()
@@ -249,16 +297,22 @@ define(["exports", "module", "react", "reactable", "courses/course", "courses/de
         },
 
         render: function render() {
-            var columns = [{ key: "userCourse", label: "" }, { key: "crn", label: "CRN" }, { key: "courseID", label: "Course" }, { key: "title", label: "Title" }, { key: "instructor", label: "Instructor" }, { key: "meetings", label: "Meetings" }, { key: "distribution", label: "Distribution" }, { key: "enrollment", label: "Enrollment" }, { key: "credits", label: "Credits" }];
-
             return React.createElement(
                 "div",
                 { className: "table-responsive" },
                 React.createElement(
-                    Table,
-                    { ref: "courseTable", className: "table table-hover course-table",
-                        columns: columns, sortable: true },
-                    this.renderCourseRows()
+                    "table",
+                    { className: "table table-hover course-table" },
+                    React.createElement(
+                        "thead",
+                        null,
+                        this.renderCourseHeaders()
+                    ),
+                    React.createElement(
+                        "tbody",
+                        null,
+                        this.renderCourseRows()
+                    )
                 ),
                 this.renderPagination()
             );

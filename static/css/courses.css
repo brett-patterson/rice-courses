@@ -25,14 +25,14 @@
   cursor: pointer;
 }
 
-.course-table th.reactable-header-sort-desc:after {
+.sort-asc:after {
   content: '\25B2';
   font-size: 0.8em;
   padding-left: 5px;
   padding-bottom: 5px;
 }
 
-.course-table th.reactable-header-sort-asc:after {
+.sort-desc:after {
   content: '\25BC';
   font-size: 0.8em;
   padding-left: 5px;

@@ -11,6 +11,11 @@ from courses.filters import filter_courses
 from courses.models import Course
 
 
+COURSE_ORDER = {
+    'courseID': ('subject', 'course_number', 'section'),
+}
+
+
 @login_required(login_url='/login/')
 def index(request):
     """ The index page for the 'Courses' tab.
@@ -30,6 +35,7 @@ def courses(request):
     """
     filtersJson = request.POST.get('filters')
     page = request.POST.get('page')
+    order = request.POST.get('order')
 
     if filtersJson is None:
         filters = []
@@ -44,8 +50,16 @@ def courses(request):
         return JsonResponse([c.json() for c in Course.objects.all()],
                             status=400)
 
-    all_courses = Course.objects.order_by('subject', 'course_number',
-                                          'section')
+    if order is None:
+        order = 'courseID'
+
+    if order.startswith('-'):
+        order_params = COURSE_ORDER.get(order[1:], (order[1:],))
+        all_courses = Course.objects.order_by(*order_params).reverse()
+    else:
+        order_params = COURSE_ORDER.get(order, (order,))
+        all_courses = Course.objects.order_by(*order_params)
+
     filtered_courses = filter_courses(all_courses, filters)
     pages = int(math.ceil(len(filtered_courses) / settings.COURSE_PAGE_LENGTH))
 

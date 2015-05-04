@@ -269,6 +269,7 @@ define(["exports", "module", "moment", "util"], function (exports, module, _mome
                 value: function get(cb) {
                     var filters = arguments[1] === undefined ? [] : arguments[1];
                     var page = arguments[2] === undefined ? -1 : arguments[2];
+                    var order = arguments[3] === undefined ? null : arguments[3];
 
                     var data = {
                         filters: JSON.stringify(filters)
@@ -276,6 +277,10 @@ define(["exports", "module", "moment", "util"], function (exports, module, _mome
 
                     if (page >= 0) {
                         data.page = page;
+                    }
+
+                    if (order !== null) {
+                        data.order = order;
                     }
 
                     ajaxCSRF({
