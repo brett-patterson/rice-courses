@@ -26,21 +26,27 @@ def evaluation_to_json(evaluation_type, crn):
     try:
         evaluation = Evaluation.objects.get(evaluation_type=evaluation_type,
                                             crn=crn)
+        return evaluation.json()
 
     except ObjectDoesNotExist:
-        course = Course.objects.get(crn=crn)
-        if evaluation_type == 'c':
-            evaluation = get_course_evaluation(course)
-        elif evaluation_type == 'i':
-            evaluation = get_instructor_evaluation(course)
-
-    if evaluation is None:
         return {
             'questions': [],
             'comments': []
         }
 
-    return evaluation.json()
+        # course = Course.objects.get(crn=crn)
+        # if evaluation_type == 'c':
+        #     evaluation = get_course_evaluation(course)
+        # elif evaluation_type == 'i':
+        #     evaluation = get_instructor_evaluation(course)
+
+        # if evaluation is None:
+        #     return {
+        #         'questions': [],
+        #         'comments': []
+        #     }
+
+        # return evaluation.json()
 
 
 def course_evaluation(request):
@@ -50,9 +56,7 @@ def course_evaluation(request):
     crn = request.POST.get('crn')
 
     if crn is not None:
-        # return HttpResponse(json.dumps(evaluation_to_json('c', crn)),
-        #                     content_type='application/json')
-        return JsonResponse([], safe=False)
+        return JsonResponse(evaluation_to_json('c', crn))
 
     return JsonResponse({'error': 'No CRN specified'}, status=400)
 
@@ -64,8 +68,6 @@ def instructor_evaluation(request):
     crn = request.POST.get('crn')
 
     if crn is not None:
-        # return HttpResponse(json.dumps(evaluation_to_json('i', crn)),
-        #                     content_type='application/json')
-        return JsonResponse([], safe=False)
+        return JsonResponse(evaluation_to_json('i', crn))
 
     return JsonResponse({'error': 'No CRN specified'}, status=400)
