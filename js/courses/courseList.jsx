@@ -97,16 +97,6 @@ export default React.createClass({
             this.setState({
                 order
             }, this.fetchCourses);
-
-            let target = jQuery(event.target);
-
-            target.siblings('th').removeClass('sort-asc').removeClass('sort-desc');
-
-            if (target.hasClass('sort-asc')) {
-                target.removeClass('sort-asc').addClass('sort-desc');
-            } else {
-                target.removeClass('sort-desc').addClass('sort-asc');
-            }
         };
     },
 

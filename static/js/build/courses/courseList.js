@@ -119,16 +119,6 @@ define(["exports", "module", "react", "courses/course", "courses/detail/courseDe
                 _this.setState({
                     order: order
                 }, _this.fetchCourses);
-
-                var target = jQuery(event.target);
-
-                target.siblings("th").removeClass("sort-asc").removeClass("sort-desc");
-
-                if (target.hasClass("sort-asc")) {
-                    target.removeClass("sort-asc").addClass("sort-desc");
-                } else {
-                    target.removeClass("sort-desc").addClass("sort-asc");
-                }
             };
         },
 
