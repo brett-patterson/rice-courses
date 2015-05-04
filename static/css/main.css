@@ -1,13 +1,5 @@
 .login-container {
-  float: right;
-  left: 0;
-  padding: 20px;
-  position: absolute;
-  text-align: center;
-  top: 0;
-}
-
-.header {
+  padding-bottom: 20px;
   text-align: center;
 }
 
@@ -38,4 +30,8 @@
   top: 0;
   width: 100%;
   z-index: 100;
+}
+
+.content {
+  padding-top: 20px;
 }

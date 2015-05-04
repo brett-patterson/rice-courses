@@ -50,50 +50,44 @@ html(lang='en')
         block head
 
     body
-        .container-fluid.header
-            .login-container
-                if user.is_authenticated
-                    span
-                        | Welcome, 
-                        strong= user.username
-                        br
-                        | (
-                        a(href='/logout/') Sign out
-                        | )
-            
-                else
-                    a(href='/login/') Sign in
-            
-            a(href="{% url 'index' %}")
-                img(src="{% static 'img/logo_beta.png' %}", height='200px')
+        .help-button
+            a(href='#', onclick='startTutorial()')
+                span.glyphicon.glyphicon-question-sign
 
-            .help-button
-                a(href='#', onclick='startTutorial()')
-                    span.glyphicon.glyphicon-question-sign
+        .container-fluid
+            .row
+                .col-lg-2.main-nav
+                    a(href="{% url 'home' %}")
+                        img(src="{% static 'img/logo_beta.png' %}", height='200px')
 
-        if nav_active
-            .container-fluid
-                .row
-                    .col-lg-2.main-nav
-                        ul.nav.nav-pills.nav-stacked
-                            li(class=('active' if nav_active == 'courses' else ''))
-                                a(href="{% url 'courses' %}")
-                                    span.glyphicon.glyphicon-list
-                                    |  Courses
+                    .login-container
+                        if user.is_authenticated
+                            span
+                                | Welcome, 
+                                strong= user.username
+                                br
+                                | (
+                                a(href='/logout/') Sign out
+                                | )
+                    
+                        else
+                            a(href='/login/') Sign in
 
-                            li(class=('active' if nav_active == 'me' else ''))
-                                a(href="{% url 'me' %}")
-                                    span.glyphicon.glyphicon-user
-                                    |  Me
+                    ul.nav.nav-pills.nav-stacked
+                        li(class=('active' if nav_active == 'courses' else ''))
+                            a(href="{% url 'courses' %}")
+                                span.glyphicon.glyphicon-list
+                                |  Courses
 
-                            li(class=('active' if nav_active == 'help' else ''))
-                                a(href="{% url 'help' %}")
-                                    span.glyphicon.glyphicon-question-sign
-                                    |  Help
+                        li(class=('active' if nav_active == 'me' else ''))
+                            a(href="{% url 'me' %}")
+                                span.glyphicon.glyphicon-user
+                                |  Me
 
-                    .col-lg-10
-                        block content
-        
-        else
-            .container
-                block no-nav-content
+                        li(class=('active' if nav_active == 'help' else ''))
+                            a(href="{% url 'help' %}")
+                                span.glyphicon.glyphicon-question-sign
+                                |  Help
+
+                .col-lg-10.content
+                    block content
