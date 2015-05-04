@@ -98,6 +98,12 @@ export default React.createClass({
 
     eventDragStart(event) {
         event.course.getOtherSections(courses => {
+            courses = courses.filter(course => {
+                return (this.props.scheduler === undefined ||
+                        (this.props.scheduler !== undefined &&
+                         !this.props.scheduler.getMap()[course.getCRN()]));
+            });
+
             this.setState({
                 alternates: courses
             });

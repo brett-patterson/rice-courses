@@ -118,6 +118,10 @@ define(["exports", "module", "react", "me/planner/planner", "courses/course", "m
             var _this = this;
 
             event.course.getOtherSections(function (courses) {
+                courses = courses.filter(function (course) {
+                    return _this.props.scheduler === undefined || _this.props.scheduler !== undefined && !_this.props.scheduler.getMap()[course.getCRN()];
+                });
+
                 _this.setState({
                     alternates: courses
                 });
