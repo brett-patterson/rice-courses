@@ -164,41 +164,41 @@ export default React.createClass({
             return (
                 <tr key={course.getCRN()}>
                     <td column='userCourse'
-                        handleClick={this.toggleUserCourseFactory(course)}>
+                        onClick={this.toggleUserCourseFactory(course)}>
                         <a className={userClasses}>
                             <span className={heartClasses} />
                         </a>
                     </td>
                     <td column='crn'
-                        handleClick={showCourseFactory(course)}>
+                        onClick={showCourseFactory(course)}>
                         {course.getCRN()}
                     </td>
                     <td column='courseID'
-                        handleClick={showCourseFactory(course)}>
+                        onClick={showCourseFactory(course)}>
                         {course.getCourseID()}
                     </td>
                     <td column='title'
-                        handleClick={showCourseFactory(course)}>
+                        onClick={showCourseFactory(course)}>
                         {course.getTitle()}
                     </td>
                     <td column='instructor'
-                        handleClick={showCourseFactory(course)}>
+                        onClick={showCourseFactory(course)}>
                         {course.getInstructor()}
                     </td>
                     <td column='meetings'
-                        handleClick={showCourseFactory(course)}>
+                        onClick={showCourseFactory(course)}>
                         {course.getMeetingsString()}
                     </td>
                     <td column='distribution'
-                        handleClick={showCourseFactory(course)}>
+                        onClick={showCourseFactory(course)}>
                         {course.getDistributionString()}
                     </td>
                     <td column='enrollment' className={enrollClasses}
-                        handleClick={showCourseFactory(course)}>
+                        onClick={showCourseFactory(course)}>
                         {course.getEnrollmentString()}
                     </td>
                     <td column='credits'
-                        handleClick={showCourseFactory(course)}>
+                        onClick={showCourseFactory(course)}>
                         {course.getCredits()}
                     </td>
                 </tr>
