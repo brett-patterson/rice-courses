@@ -107,16 +107,17 @@ export default React.createClass({
             ['title', 'Title'],
             ['instructor', 'Instructor'],
             ['meetings', 'Meetings'],
-            ['distribution', 'Distribution'],
-            ['enrollment', 'Enrollment'],
-            ['credits', 'Credits']
+            ['distribution', 'Distribution', true],
+            ['enrollment', 'Enrollment', true],
+            ['credits', 'Credits', true]
         ];
 
         const headers = columns.map(column => {
-            const [key, name] = column;
+            const [key, name, center] = column;
             const classes = makeClasses({
                 'sort-asc': this.state.order.substring(1) === key,
-                'sort-desc': this.state.order === key
+                'sort-desc': this.state.order === key,
+                'text-center': center
             });
 
             return (
@@ -158,7 +159,8 @@ export default React.createClass({
             const percent = course.getEnrollmentPercentage();
             const enrollClasses = makeClasses({
                 'enroll-warning': percent >= 75 && percent < 100,
-                'enroll-full': percent === 100
+                'enroll-full': percent === 100,
+                'text-center': true
             });
 
             return (
@@ -189,7 +191,7 @@ export default React.createClass({
                         onClick={showCourseFactory(course)}>
                         {course.getMeetingsString()}
                     </td>
-                    <td column='distribution'
+                    <td column='distribution' className='text-center'
                         onClick={showCourseFactory(course)}>
                         {course.getDistributionString()}
                     </td>
@@ -197,7 +199,7 @@ export default React.createClass({
                         onClick={showCourseFactory(course)}>
                         {course.getEnrollmentString()}
                     </td>
-                    <td column='credits'
+                    <td column='credits' className='text-center'
                         onClick={showCourseFactory(course)}>
                         {course.getCredits()}
                     </td>

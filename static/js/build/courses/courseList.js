@@ -125,17 +125,19 @@ define(["exports", "module", "react", "courses/course", "courses/detail/courseDe
         renderCourseHeaders: function renderCourseHeaders() {
             var _this = this;
 
-            var columns = [["crn", "CRN"], ["courseID", "Course"], ["title", "Title"], ["instructor", "Instructor"], ["meetings", "Meetings"], ["distribution", "Distribution"], ["enrollment", "Enrollment"], ["credits", "Credits"]];
+            var columns = [["crn", "CRN"], ["courseID", "Course"], ["title", "Title"], ["instructor", "Instructor"], ["meetings", "Meetings"], ["distribution", "Distribution", true], ["enrollment", "Enrollment", true], ["credits", "Credits", true]];
 
             var headers = columns.map(function (column) {
-                var _column = _slicedToArray(column, 2);
+                var _column = _slicedToArray(column, 3);
 
                 var key = _column[0];
                 var name = _column[1];
+                var center = _column[2];
 
                 var classes = makeClasses({
                     "sort-asc": _this.state.order.substring(1) === key,
-                    "sort-desc": _this.state.order === key
+                    "sort-desc": _this.state.order === key,
+                    "text-center": center
                 });
 
                 return React.createElement(
@@ -194,7 +196,8 @@ define(["exports", "module", "react", "courses/course", "courses/detail/courseDe
                 var percent = course.getEnrollmentPercentage();
                 var enrollClasses = makeClasses({
                     "enroll-warning": percent >= 75 && percent < 100,
-                    "enroll-full": percent === 100
+                    "enroll-full": percent === 100,
+                    "text-center": true
                 });
 
                 return React.createElement(
@@ -242,7 +245,7 @@ define(["exports", "module", "react", "courses/course", "courses/detail/courseDe
                     ),
                     React.createElement(
                         "td",
-                        { column: "distribution",
+                        { column: "distribution", className: "text-center",
                             onClick: showCourseFactory(course) },
                         course.getDistributionString()
                     ),
@@ -254,7 +257,7 @@ define(["exports", "module", "react", "courses/course", "courses/detail/courseDe
                     ),
                     React.createElement(
                         "td",
-                        { column: "credits",
+                        { column: "credits", className: "text-center",
                             onClick: showCourseFactory(course) },
                         course.getCredits()
                     )

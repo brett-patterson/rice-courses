@@ -1,4 +1,4 @@
-define(["exports", "module", "react", "reactBootstrap", "reactable", "zeroClipboard", "me/scheduler", "courses/course", "courses/detail/courseDetail", "util"], function (exports, module, _react, _reactBootstrap, _reactable, _zeroClipboard, _meScheduler, _coursesCourse, _coursesDetailCourseDetail, _util) {
+define(["exports", "module", "react", "reactBootstrap", "zeroClipboard", "me/scheduler", "courses/course", "courses/detail/courseDetail", "util"], function (exports, module, _react, _reactBootstrap, _zeroClipboard, _meScheduler, _coursesCourse, _coursesDetailCourseDetail, _util) {
     "use strict";
 
     var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -8,9 +8,6 @@ define(["exports", "module", "react", "reactBootstrap", "reactable", "zeroClipbo
     var React = _interopRequire(_react);
 
     var Badge = _reactBootstrap.Badge;
-    var Table = _reactable.Table;
-    var Tr = _reactable.Tr;
-    var Td = _reactable.Td;
 
     var ZeroClipboard = _interopRequire(_zeroClipboard);
 
@@ -202,14 +199,15 @@ define(["exports", "module", "react", "reactBootstrap", "reactable", "zeroClipbo
                 var percent = course.getEnrollmentPercentage();
                 var enrollClasses = makeClasses({
                     "enroll-warning": percent >= 75 && percent < 100,
-                    "enroll-full": percent === 100
+                    "enroll-full": percent === 100,
+                    "text-center": true
                 });
 
                 return React.createElement(
-                    Tr,
+                    "tr",
                     { key: course.getCRN() },
                     React.createElement(
-                        Td,
+                        "td",
                         { column: "shown",
                             handleClick: _this.toggleCourseShownFactory(course) },
                         React.createElement(
@@ -219,7 +217,7 @@ define(["exports", "module", "react", "reactBootstrap", "reactable", "zeroClipbo
                         )
                     ),
                     React.createElement(
-                        Td,
+                        "td",
                         { column: "crn",
                             handleClick: showCourseFactory(course) },
                         React.createElement(
@@ -236,49 +234,49 @@ define(["exports", "module", "react", "reactBootstrap", "reactable", "zeroClipbo
                         )
                     ),
                     React.createElement(
-                        Td,
+                        "td",
                         { column: "courseID",
                             handleClick: showCourseFactory(course) },
                         course.getCourseID()
                     ),
                     React.createElement(
-                        Td,
+                        "td",
                         { column: "title",
                             handleClick: showCourseFactory(course) },
                         course.getTitle()
                     ),
                     React.createElement(
-                        Td,
+                        "td",
                         { column: "instructor",
                             handleClick: showCourseFactory(course) },
                         course.getInstructor()
                     ),
                     React.createElement(
-                        Td,
+                        "td",
                         { column: "meetings",
                             handleClick: showCourseFactory(course) },
                         course.getMeetingsString()
                     ),
                     React.createElement(
-                        Td,
-                        { column: "distribution",
+                        "td",
+                        { column: "distribution", className: "text-center",
                             handleClick: showCourseFactory(course) },
                         course.getDistributionString()
                     ),
                     React.createElement(
-                        Td,
+                        "td",
                         { column: "enrollment", className: enrollClasses,
                             handleClick: showCourseFactory(course) },
                         course.getEnrollmentString()
                     ),
                     React.createElement(
-                        Td,
-                        { column: "credits",
+                        "td",
+                        { column: "credits", className: "text-center",
                             handleClick: showCourseFactory(course) },
                         course.getCredits()
                     ),
                     React.createElement(
-                        Td,
+                        "td",
                         { column: "remove", className: "remove-btn",
                             handleClick: _this.removeCourseFactory(course) },
                         React.createElement("span", { className: "glyphicon glyphicon-remove" })
@@ -287,17 +285,71 @@ define(["exports", "module", "react", "reactBootstrap", "reactable", "zeroClipbo
             });
         },
 
-        renderCourseTable: function renderCourseTable() {
-            var columns = [{ key: "shown", label: "" }, { key: "crn", label: "CRN" }, { key: "courseID", label: "Course" }, { key: "title", label: "Title" }, { key: "instructor", label: "Instructor" }, { key: "meetings", label: "Meetings" }, { key: "distribution", label: "Distribution" }, { key: "enrollment", label: "Enrollment" }, { key: "credits", label: "Credits" }, { key: "remove", label: "" }];
+        renderCourseHeaders: function renderCourseHeaders() {
+            return React.createElement(
+                "tr",
+                null,
+                React.createElement("th", null),
+                React.createElement(
+                    "th",
+                    null,
+                    "CRN"
+                ),
+                React.createElement(
+                    "th",
+                    null,
+                    "Course"
+                ),
+                React.createElement(
+                    "th",
+                    null,
+                    "Title"
+                ),
+                React.createElement(
+                    "th",
+                    null,
+                    "Instructor"
+                ),
+                React.createElement(
+                    "th",
+                    null,
+                    "Meetings"
+                ),
+                React.createElement(
+                    "th",
+                    { className: "text-center" },
+                    "Distribution"
+                ),
+                React.createElement(
+                    "th",
+                    { className: "text-center" },
+                    "Enrollment"
+                ),
+                React.createElement(
+                    "th",
+                    { className: "text-center" },
+                    "Credits"
+                )
+            );
+        },
 
+        renderCourseTable: function renderCourseTable() {
             return React.createElement(
                 "div",
                 { className: "table-responsive" },
                 React.createElement(
-                    Table,
-                    { ref: "courseTable", columns: columns,
-                        className: "table table-hover course-table" },
-                    this.renderCourseRows()
+                    "table",
+                    { className: "table table-hover course-table" },
+                    React.createElement(
+                        "thead",
+                        null,
+                        this.renderCourseHeaders()
+                    ),
+                    React.createElement(
+                        "tbody",
+                        null,
+                        this.renderCourseRows()
+                    )
                 )
             );
         },

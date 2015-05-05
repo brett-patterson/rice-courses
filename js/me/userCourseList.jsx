@@ -1,6 +1,5 @@
 import React from 'react';
 import {Badge} from 'reactBootstrap';
-import {Table, Tr, Td} from 'reactable';
 import ZeroClipboard from 'zeroClipboard';
 
 import Scheduler from 'me/scheduler';
@@ -163,18 +162,19 @@ export default React.createClass({
             const percent = course.getEnrollmentPercentage();
             const enrollClasses = makeClasses({
                 'enroll-warning': percent >= 75 && percent < 100,
-                'enroll-full': percent === 100
+                'enroll-full': percent === 100,
+                'text-center': true
             });
 
             return (
-                <Tr key={course.getCRN()}>
-                    <Td column='shown'
+                <tr key={course.getCRN()}>
+                    <td column='shown'
                         handleClick={this.toggleCourseShownFactory(course)}>
                         <a className={buttonClass}>
                             <span className={eyeClasses} />
                         </a>
-                    </Td>
-                    <Td column='crn'
+                    </td>
+                    <td column='crn'
                         handleClick={showCourseFactory(course)}>
                         <span>
                             {course.getCRN() + ' '}
@@ -184,64 +184,71 @@ export default React.createClass({
                                <span className='glyphicon glyphicon-paperclip' />
                             </a>
                         </span>
-                    </Td>
-                    <Td column='courseID'
+                    </td>
+                    <td column='courseID'
                         handleClick={showCourseFactory(course)}>
                         {course.getCourseID()}
-                    </Td>
-                    <Td column='title'
+                    </td>
+                    <td column='title'
                         handleClick={showCourseFactory(course)}>
                         {course.getTitle()}
-                    </Td>
-                    <Td column='instructor'
+                    </td>
+                    <td column='instructor'
                         handleClick={showCourseFactory(course)}>
                         {course.getInstructor()}
-                    </Td>
-                    <Td column='meetings'
+                    </td>
+                    <td column='meetings'
                         handleClick={showCourseFactory(course)}>
                         {course.getMeetingsString()}
-                    </Td>
-                    <Td column='distribution'
+                    </td>
+                    <td column='distribution' className='text-center'
                         handleClick={showCourseFactory(course)}>
                         {course.getDistributionString()}
-                    </Td>
-                    <Td column='enrollment' className={enrollClasses}
+                    </td>
+                    <td column='enrollment' className={enrollClasses}
                         handleClick={showCourseFactory(course)}>
                         {course.getEnrollmentString()}
-                    </Td>
-                    <Td column='credits'
+                    </td>
+                    <td column='credits' className='text-center'
                         handleClick={showCourseFactory(course)}>
                         {course.getCredits()}
-                    </Td>
-                    <Td column='remove' className='remove-btn'
+                    </td>
+                    <td column='remove' className='remove-btn'
                         handleClick={this.removeCourseFactory(course)}>
                         <span className='glyphicon glyphicon-remove' />
-                    </Td>
-                </Tr>
+                    </td>
+                </tr>
             );
         });
     },
 
-    renderCourseTable() {
-        const columns = [
-            { key: 'shown', label: '' },
-            { key: 'crn', label: 'CRN' },
-            { key: 'courseID', label: 'Course' },
-            { key: 'title', label: 'Title' },
-            { key: 'instructor', label: 'Instructor' },
-            { key: 'meetings', label: 'Meetings' },
-            { key: 'distribution', label: 'Distribution' },
-            { key: 'enrollment', label: 'Enrollment' },
-            { key: 'credits', label: 'Credits' },
-            { key: 'remove', label: ''}
-        ];
+    renderCourseHeaders() {
+        return (
+            <tr>
+                <th></th>
+                <th>CRN</th>
+                <th>Course</th>
+                <th>Title</th>
+                <th>Instructor</th>
+                <th>Meetings</th>
+                <th className='text-center'>Distribution</th>
+                <th className='text-center'>Enrollment</th>
+                <th className='text-center'>Credits</th>
+            </tr>
+        );
+    },
 
+    renderCourseTable() {
         return (
             <div className='table-responsive'>
-                <Table ref='courseTable' columns={columns}
-                       className='table table-hover course-table'>
-                    {this.renderCourseRows()}
-                </Table>
+                <table className='table table-hover course-table'>
+                    <thead>
+                        {this.renderCourseHeaders()}
+                    </thead>
+                    <tbody>
+                        {this.renderCourseRows()}
+                    </tbody>
+                </table>
             </div>
         );
     },
