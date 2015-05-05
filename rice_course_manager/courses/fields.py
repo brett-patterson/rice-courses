@@ -1,107 +1,81 @@
 import json
-import re
 
 from dateutil.parser import parse
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.deconstruct import deconstructible
 
-
-@deconstructible
-class Range(object):
-    """ An object to represent a range from a minimum to a maximum.
-
-    """
-    def __init__(self, minimum, maximum):
-        """ Initialize the range.
-
-        minimum : float
-            The minimum value for the range.
-
-        maximum : float
-            The maximum value for the range.
-
-        """
-        self.minimum = minimum
-        self.maximum = maximum
-
-    def __str__(self):
-        """ Convert the range to a human-readable string.
-
-        """
-        if self.minimum == self.maximum:
-            return str(self.minimum)
-        else:
-            return '%s to %s' % (self.minimum, self.maximum)
-
-    def __eq__(self, other):
-        """ Assert equality between ranges by comparing their minimums and
-        maximums.
-
-        """
-        return self.minimum == other.minimum and self.maximum == other.maximum
-
-    @classmethod
-    def from_string(cls, string):
-        """ Create a range from a string such as '1 to 3' or '1 or 2'. A
-        single value such as '4' creates a range with minimum=4 and maximum=4.
-
-        """
-        try:
-            minimum = maximum = float(string)
-        except ValueError:
-            pattern = r'(?P<minimum>[\.\d]+)\s*(to|or)\s*(?P<maximum>[\.\d]+)'
-            matches = re.match(pattern, string, flags=re.IGNORECASE)
-            if matches:
-                match_dict = matches.groupdict()
-                minimum = float(match_dict['minimum'])
-                maximum = float(match_dict['maximum'])
-            else:
-                raise ValidationError('Invalid input for Range instance')
-
-        return cls(minimum, maximum)
+from psycopg2.extras import NumericRange
 
 
-class RangeField(models.CharField):
+class RangeContainsLookup(models.Lookup):
+    lookup_name = 'contains'
+
+    def as_sql(self, qn, connection):
+        lhs, lhs_params = self.process_lhs(qn, connection)
+        rhs, rhs_params = self.process_rhs(qn, connection)
+
+        if '%%' in rhs_params:
+            return '', []
+
+        params = lhs_params + [p.replace('%', '') for p in rhs_params]
+        return '%s @> %s::numeric' % (lhs, rhs), params
+
+
+class FloatRangeField(models.CharField):
     """ Implements a float range field.
 
     """
     __metaclass__ = models.SubfieldBase
 
-    def __init__(self, minimum=0, maximum=0, *args, **kwargs):
-        """ Initialize the RangeField.
+    def __init__(self, *args, **kwargs):
+        """ Initialize the FloatRangeField.
 
         """
-        self.minimum = minimum
-        self.maximum = maximum
         kwargs['max_length'] = 20
-        super(RangeField, self).__init__(*args, **kwargs)
+        super(FloatRangeField, self).__init__(*args, **kwargs)
+
+    def db_type(self, connection):
+        """ Represent the FloatRangeField as a custom PostgresSQL field.
+
+        """
+        return 'numrange'
+
+    def get_lookup(self, lookup_name):
+        """ Use a custom implementation for the 'contains' lookup.
+
+        """
+        if lookup_name == 'contains':
+            return RangeContainsLookup
+        return super(FloatRangeField, self).get_lookup(lookup_name)
 
     def deconstruct(self):
-        """ Deconstruct the RangeField into serializable components.
+        """ Deconstruct the FloatRangeField into serializable components.
 
         """
-        name, path, args, kwargs = super(RangeField, self).deconstruct()
-        kwargs['minimum'] = self.minimum
-        kwargs['maximum'] = self.maximum
+        name, path, args, kwargs = super(FloatRangeField, self).deconstruct()
         del kwargs['max_length']
         return name, path, args, kwargs
 
     def to_python(self, value):
-        """ Create a Range object from the given value.
+        """ Create the approriate from the given value.
 
         """
-        if isinstance(value, Range) or value is None:
+        if isinstance(value, tuple) and len(value) == 2 or value is None:
             return value
+        elif isinstance(value, NumericRange):
+            if value.isempty:
+                return (0.0, 0.0)
+            else:
+                return (value.lower, value.upper)
 
-        return Range.from_string(value)
+        return tuple(float(a) for a in value[1:-1].split(','))
 
     def get_prep_value(self, value):
         """ Ensure that the value is a string before writing to the database.
 
         """
-        if isinstance(value, Range):
-            return str(value)
+        if isinstance(value, tuple) and len(value) == 2:
+            return '[%s,%s]' % value
         return value
 
 

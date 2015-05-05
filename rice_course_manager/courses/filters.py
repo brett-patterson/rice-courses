@@ -21,6 +21,12 @@ def course_id_filter(value):
     }
 
 
+def credits_filter(value):
+    return {
+        'credits__contains': value
+    }
+
+
 def distribution_filter(value):
     if len(value) == 0:
         value = 0
@@ -49,7 +55,7 @@ FILTER_FUNCS = {
     'title': build_contains_filter('title'),
     'instructor': build_contains_filter('instructor'),
     'meetings': build_contains_filter('meetings'),
-    'credits': build_contains_filter('credits'),
+    'credits': credits_filter,
     'distribution': distribution_filter
 }
 

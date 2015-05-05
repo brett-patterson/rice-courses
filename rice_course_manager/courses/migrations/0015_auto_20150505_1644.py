@@ -8,14 +8,14 @@ import courses.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('courses', '0005_auto_20141103_2109'),
+        ('courses', '0014_course_cross_list_group'),
     ]
 
     operations = [
         migrations.AlterField(
             model_name='course',
             name='credits',
-            field=courses.fields.RangeField(minimum=0, maximum=0),
+            field=courses.fields.FloatRangeField(default=(0, 0)),
             preserve_default=True,
         ),
     ]

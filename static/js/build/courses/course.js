@@ -296,6 +296,8 @@ define(["exports", "module", "moment", "util"], function (exports, module, _mome
 
                             cb(result);
                         }
+                    }).fail(function (result) {
+                        console.log(result);
                     });
                 }
             }

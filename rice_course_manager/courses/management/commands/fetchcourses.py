@@ -89,5 +89,4 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         term = args[0]
         verbose = int(options['verbosity']) > 1
-
         fetch_courses(term, verbose=verbose)

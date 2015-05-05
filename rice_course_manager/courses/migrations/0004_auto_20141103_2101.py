@@ -18,12 +18,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='course',
-            name='credits',
-            field=courses.fields.RangeField(default=b'0', minimum=0, maximum=0),
-            preserve_default=True,
-        ),
-        migrations.AlterField(
-            model_name='course',
             name='crn',
             field=models.CharField(max_length=5, serialize=False, primary_key=True),
             preserve_default=True,

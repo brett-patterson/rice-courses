@@ -1,9 +1,10 @@
 import re
 
 from dateutil.parser import parse
+from django.core.exceptions import ValidationError
 from django.db import models
 
-from fields import RangeField, Range, DateTimeListField, DateTimeInterval
+from fields import DateTimeInterval, DateTimeListField, FloatRangeField
 
 
 def try_set(dictionary, key, target, coerce_func=lambda x: x):
@@ -25,10 +26,37 @@ def parse_distribution(string):
 
 
 def parse_credits(string):
-    """ Parse a credits string into a Range object.
+    """ Parse a credits string into a range tuple.
 
     """
-    return Range.from_string(string)
+    try:
+        minimum = maximum = float(string)
+
+    except ValueError:
+        pattern = r'(?P<minimum>[\.\d]+)\s*(to)\s*(?P<maximum>[\.\d]+)'
+        matches = re.match(pattern, string, flags=re.IGNORECASE)
+        if matches:
+            match_dict = matches.groupdict()
+            minimum = float(match_dict['minimum'])
+            maximum = float(match_dict['maximum'])
+        else:
+            raise ValidationError('Invalid input for Range instance')
+
+    return minimum, maximum
+
+
+def display_credits(credits_range):
+    """ Convert a tuple credits range into a formatted string.
+
+    """
+    lower, upper = ['{1:0.{0}f}'.format(int(not float(c).is_integer()), c)
+                    for c in credits_range]
+
+    if lower == upper:
+        return str(lower)
+
+    else:
+        return '%s - %s' % (lower, upper)
 
 
 def parse_meetings(meetings_string):
@@ -44,7 +72,8 @@ def parse_meetings(meetings_string):
     if not match:
         return meetings
 
-    days, starts, ends = [group.strip().split(', ') for group in match.groups()]
+    days, starts, ends = [group.strip().split(', ')
+                          for group in match.groups()]
 
     for i, day_string in enumerate(days):
         start_string = starts[i]
@@ -95,7 +124,7 @@ class Course(models.Model):
     distribution = models.PositiveIntegerField(default=0)
 
     # The number of credits that the course awards.
-    credits = RangeField(default=Range(0, 0))
+    credits = FloatRangeField(default=(0, 0))
 
     # The meeting dates and times for the course
     meetings = DateTimeListField(default=[])
@@ -148,7 +177,7 @@ class Course(models.Model):
     def json(self, cross_list=True):
         """ Convert the course to a JSON-serializable dictionary.
 
-        """
+        """        
         result = {
             'subject': self.subject,
             'course_number': self.course_number,
@@ -156,7 +185,7 @@ class Course(models.Model):
             'section': self.section,
             'location': self.location,
             'distribution': self.distribution,
-            'credits': str(self.credits),
+            'credits': display_credits(self.credits),
             'meetings': [str(m) for m in self.meetings],
             'description': self.description,
             'enrollment': self.enrollment,

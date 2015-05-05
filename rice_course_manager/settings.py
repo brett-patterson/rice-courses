@@ -92,8 +92,10 @@ DATABASES = {}
 
 if LOCAL:
     DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'rice_courses.db'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'rice_courses',
+        'USER': 'rice_courses',
+        'PASSWORD': 'root'
     }
 else:
     import dj_database_url

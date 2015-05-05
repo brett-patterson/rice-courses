@@ -84,7 +84,7 @@ export default class Course {
 
                 cb(result);
             }
-        });
+        }).fail(result => {console.log(result);});
     }
 
     getOtherSections(cb) {
