@@ -41,7 +41,7 @@ html(lang='en')
                                     tutorial.start();
                             };
 
-                            $('.help-button').show();
+                            $('#helpButton').show();
                         }
                     });
                 });
@@ -50,7 +50,7 @@ html(lang='en')
         block head
 
     body
-        .help-button
+        #helpButton.help-button
             a(href='#', onclick='startTutorial()')
                 span.glyphicon.glyphicon-question-sign
 
@@ -88,6 +88,9 @@ html(lang='en')
                             a(href="{% url 'help' %}")
                                 span.glyphicon.glyphicon-question-sign
                                 |  Help
+
+                    h4
+                        small &copy; 2015 Brett Patterson
 
                 .col-lg-10
                     block content
