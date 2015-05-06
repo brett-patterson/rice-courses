@@ -6,7 +6,8 @@ Requirements
 * Python 2.7
 * Sass
 
-Optionally:
+Optional requirements
+
 * node.js
 * babel installed globally
 
