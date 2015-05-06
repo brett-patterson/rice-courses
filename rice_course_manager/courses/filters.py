@@ -21,12 +21,6 @@ def course_id_filter(value):
     }
 
 
-def credits_filter(value):
-    return {
-        'credits__contains': value
-    }
-
-
 def distribution_filter(value):
     if len(value) == 0:
         value = 0
@@ -38,24 +32,24 @@ def distribution_filter(value):
     }
 
 
-def build_contains_filter(key):
-    field = '%s__icontains' % key
+def build_filter(key, func):
+    field = '%s__%s' % (key, func)
 
-    def contains_filter(value):
+    def _filter(value):
         return {
             field: value
         }
 
-    return contains_filter
+    return _filter
 
 
 FILTER_FUNCS = {
-    'crn': build_contains_filter('crn'),
+    'crn': build_filter('crn', 'icontains'),
     'courseID': course_id_filter,
-    'title': build_contains_filter('title'),
-    'instructor': build_contains_filter('instructor'),
-    'meetings': build_contains_filter('meetings'),
-    'credits': credits_filter,
+    'title': build_filter('title', 'icontains'),
+    'instructor': build_filter('instructor', 'icontains'),
+    'meetings': build_filter('meetings', 'contains'),
+    'credits': build_filter('credits', 'contains'),
     'distribution': distribution_filter
 }
 
