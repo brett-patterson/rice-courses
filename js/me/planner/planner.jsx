@@ -100,8 +100,8 @@ export default React.createClass({
     },
 
     getTopForEvent(event) {
-        return (event.start.hour() - this.props.startHour + 1) *
-                2 * this.props.slotHeight;
+        return (event.start.hour() - this.props.startHour) *
+                2 * this.props.slotHeight + this.props.slotHeight + 1;
     },
 
     onEventClickHandler(event) {
