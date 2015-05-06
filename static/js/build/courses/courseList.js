@@ -165,7 +165,7 @@ define(["exports", "module", "react", "courses/course", "courses/detail/courseDe
                     null,
                     React.createElement(
                         "td",
-                        { column: "userCourse" },
+                        null,
                         "Loading courses..."
                     )
                 );
@@ -175,7 +175,7 @@ define(["exports", "module", "react", "courses/course", "courses/detail/courseDe
                     null,
                     React.createElement(
                         "td",
-                        { column: "userCourse" },
+                        null,
                         "No courses found"
                     )
                 );
@@ -205,8 +205,7 @@ define(["exports", "module", "react", "courses/course", "courses/detail/courseDe
                     { key: course.getCRN() },
                     React.createElement(
                         "td",
-                        { column: "userCourse",
-                            onClick: _this.toggleUserCourseFactory(course) },
+                        { onClick: _this.toggleUserCourseFactory(course) },
                         React.createElement(
                             "a",
                             { className: userClasses },
@@ -215,49 +214,44 @@ define(["exports", "module", "react", "courses/course", "courses/detail/courseDe
                     ),
                     React.createElement(
                         "td",
-                        { column: "crn",
-                            onClick: showCourseFactory(course) },
+                        { onClick: showCourseFactory(course) },
                         course.getCRN()
                     ),
                     React.createElement(
                         "td",
-                        { column: "courseID",
-                            onClick: showCourseFactory(course) },
+                        { onClick: showCourseFactory(course) },
                         course.getCourseID()
                     ),
                     React.createElement(
                         "td",
-                        { column: "title",
-                            onClick: showCourseFactory(course) },
+                        { onClick: showCourseFactory(course) },
                         course.getTitle()
                     ),
                     React.createElement(
                         "td",
-                        { column: "instructor",
-                            onClick: showCourseFactory(course) },
+                        { onClick: showCourseFactory(course) },
                         course.getInstructor()
                     ),
                     React.createElement(
                         "td",
-                        { column: "meetings",
-                            onClick: showCourseFactory(course) },
+                        { onClick: showCourseFactory(course) },
                         course.getMeetingsString()
                     ),
                     React.createElement(
                         "td",
-                        { column: "distribution", className: "text-center",
+                        { className: "text-center",
                             onClick: showCourseFactory(course) },
                         course.getDistributionString()
                     ),
                     React.createElement(
                         "td",
-                        { column: "enrollment", className: enrollClasses,
+                        { className: enrollClasses,
                             onClick: showCourseFactory(course) },
                         course.getEnrollmentString()
                     ),
                     React.createElement(
                         "td",
-                        { column: "credits", className: "text-center",
+                        { className: "text-center",
                             onClick: showCourseFactory(course) },
                         course.getCredits()
                     )

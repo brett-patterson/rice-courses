@@ -138,9 +138,9 @@ export default React.createClass({
 
     renderCourseRows() {
         if (this.state.courses === undefined)
-            return <tr><td column='userCourse'>Loading courses...</td></tr>;
+            return <tr><td>Loading courses...</td></tr>;
         else if (this.state.courses.length === 0)
-            return <tr><td column='userCourse'>No courses found</td></tr>;
+            return <tr><td>No courses found</td></tr>;
 
         return this.state.courses.map(course => {
             const isUserCourse = this.isUserCourse(course);
@@ -165,41 +165,35 @@ export default React.createClass({
 
             return (
                 <tr key={course.getCRN()}>
-                    <td column='userCourse'
-                        onClick={this.toggleUserCourseFactory(course)}>
+                    <td onClick={this.toggleUserCourseFactory(course)}>
                         <a className={userClasses}>
                             <span className={heartClasses} />
                         </a>
                     </td>
-                    <td column='crn'
-                        onClick={showCourseFactory(course)}>
+                    <td onClick={showCourseFactory(course)}>
                         {course.getCRN()}
                     </td>
-                    <td column='courseID'
-                        onClick={showCourseFactory(course)}>
+                    <td onClick={showCourseFactory(course)}>
                         {course.getCourseID()}
                     </td>
-                    <td column='title'
-                        onClick={showCourseFactory(course)}>
+                    <td onClick={showCourseFactory(course)}>
                         {course.getTitle()}
                     </td>
-                    <td column='instructor'
-                        onClick={showCourseFactory(course)}>
+                    <td onClick={showCourseFactory(course)}>
                         {course.getInstructor()}
                     </td>
-                    <td column='meetings'
-                        onClick={showCourseFactory(course)}>
+                    <td onClick={showCourseFactory(course)}>
                         {course.getMeetingsString()}
                     </td>
-                    <td column='distribution' className='text-center'
+                    <td className='text-center'
                         onClick={showCourseFactory(course)}>
                         {course.getDistributionString()}
                     </td>
-                    <td column='enrollment' className={enrollClasses}
+                    <td className={enrollClasses}
                         onClick={showCourseFactory(course)}>
                         {course.getEnrollmentString()}
                     </td>
-                    <td column='credits' className='text-center'
+                    <td className='text-center'
                         onClick={showCourseFactory(course)}>
                         {course.getCredits()}
                     </td>

@@ -208,8 +208,7 @@ define(["exports", "module", "react", "reactBootstrap", "zeroClipboard", "me/sch
                     { key: course.getCRN() },
                     React.createElement(
                         "td",
-                        { column: "shown",
-                            handleClick: _this.toggleCourseShownFactory(course) },
+                        { onClick: _this.toggleCourseShownFactory(course) },
                         React.createElement(
                             "a",
                             { className: buttonClass },
@@ -218,8 +217,7 @@ define(["exports", "module", "react", "reactBootstrap", "zeroClipboard", "me/sch
                     ),
                     React.createElement(
                         "td",
-                        { column: "crn",
-                            handleClick: showCourseFactory(course) },
+                        { onClick: showCourseFactory(course) },
                         React.createElement(
                             "span",
                             null,
@@ -235,50 +233,46 @@ define(["exports", "module", "react", "reactBootstrap", "zeroClipboard", "me/sch
                     ),
                     React.createElement(
                         "td",
-                        { column: "courseID",
-                            handleClick: showCourseFactory(course) },
+                        { onClick: showCourseFactory(course) },
                         course.getCourseID()
                     ),
                     React.createElement(
                         "td",
-                        { column: "title",
-                            handleClick: showCourseFactory(course) },
+                        { onClick: showCourseFactory(course) },
                         course.getTitle()
                     ),
                     React.createElement(
                         "td",
-                        { column: "instructor",
-                            handleClick: showCourseFactory(course) },
+                        { onClick: showCourseFactory(course) },
                         course.getInstructor()
                     ),
                     React.createElement(
                         "td",
-                        { column: "meetings",
-                            handleClick: showCourseFactory(course) },
+                        { onClick: showCourseFactory(course) },
                         course.getMeetingsString()
                     ),
                     React.createElement(
                         "td",
-                        { column: "distribution", className: "text-center",
-                            handleClick: showCourseFactory(course) },
+                        { className: "text-center",
+                            onClick: showCourseFactory(course) },
                         course.getDistributionString()
                     ),
                     React.createElement(
                         "td",
-                        { column: "enrollment", className: enrollClasses,
-                            handleClick: showCourseFactory(course) },
+                        { className: enrollClasses,
+                            onClick: showCourseFactory(course) },
                         course.getEnrollmentString()
                     ),
                     React.createElement(
                         "td",
-                        { column: "credits", className: "text-center",
-                            handleClick: showCourseFactory(course) },
+                        { className: "text-center",
+                            onClick: showCourseFactory(course) },
                         course.getCredits()
                     ),
                     React.createElement(
                         "td",
-                        { column: "remove", className: "remove-btn",
-                            handleClick: _this.removeCourseFactory(course) },
+                        { className: "remove-btn",
+                            onClick: _this.removeCourseFactory(course) },
                         React.createElement("span", { className: "glyphicon glyphicon-remove" })
                     )
                 );

@@ -168,14 +168,12 @@ export default React.createClass({
 
             return (
                 <tr key={course.getCRN()}>
-                    <td column='shown'
-                        handleClick={this.toggleCourseShownFactory(course)}>
+                    <td onClick={this.toggleCourseShownFactory(course)}>
                         <a className={buttonClass}>
                             <span className={eyeClasses} />
                         </a>
                     </td>
-                    <td column='crn'
-                        handleClick={showCourseFactory(course)}>
+                    <td onClick={showCourseFactory(course)}>
                         <span>
                             {course.getCRN() + ' '}
                             <a className='copy-btn'
@@ -185,36 +183,32 @@ export default React.createClass({
                             </a>
                         </span>
                     </td>
-                    <td column='courseID'
-                        handleClick={showCourseFactory(course)}>
+                    <td onClick={showCourseFactory(course)}>
                         {course.getCourseID()}
                     </td>
-                    <td column='title'
-                        handleClick={showCourseFactory(course)}>
+                    <td onClick={showCourseFactory(course)}>
                         {course.getTitle()}
                     </td>
-                    <td column='instructor'
-                        handleClick={showCourseFactory(course)}>
+                    <td onClick={showCourseFactory(course)}>
                         {course.getInstructor()}
                     </td>
-                    <td column='meetings'
-                        handleClick={showCourseFactory(course)}>
+                    <td onClick={showCourseFactory(course)}>
                         {course.getMeetingsString()}
                     </td>
-                    <td column='distribution' className='text-center'
-                        handleClick={showCourseFactory(course)}>
+                    <td  className='text-center'
+                        onClick={showCourseFactory(course)}>
                         {course.getDistributionString()}
                     </td>
-                    <td column='enrollment' className={enrollClasses}
-                        handleClick={showCourseFactory(course)}>
+                    <td  className={enrollClasses}
+                        onClick={showCourseFactory(course)}>
                         {course.getEnrollmentString()}
                     </td>
-                    <td column='credits' className='text-center'
-                        handleClick={showCourseFactory(course)}>
+                    <td  className='text-center'
+                        onClick={showCourseFactory(course)}>
                         {course.getCredits()}
                     </td>
-                    <td column='remove' className='remove-btn'
-                        handleClick={this.removeCourseFactory(course)}>
+                    <td className='remove-btn'
+                        onClick={this.removeCourseFactory(course)}>
                         <span className='glyphicon glyphicon-remove' />
                     </td>
                 </tr>
