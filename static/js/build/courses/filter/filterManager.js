@@ -9,6 +9,8 @@ define(["exports", "module", "courses/filter/courseFilter"], function (exports, 
 
     var CourseFilter = _interopRequire(_coursesFilterCourseFilter);
 
+    var updateTimerId = null;
+
     var FilterManager = (function () {
         /**
          * Create a new filter manager.
@@ -17,11 +19,13 @@ define(["exports", "module", "courses/filter/courseFilter"], function (exports, 
 
         function FilterManager() {
             var onFiltersChanged = arguments[0] === undefined ? function () {} : arguments[0];
+            var filterUpdateDelay = arguments[1] === undefined ? 500 : arguments[1];
 
             _classCallCheck(this, FilterManager);
 
             this.filters = [];
             this.onFiltersChanged = onFiltersChanged;
+            this.filterUpdateDelay = filterUpdateDelay;
             this.loadFilters();
         }
 
@@ -70,7 +74,9 @@ define(["exports", "module", "courses/filter/courseFilter"], function (exports, 
                     if (index > -1) {
                         this.filters[index].setValue(value);
                         this.saveFilters();
-                        this.onFiltersChanged();
+
+                        clearTimeout(updateTimerId);
+                        updateTimerId = setTimeout(this.onFiltersChanged, this.filterUpdateDelay);
                     }
                 }
             },

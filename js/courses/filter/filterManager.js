@@ -1,13 +1,16 @@
 import CourseFilter from 'courses/filter/courseFilter';
 
+let updateTimerId = null;
+
 export default class FilterManager {
     /**
      * Create a new filter manager.
      * @param {function} onFiltersChanged - fired when the filters change
      */
-    constructor(onFiltersChanged = () => {}) {
+    constructor(onFiltersChanged = () => {}, filterUpdateDelay=500) {
         this.filters = [];
         this.onFiltersChanged = onFiltersChanged;
+        this.filterUpdateDelay = filterUpdateDelay;
         this.loadFilters();
     }
 
@@ -46,7 +49,10 @@ export default class FilterManager {
         if (index > -1) {
             this.filters[index].setValue(value);
             this.saveFilters();
-            this.onFiltersChanged();
+
+            clearTimeout(updateTimerId);
+            updateTimerId = setTimeout(this.onFiltersChanged,
+                this.filterUpdateDelay);
         }
     }
 
