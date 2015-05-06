@@ -30,6 +30,6 @@ def tutorial(request):
             tutorial = Tutorial.objects.get(name=tutorial_name)
             return JsonResponse(tutorial.json())
         except ObjectDoesNotExist:
-            return JsonResponse({'error': 'No such tutorial'}, status=400)
+            return JsonResponse({'error': 'No such tutorial'})
 
     return JsonResponse({'error': 'Must specify a tutorial name'}, status=400)
