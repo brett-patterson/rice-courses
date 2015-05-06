@@ -126,8 +126,17 @@ class Course(models.Model):
     # The number of credits that the course awards.
     credits = FloatRangeField(default=(0, 0))
 
-    # The meeting dates and times for the course
+    # The converted meeting dates and times for the course
     meetings = DateTimeListField(default=[])
+
+    # The raw meeting days for the course
+    meeting_days = models.CharField(max_length=7, default='')
+
+    # The raw start times for the course
+    start_time = models.CharField(max_length=15, default='')
+
+    # The raw end times for the course
+    end_time = models.CharField(max_length=15, default='')
 
     # A full description of the content of the course.
     description = models.TextField(default='')
@@ -230,6 +239,9 @@ class Course(models.Model):
         try_set(json_obj, 'instructor', self)
         try_set(json_obj, 'crn', self)
         try_set(json_obj, 'cross_list_group', self)
+        try_set(json_obj, 'meeting_days', self)
+        try_set(json_obj, 'start_time', self)
+        try_set(json_obj, 'end_time', self)
 
         if ('meeting_days' in json_obj and 'start_time' in json_obj and
                 'end_time' in json_obj):
