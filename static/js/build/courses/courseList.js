@@ -278,7 +278,7 @@ define(["exports", "module", "react", "courses/course", "courses/detail/courseDe
                     "a",
                     { className: classes, key: "coursePage" + i,
                         onClick: this.onPageClickHandler(i) },
-                    i
+                    i + 1
                 ));
             }
 

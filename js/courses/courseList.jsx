@@ -220,7 +220,7 @@ export default React.createClass({
             pages.push(
                 <a className={classes} key={`coursePage${i}`}
                    onClick={this.onPageClickHandler(i)}>
-                    {i}
+                    {i+1}
                 </a>
             );
         }
