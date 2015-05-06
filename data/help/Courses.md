@@ -9,3 +9,4 @@ __Filtering Notes__
 * When filtering by distribution, both numbers and roman numerals can be used.
 * An empty distribution filter filters for courses that have no distribution.
 * When filtering by course, a dropdown of possible subjects will appear which filters as you continue to type
+* When filtering for course meetings, filter values are interpreted as "`meeting_days` `start_time`-`end_time`"
