@@ -37,11 +37,6 @@ def esther_login():
         br.open(LOGIN_URL)
         br.select_form(name="loginform")
 
-        # Encode credentials in base64 so that although not any more secure,
-        # we don't store credentials as plain text
-        br['sid'] = base64.b64decode('UzAxMTk5NjA5')
-        br['PIN'] = base64.b64decode('aXRpbjRjdXI=')
-
         br.submit()
         session.cookies = cookie_jar
 
