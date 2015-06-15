@@ -1,18 +1,11 @@
 extends base
-- load static
-
-block head
-
-    link(type='text/css', rel='stylesheet',
-         href="{% static 'css/help.css' %}")
 
 block content
-    .row
-        section.col-md-9#content
-            each article in articles
-                article(id='{{ article.title | slugify }}')
-                    h2 #{ article.title }
-                    hr
-                    - autoescape off
-                        #{ article.render_html }
-                    hr
+    section
+        each article in articles
+            article(id='{{ article.title | slugify }}')
+                h2 #{ article.title }
+                hr
+                - autoescape off
+                    #{ article.render_html }
+                hr
