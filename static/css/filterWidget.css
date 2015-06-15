@@ -58,6 +58,8 @@
 
 .filter-view-name {
   border-right: 1px solid #ccc;
+  font-weight: bold;
+  font-variant: small-caps;
   padding-right: 5px;
 }
 
