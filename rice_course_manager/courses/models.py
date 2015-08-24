@@ -118,7 +118,7 @@ class Course(models.Model):
     section = models.CharField(max_length=3, default='')
 
     # The physical location of the course on campus.
-    location = models.CharField(max_length=10, default='')
+    location = models.CharField(max_length=30, default='')
 
     # The distribution of the course, represented as a single integer.
     distribution = models.PositiveIntegerField(default=0)
@@ -186,7 +186,7 @@ class Course(models.Model):
     def json(self, cross_list=True):
         """ Convert the course to a JSON-serializable dictionary.
 
-        """        
+        """
         result = {
             'subject': self.subject,
             'course_number': self.course_number,
