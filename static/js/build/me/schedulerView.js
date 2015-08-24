@@ -55,6 +55,7 @@ define(["exports", "module", "react", "me/planner/planner", "courses/course", "m
                 return {
                     id: "" + course.getCRN() + "-" + i,
                     title: course.getCourseID(),
+                    note: course.getLocation(),
                     start: date.start,
                     end: date.end,
                     course: course,

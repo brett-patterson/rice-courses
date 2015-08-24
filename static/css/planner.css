@@ -56,3 +56,8 @@
 .planner-event-drop-hover {
     background-color: #136400 !important;
 }
+
+.planner-note {
+    float: right;
+    padding-right: 5px;
+}

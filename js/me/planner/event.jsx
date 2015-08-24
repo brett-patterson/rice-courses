@@ -95,6 +95,7 @@ export default React.createClass({
             <div {...this.props} className={makeClasses(classes)}
                  {...this.dragSourceFor('plannerEvent')}
                  {...this.dropTargetFor('plannerEvent')}>
+                <small className='planner-note'>{event.note}</small>
                 {event.title}<br/>
                 <small>{`${eventStart} - ${eventEnd}`}</small>
             </div>

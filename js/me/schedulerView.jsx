@@ -41,6 +41,7 @@ export default React.createClass({
             return {
                 id: `${course.getCRN()}-${i}`,
                 title: course.getCourseID(),
+                note: course.getLocation(),
                 start: date.start,
                 end: date.end,
                 course: course,
@@ -122,7 +123,7 @@ export default React.createClass({
         });
 
         this.props.courseDelegate.replaceSection(oldEvent.course,
-                                                 newEvent.course);                    
+                                                 newEvent.course);
     },
 
     componentDidUpdate(nextProps, nextState) {

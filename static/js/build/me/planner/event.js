@@ -100,6 +100,11 @@ define(["exports", "module", "react", "reactDnd", "util"], function (exports, mo
                 "div",
                 _extends({}, this.props, { className: makeClasses(classes)
                 }, this.dragSourceFor("plannerEvent"), this.dropTargetFor("plannerEvent")),
+                React.createElement(
+                    "small",
+                    { className: "planner-note" },
+                    event.note
+                ),
                 event.title,
                 React.createElement("br", null),
                 React.createElement(
