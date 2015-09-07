@@ -61,7 +61,8 @@ def courses(request):
         all_courses = Course.objects.order_by(*order_params)
 
     filtered_courses = filter_courses(all_courses, filters)
-    pages = int(math.ceil(len(filtered_courses) /
+
+    pages = int(math.ceil(filtered_courses.count() /
                           float(settings.COURSE_PAGE_LENGTH)))
 
     page = int(page)
