@@ -20,6 +20,9 @@ define(["exports", "module", "react", "me/planner/planner", "courses/course", "m
     var getHueByIndex = _util.getHueByIndex;
     var hsvToRgb = _util.hsvToRgb;
     var propTypeHas = _util.propTypeHas;
+
+    var DAY_ORDER = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
     module.exports = React.createClass({
         displayName: "schedulerView",
 
@@ -111,6 +114,32 @@ define(["exports", "module", "react", "me/planner/planner", "courses/course", "m
             }
         },
 
+        getDays: function getDays() {
+            var days = [];
+
+            if (this.state.scheduler === undefined) {
+                return days;
+            }var map = this.state.scheduler.getMap();
+
+            for (var i = 0; i < this.state.courses.length; i++) {
+                var course = this.state.courses[i];
+                if (map[course.getCRN()]) {
+                    for (var j = 0; j < course.meetings.length; j++) {
+                        var day = course.meetings[j].start.format("dddd");
+                        if (days.indexOf(day) < 0) {
+                            days.push(day);
+                        }
+                    }
+                }
+            }
+
+            days.sort(function (a, b) {
+                return DAY_ORDER.indexOf(a) - DAY_ORDER.indexOf(b);
+            });
+
+            return days;
+        },
+
         eventClick: function eventClick(event) {
             showCourseDetail(event.course);
         },
@@ -149,6 +178,7 @@ define(["exports", "module", "react", "me/planner/planner", "courses/course", "m
 
         render: function render() {
             return React.createElement(Planner, { ref: "planner", eventSource: this.getEvents,
+                days: this.getDays(),
                 onEventClick: this.eventClick,
                 onEventDragStart: this.eventDragStart,
                 onEventDragCancel: this.eventDragCancel,

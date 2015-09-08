@@ -7,7 +7,9 @@ const DAY_ABBR_MAP = {
     'Tuesday': 'T',
     'Wednesday': 'W',
     'Thursday': 'R',
-    'Friday': 'F'
+    'Friday': 'F',
+    'Saturday': 'S',
+    'Sunday': 'U'
 };
 
 export default class Course {

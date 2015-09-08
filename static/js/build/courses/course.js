@@ -18,7 +18,9 @@ define(["exports", "module", "moment", "util"], function (exports, module, _mome
         Tuesday: "T",
         Wednesday: "W",
         Thursday: "R",
-        Friday: "F"
+        Friday: "F",
+        Saturday: "S",
+        Sunday: "U"
     };
 
     var Course = (function () {

@@ -8,6 +8,11 @@ import {showCourseDetail} from 'courses/detail/courseDetail';
 import {eventOverlap, getHueByIndex, hsvToRgb, propTypeHas} from 'util';
 
 
+const DAY_ORDER = [
+    'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
+];
+
+
 export default React.createClass({
     propTypes: {
         scheduler: React.PropTypes.instanceOf(Scheduler),
@@ -93,6 +98,33 @@ export default React.createClass({
         }
     },
 
+    getDays() {
+        let days = [];
+
+        if (this.state.scheduler === undefined)
+            return days;
+
+        const map = this.state.scheduler.getMap();
+
+        for (let i = 0; i < this.state.courses.length; i++) {
+            const course = this.state.courses[i];
+            if (map[course.getCRN()]) {
+                for (let j = 0; j < course.meetings.length; j++) {
+                    const day = course.meetings[j].start.format('dddd');
+                    if (days.indexOf(day) < 0) {
+                        days.push(day);
+                    }
+                }
+            }
+        }
+
+        days.sort((a, b) => {
+            return DAY_ORDER.indexOf(a) - DAY_ORDER.indexOf(b);
+        });
+
+        return days;
+    },
+
     eventClick(event) {
         showCourseDetail(event.course);
     },
@@ -132,6 +164,7 @@ export default React.createClass({
 
     render() {
         return <Planner ref='planner' eventSource={this.getEvents}
+                        days={this.getDays()}
                         onEventClick={this.eventClick}
                         onEventDragStart={this.eventDragStart}
                         onEventDragCancel={this.eventDragCancel}
