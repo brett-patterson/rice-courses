@@ -45,12 +45,22 @@ def parse_credits(string):
     return minimum, maximum
 
 
+def simplest_float(value):
+    """ Return the simplest number type for the given floating value. That is,
+    if a floating point number has no decimal part (e.g. 4.0) convert it to an
+    integer (e.g. 4).
+
+    """
+    if float(value) == int(value):
+        return int(value)
+    return value
+
+
 def display_credits(credits_range):
     """ Convert a tuple credits range into a formatted string.
 
     """
-    lower, upper = ['{1:0.{0}f}'.format(int(not float(c).is_integer()), c)
-                    for c in credits_range]
+    lower, upper = [simplest_float(value) for value in credits_range]
 
     if lower == upper:
         return str(lower)
