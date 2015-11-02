@@ -100,7 +100,7 @@ export default React.createClass({
     },
 
     getTopForEvent(event) {
-        return (event.start.hour() - this.props.startHour) *
+        return (event.start.hour() + event.start.minutes() / 60.0 - this.props.startHour) *
                 2 * this.props.slotHeight + this.props.slotHeight + 1;
     },
 
@@ -228,7 +228,7 @@ export default React.createClass({
         return rows;
     },
 
-    render() {        
+    render() {
         return (
             <div className='planner'>
                 <div className='planner-overlay'>

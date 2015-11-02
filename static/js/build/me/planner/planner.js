@@ -104,7 +104,7 @@ define(["exports", "module", "react", "me/planner/event", "util"], function (exp
         },
 
         getTopForEvent: function getTopForEvent(event) {
-            return (event.start.hour() - this.props.startHour) * 2 * this.props.slotHeight + this.props.slotHeight + 1;
+            return (event.start.hour() + event.start.minutes() / 60 - this.props.startHour) * 2 * this.props.slotHeight + this.props.slotHeight + 1;
         },
 
         onEventClickHandler: function onEventClickHandler(event) {
