@@ -33,7 +33,7 @@ def parse_credits(string):
         minimum = maximum = float(string)
 
     except ValueError:
-        pattern = r'(?P<minimum>[\.\d]+)\s*(to)\s*(?P<maximum>[\.\d]+)'
+        pattern = r'(?P<minimum>[\.\d]+)\s*(?:to|or)\s*(?P<maximum>[\.\d]+)'
         matches = re.match(pattern, string, flags=re.IGNORECASE)
         if matches:
             match_dict = matches.groupdict()
