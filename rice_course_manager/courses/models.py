@@ -40,7 +40,9 @@ def parse_credits(string):
             minimum = float(match_dict['minimum'])
             maximum = float(match_dict['maximum'])
         else:
-            raise ValidationError('Invalid input for Range instance')
+            raise ValidationError(
+                'Invalid input for Range instance: "%s"' % string
+            )
 
     return minimum, maximum
 
