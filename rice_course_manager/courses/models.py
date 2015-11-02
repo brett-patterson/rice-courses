@@ -145,10 +145,10 @@ class Course(models.Model):
     meeting_days = models.CharField(max_length=7, default='')
 
     # The raw start times for the course
-    start_time = models.CharField(max_length=15, default='')
+    start_time = models.CharField(max_length=30, default='')
 
     # The raw end times for the course
-    end_time = models.CharField(max_length=15, default='')
+    end_time = models.CharField(max_length=30, default='')
 
     # A full description of the content of the course.
     description = models.TextField(default='')

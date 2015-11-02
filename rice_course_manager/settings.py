@@ -95,7 +95,9 @@ if LOCAL:
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'rice_courses',
         'USER': 'rice_courses',
-        'PASSWORD': 'root'
+        'PASSWORD': 'root',
+        'HOST': 'localhost',
+        'PORT': ''
     }
 else:
     import dj_database_url
