@@ -15,7 +15,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', DEFAULT_SECRET_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 LOCAL = os.environ.get('RCM_REMOTE') is None
-DEBUG = True
+DEBUG = not LOCAL
 TEMPLATE_DEBUG = DEBUG
 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
