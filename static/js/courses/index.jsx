@@ -1,8 +1,11 @@
+import jQuery from 'jquery';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Courses from './courses';
 
-ReactDOM.render(
-    React.createElement(Courses),
-    document.getElementById('courseList')
-);
+jQuery(() => {
+    ReactDOM.render(
+        React.createElement(Courses),
+        document.getElementById('courseList')
+    );
+});
