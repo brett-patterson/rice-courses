@@ -1,3 +1,5 @@
+import 'tutorialize/dist/css/tutorialize.min.css';
+
 import jQuery from 'jquery';
 import Tutorialize from 'tutorialize';
 import {ajaxCSRF} from './util';

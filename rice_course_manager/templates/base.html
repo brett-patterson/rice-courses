@@ -11,14 +11,13 @@
 
         {% render_bundle 'base' %}
 
-        <link rel="stylesheet" href="{% static 'lib/tutorialize/dist/css/tutorialize.min.css' %}" type="text/css">
         <script type="text/javascript">
         window.TUTORIAL_URL = "{% url 'tutorial' %}";
         </script>
         {% render_bundle 'tutorial' %}
 
         {% block head %}{% endblock %}
-
+    </head>
     <body>
         <div id="helpButton" class="help-button">
             <a href="#" onclick="startTutorial()">
