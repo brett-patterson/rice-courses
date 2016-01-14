@@ -8,6 +8,7 @@ module.exports = {
     entry: {
         courses: './static/js/courses/index',
         me: './static/js/me/index',
+        tutorial: './static/js/tutorial',
 
         base: './static/base'
     },

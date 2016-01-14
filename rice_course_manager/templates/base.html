@@ -12,32 +12,10 @@
         {% render_bundle 'base' %}
 
         <link rel="stylesheet" href="{% static 'lib/tutorialize/dist/css/tutorialize.min.css' %}" type="text/css">
-        <!--
-        <script type="text/javascript"></script>
-            $(function() {
-                require(['tutorialize'], function (Tutorialize) {
-                    var tutorial;
-                    $.ajax({
-                        url: "{% url 'tutorial' %}",
-                        method: 'POST',
-                        data: {
-                            tutorial: location.pathname
-                        },
-                        dataType: 'json'
-                    }).done(function(data) {
-                        if (!data.error) {
-                            tutorial = new Tutorialize(data.tutorial, data);
-                            window.startTutorial = function() {
-                                if (tutorial && tutorial.tutorial &&
-                                    tutorial.tutorial.length > 0)
-                                    tutorial.start();
-                            };
-                            $('#helpButton').show();
-                        }
-                    });
-                });
-            });
-        -->
+        <script type="text/javascript">
+        window.TUTORIAL_URL = "{% url 'tutorial' %}";
+        </script>
+        {% render_bundle 'tutorial' %}
 
         {% block head %}{% endblock %}
 
