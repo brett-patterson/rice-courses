@@ -18,7 +18,8 @@ LOCAL = os.environ.get('RCM_REMOTE') is None
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(APP_DIR)
 
 if LOCAL:
     ALLOWED_HOSTS = []
@@ -29,8 +30,7 @@ else:
 # Website specific settings
 
 EVAL_DATE_FORMAT = '%m/%d/%Y %I:%M %p'
-HELP_DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(BASE_DIR),
-                                             'data/help'))
+HELP_DATA_DIR = os.path.abspath(os.path.join(BASE_DIR, 'data/help'))
 COURSE_PAGE_LENGTH = 50
 
 # Application definition
@@ -54,7 +54,7 @@ INSTALLED_APPS = (
 )
 
 TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'templates'),
+    os.path.join(APP_DIR, 'templates'),
 )
 
 MIDDLEWARE_CLASSES = (
@@ -117,12 +117,13 @@ USE_TZ = False
 STATIC_URL = '/static/'
 STATIC_ROOT = '/app/staticfiles/'
 STATICFILES_DIRS = (
-    os.path.join(os.path.dirname(BASE_DIR), 'static'),
+    os.path.join(BASE_DIR, 'static'),
 )
 
 WEBPACK_LOADER = {
     'DEFAULT': {
-        'BUNDLE_DIR_NAME': 'bundles/'
+        'BUNDLE_DIR_NAME': 'bundles/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json')
     }
 }
 
