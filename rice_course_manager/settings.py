@@ -72,6 +72,8 @@ AUTHENTICATION_BACKENDS = (
     'django_cas.backends.CASBackend',
 )
 
+LOGIN_URL = '/login/'
+
 CAS_SERVER_URL = 'https://netid.rice.edu/cas/'
 
 ROOT_URLCONF = 'rice_courses.urls'
