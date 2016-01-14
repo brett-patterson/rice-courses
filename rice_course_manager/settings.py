@@ -50,8 +50,7 @@ INSTALLED_APPS = (
     'courses',
     'evaluation',
     'help',
-    'me',
-    'requirements',
+    'me'
 )
 
 TEMPLATE_DIRS = (
