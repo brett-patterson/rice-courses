@@ -25,7 +25,7 @@ def index(request):
         'nav_active': 'courses'
     }
 
-    return render(request, 'courses/index.jade', context)
+    return render(request, 'courses/index.html', context)
 
 
 @login_required(login_url='/login/')

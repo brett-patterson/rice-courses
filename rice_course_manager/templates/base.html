@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+
+{% load static %}
+{% load render_bundle from webpack_loader %}
+
+<html>
+    <head>
+        <title>Rice Course Manager</title>
+
+        <link rel="icon" href="{% static 'img/icon.png' %}" type="image/png">
+
+        {% render_bundle 'base' %}
+
+        <link rel="stylesheet" href="{% static 'lib/tutorialize/dist/css/tutorialize.min.css' %}" type="text/css">
+        <!--
+        <script type="text/javascript"></script>
+            $(function() {
+                require(['tutorialize'], function (Tutorialize) {
+                    var tutorial;
+                    $.ajax({
+                        url: "{% url 'tutorial' %}",
+                        method: 'POST',
+                        data: {
+                            tutorial: location.pathname
+                        },
+                        dataType: 'json'
+                    }).done(function(data) {
+                        if (!data.error) {
+                            tutorial = new Tutorialize(data.tutorial, data);
+                            window.startTutorial = function() {
+                                if (tutorial && tutorial.tutorial &&
+                                    tutorial.tutorial.length > 0)
+                                    tutorial.start();
+                            };
+                            $('#helpButton').show();
+                        }
+                    });
+                });
+            });
+        -->
+
+        {% block head %}{% endblock %}
+
+    <body>
+        <div id="helpButton" class="help-button">
+            <a href="#" onclick="startTutorial()">
+                <span class="glyphicon glyphicon-question-sign"></span>
+            </a>
+        </div>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-2 main-nav">
+                    <a href="{% url 'home' %}">
+                        <img src="{% static 'img/logo_beta.png' %}" alt="" class="logo">
+                    </a>
+
+                    <div class="login-container">
+                        {% if user.is_authenticated %}
+                            <span>
+                                Welcome, <strong>{{user.username}}</strong><br>
+                                (<a href="/logout/">Sign out</a>)
+                            </span>
+                        {% else %}
+                            <a href="/login/">Sign in</a>
+                        {% endif %}
+                    </div>
+
+                    <ul class="nav nav-pills nav-stacked">
+                        <li {% if nav_active == 'courses' %}class="active"{% endif %}>
+                            <a href="{% url 'courses' %}">
+                                <span class="glyphicon glyphicon-list"></span>
+                                Courses
+                            </a>
+                        </li>
+                        <li {% if nav_active == 'me' %}class="active"{% endif %}>
+                            <a href="{% url 'me' %}">
+                                <span class="glyphicon glyphicon-user"></span>
+                                Me
+                            </a>
+                        </li>
+                        <li {% if nav_active == 'help' %}class="active"{% endif %}>
+                            <a href="{% url 'help' %}">
+                                <span class="glyphicon glyphicon-question-sign"></span>
+                                Help
+                            </a>
+                        </li>
+
+                    <h4><small>&copy; 2015 Brett Patterson</small></h4>
+                </div>
+                <div class="col-lg-10">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
