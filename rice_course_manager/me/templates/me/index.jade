@@ -1,5 +1,6 @@
 extends base
 - load static
+- load render_bundle from webpack_loader
 
 block head
     link(type='text/css', rel='stylesheet',
@@ -10,14 +11,5 @@ block head
 
 block content
     #meContent
-
-    script(type='text/javascript', src="{% static 'lib/requirejs/require.js' %}")
-    script(type='text/javascript', src="{% static 'js/requireConfig.js' %}")
-    script(type='text/javascript').
-        require(['react', 'me/me'], function (React, Me) {
-            React.initializeTouchEvents(true);
-            React.render(
-                React.createElement(Me),
-                document.getElementById('meContent')
-            );
-        });
+    
+    {% render_bundle 'me' %}

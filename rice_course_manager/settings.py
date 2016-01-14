@@ -45,6 +45,7 @@ INSTALLED_APPS = (
 
     'adminsortable',
     'nested_inline',
+    'webpack_loader',
 
     'courses',
     'evaluation',
@@ -124,6 +125,12 @@ STATIC_ROOT = '/app/staticfiles/'
 STATICFILES_DIRS = (
     os.path.join(os.path.dirname(BASE_DIR), 'static'),
 )
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'bundles/'
+    }
+}
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
