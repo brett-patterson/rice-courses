@@ -5,3 +5,6 @@ staticfiles
 .DS_Store
 *.db
 src/
+node_modules/
+static/bundles
+webpack-stats.json

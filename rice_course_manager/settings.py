@@ -15,10 +15,11 @@ SECRET_KEY = os.environ.get('SECRET_KEY', DEFAULT_SECRET_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 LOCAL = os.environ.get('RCM_REMOTE') is None
-DEBUG = True
+DEBUG = not LOCAL
 TEMPLATE_DEBUG = DEBUG
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(APP_DIR)
 
 if LOCAL:
     ALLOWED_HOSTS = []
@@ -29,8 +30,7 @@ else:
 # Website specific settings
 
 EVAL_DATE_FORMAT = '%m/%d/%Y %I:%M %p'
-HELP_DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(BASE_DIR),
-                                             'data/help'))
+HELP_DATA_DIR = os.path.abspath(os.path.join(BASE_DIR, 'data/help'))
 COURSE_PAGE_LENGTH = 50
 
 # Application definition
@@ -45,23 +45,16 @@ INSTALLED_APPS = (
 
     'adminsortable',
     'nested_inline',
+    'webpack_loader',
 
     'courses',
     'evaluation',
     'help',
-    'me',
-    'requirements',
+    'me'
 )
 
 TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'templates'),
-)
-
-TEMPLATE_LOADERS = (
-    ('pyjade.ext.django.Loader', (
-        'django.template.loaders.filesystem.Loader',
-        'django.template.loaders.app_directories.Loader',
-    )),
+    os.path.join(APP_DIR, 'templates'),
 )
 
 MIDDLEWARE_CLASSES = (
@@ -78,6 +71,8 @@ MIDDLEWARE_CLASSES = (
 AUTHENTICATION_BACKENDS = (
     'django_cas.backends.CASBackend',
 )
+
+LOGIN_URL = '/login/'
 
 CAS_SERVER_URL = 'https://netid.rice.edu/cas/'
 
@@ -122,8 +117,15 @@ USE_TZ = False
 STATIC_URL = '/static/'
 STATIC_ROOT = '/app/staticfiles/'
 STATICFILES_DIRS = (
-    os.path.join(os.path.dirname(BASE_DIR), 'static'),
+    os.path.join(BASE_DIR, 'static'),
 )
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'bundles/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json')
+    }
+}
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

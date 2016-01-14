@@ -16,7 +16,7 @@ COURSE_ORDER = {
 }
 
 
-@login_required(login_url='/login/')
+@login_required
 def index(request):
     """ The index page for the 'Courses' tab.
 
@@ -25,10 +25,10 @@ def index(request):
         'nav_active': 'courses'
     }
 
-    return render(request, 'courses/index.jade', context)
+    return render(request, 'courses/index.html', context)
 
 
-@login_required(login_url='/login/')
+@login_required
 def courses(request):
     """ Returns a list of all courses as JSON objects.
 
@@ -72,10 +72,10 @@ def courses(request):
     return JsonResponse({
         'courses': [c.json() for c in filtered_courses[start:end]],
         'pages': pages
-        }, safe=False)
+    }, safe=False)
 
 
-@login_required(login_url='/login/')
+@login_required
 def get_sections(request):
     """ Get all sections of a course.
 
@@ -94,7 +94,7 @@ def get_sections(request):
     return JsonResponse([c.json() for c in filtered], safe=False)
 
 
-@login_required(login_url='/login/')
+@login_required
 def get_subjects(request):
     """ Get all unique course subjects.
 

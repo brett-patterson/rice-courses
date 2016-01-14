@@ -14,4 +14,4 @@ django-admin-sortable
 django-nested-inline
 mechanize
 beautifulsoup4
-pyjade
+django-webpack-loader
