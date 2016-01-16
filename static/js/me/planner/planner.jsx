@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 
-import Event from './event';
-import {eventOverlap, wrapComponentClass} from '../../util';
+import Event, {eventOverlap} from './event';
+import {wrapComponentClass} from '../../util';
 
 
 class Planner extends React.Component {

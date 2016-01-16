@@ -1,12 +1,14 @@
 import React, {PropTypes} from 'react';
 import reactMixin from 'react-mixin';
 import update from 'react-addons-update';
+import {Pagination} from 'react-bootstrap';
+import classNames from 'classnames';
 
 import Course from './course';
 import CourseDetailMixin from './detail/courseDetail';
 import UserCourses from './userCourses';
 import FilterManager from './filter/filterManager';
-import {makeClasses, wrapComponentClass} from '../util';
+import {wrapComponentClass} from '../util';
 
 class CourseList extends React.Component {
     constructor() {
@@ -84,12 +86,10 @@ class CourseList extends React.Component {
         };
     }
 
-    onPageClickHandler(page) {
-        return () => {
-            this.setState({
-                page
-            }, this.fetchCourses);
-        };
+    onPageClick(event, selectedEvent) {
+        this.setState({
+            page: selectedEvent.eventKey - 1
+        }, this.fetchCourses);
     }
 
     onHeaderClickHandler(order) {
@@ -120,7 +120,7 @@ class CourseList extends React.Component {
 
         const headers = columns.map(column => {
             const [key, name, center] = column;
-            const classes = makeClasses({
+            const classes = classNames({
                 'sort-asc': this.state.order.substring(1) === key,
                 'sort-desc': this.state.order === key,
                 'text-center': center
@@ -151,22 +151,20 @@ class CourseList extends React.Component {
         return this.state.courses.map(course => {
             const isUserCourse = this.isUserCourse(course);
 
-            const userClasses = makeClasses({
+            const userClasses = classNames({
                 'user-course': isUserCourse,
                 'not-user-course': !isUserCourse
             });
 
-            const heartClasses = makeClasses({
-                'glyphicon': true,
+            const heartClasses = classNames('glyphicon', {
                 'glyphicon-heart': isUserCourse,
                 'glyphicon-heart-empty': !isUserCourse
             });
 
             const percent = course.getEnrollmentPercentage();
-            const enrollClasses = makeClasses({
+            const enrollClasses = classNames('text-center', {
                 'enroll-warning': percent >= 75 && percent < 100,
-                'enroll-full': percent === 100,
-                'text-center': true
+                'enroll-full': percent === 100
             });
 
             return (
@@ -208,30 +206,6 @@ class CourseList extends React.Component {
         });
     }
 
-    renderPagination() {
-        let pages = [];
-
-        for (let i = 0; i < this.state.totalPages; i++) {
-            const classes = makeClasses({
-                'course-page-button': true,
-                'course-current-page': i == this.state.page
-            });
-
-            pages.push(
-                <a className={classes} key={`coursePage${i}`}
-                   onClick={this.onPageClickHandler(i)}>
-                    {i+1}
-                </a>
-            );
-        }
-
-        return (
-            <div className='course-pagination'>
-                {pages}
-            </div>
-        );
-    }
-
     render() {
         return (
             <div className='table-responsive'>
@@ -243,7 +217,15 @@ class CourseList extends React.Component {
                         {this.renderCourseRows()}
                     </tbody>
                 </table>
-                {this.renderPagination()}
+
+                <div className='text-center'>
+                    <Pagination items={this.state.totalPages}
+                                activePage={this.state.page + 1}
+                                onSelect={this.onPageClick}
+                                maxButtons={30} first={true} last={true}
+                                next={true} prev={true} />
+                </div>
+
                 {this.renderCourseDetails(this.state.courses)}
             </div>
         );

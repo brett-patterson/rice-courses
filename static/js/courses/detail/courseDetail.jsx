@@ -18,33 +18,33 @@ class CourseDetail extends React.Component {
             chartType: 'pie'
         };
 
-        ajaxCSRF({
-            url: '/evaluation/api/course/',
-            method: 'POST',
-            data: {
-                crn: props.course.getCRN()
-            },
-            responseType: 'json'
-        }).done(result => {
-            this.setState({
-                courseQuestions: result.questions,
-                courseComments: result.comments
-            });
-        });
-
-        ajaxCSRF({
-            url: '/evaluation/api/instructor/',
-            method: 'POST',
-            data: {
-                crn: props.course.getCRN()
-            },
-            responseType: 'json'
-        }).done(result => {
-            this.setState({
-                instructorQuestions: result.questions,
-                instructorComments: result.comments
-            });
-        });
+        // ajaxCSRF({
+        //     url: '/evaluation/api/course/',
+        //     method: 'POST',
+        //     data: {
+        //         crn: props.course.getCRN()
+        //     },
+        //     responseType: 'json'
+        // }).done(result => {
+        //     this.setState({
+        //         courseQuestions: result.questions,
+        //         courseComments: result.comments
+        //     });
+        // });
+        //
+        // ajaxCSRF({
+        //     url: '/evaluation/api/instructor/',
+        //     method: 'POST',
+        //     data: {
+        //         crn: props.course.getCRN()
+        //     },
+        //     responseType: 'json'
+        // }).done(result => {
+        //     this.setState({
+        //         instructorQuestions: result.questions,
+        //         instructorComments: result.comments
+        //     });
+        // });
     }
 
     renderInfo() {
@@ -62,7 +62,7 @@ class CourseDetail extends React.Component {
                 <p><strong>Cross Listed: </strong>
                 {course.getCrossListed().map(crossCourse => {
                     return crossCourse.getCourseID();
-                })}</p>
+                }).join(', ')}</p>
             );
 
         return (

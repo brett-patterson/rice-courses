@@ -14,14 +14,13 @@ DEFAULT_SECRET_KEY = '0+u!e@o_m4)t1%2gzzpuxtb5f8qx+3lg^fxf*ix$g5lw98219+'
 SECRET_KEY = os.environ.get('SECRET_KEY', DEFAULT_SECRET_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-LOCAL = os.environ.get('RCM_REMOTE') is None
-DEBUG = not LOCAL
+DEBUG = os.environ.get('RCM_REMOTE') is None
 TEMPLATE_DEBUG = DEBUG
 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.dirname(APP_DIR)
 
-if LOCAL:
+if DEBUG:
     ALLOWED_HOSTS = []
 else:
     ALLOWED_HOSTS = ['*']
@@ -85,7 +84,7 @@ WSGI_APPLICATION = 'wsgi.application'
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 DATABASES = {}
 
-if LOCAL:
+if DEBUG:
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'rice_courses',

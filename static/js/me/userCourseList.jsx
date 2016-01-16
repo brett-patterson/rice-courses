@@ -1,22 +1,16 @@
 import React, {PropTypes} from 'react';
 import reactMixin from 'react-mixin';
-import jQuery from 'jquery';
 import {Badge} from 'react-bootstrap';
-import ZeroClipboard from 'zeroclipboard';
+import classNames from 'classnames';
 
 import Scheduler from './scheduler';
 import Course from '../courses/course';
 import CourseDetailMixin from '../courses/detail/courseDetail';
-import {makeClasses, propTypeHas, wrapComponentClass} from '../util';
+import ClipboardTrigger from '../clipboardTrigger';
+import {propTypeHas, wrapComponentClass} from '../util';
 
 
 class UserCourseList extends React.Component {
-    componentDidUpdate() {
-        jQuery('.copy-btn').each((index, button) => {
-            this.clip = new ZeroClipboard(button);
-        });
-    }
-
     toggleCourseShownFactory(course) {
         return () => {
             const scheduler = this.props.scheduler;
@@ -126,14 +120,6 @@ class UserCourseList extends React.Component {
         return [creditsSum, label, distCredits];
     }
 
-    copyButtonClicked(event) {
-        let crn = jQuery(event.target).attr('data-clipboard-text');
-
-        const msg = `Copied CRN <strong>${crn}</strong> to clipboard.`;
-        this.props.delegate.addAlert(msg, 'success');
-        event.stopPropagation();
-    }
-
     showCourseFactory(course) {
         return () => {
             this.showCourseDetail(course);
@@ -149,17 +135,15 @@ class UserCourseList extends React.Component {
                 courseShown = this.props.scheduler.getMap()[course.getCRN()];
 
             const buttonClass = courseShown ? 'toggle-btn-show' : 'toggle-btn-hide';
-            const eyeClasses = makeClasses({
-                'glyphicon': true,
+            const eyeClasses = classNames('glyphicon', {
                 'glyphicon-eye-open': courseShown,
                 'glyphicon-eye-close': !courseShown
             });
 
             const percent = course.getEnrollmentPercentage();
-            const enrollClasses = makeClasses({
+            const enrollClasses = classNames('text-center', {
                 'enroll-warning': percent >= 75 && percent < 100,
-                'enroll-full': percent === 100,
-                'text-center': true
+                'enroll-full': percent === 100
             });
 
             return (
@@ -172,11 +156,9 @@ class UserCourseList extends React.Component {
                     <td onClick={this.showCourseFactory(course)}>
                         <span>
                             {course.getCRN() + ' '}
-                            <a className='copy-btn'
-                               data-clipboard-text={course.getCRN()}
-                               onClick={this.copyButtonClicked}>
+                            <ClipboardTrigger text={course.getCRN()} onClick={e => e.stopPropagation()}>
                                <span className='glyphicon glyphicon-paperclip' />
-                            </a>
+                            </ClipboardTrigger>
                         </span>
                     </td>
                     <td onClick={this.showCourseFactory(course)}>
