@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 import reactMixin from 'react-mixin';
 import update from 'react-addons-update';
+import {Pagination} from 'react-bootstrap';
 import classNames from 'classnames';
 
 import Course from './course';
@@ -85,12 +86,10 @@ class CourseList extends React.Component {
         };
     }
 
-    onPageClickHandler(page) {
-        return () => {
-            this.setState({
-                page
-            }, this.fetchCourses);
-        };
+    onPageClick(event, selectedEvent) {
+        this.setState({
+            page: selectedEvent.eventKey - 1
+        }, this.fetchCourses);
     }
 
     onHeaderClickHandler(order) {
@@ -207,29 +206,6 @@ class CourseList extends React.Component {
         });
     }
 
-    renderPagination() {
-        let pages = [];
-
-        for (let i = 0; i < this.state.totalPages; i++) {
-            const classes = classNames('course-page-button', {
-                'course-current-page': i == this.state.page
-            });
-
-            pages.push(
-                <a className={classes} key={`coursePage${i}`}
-                   onClick={this.onPageClickHandler(i)}>
-                    {i+1}
-                </a>
-            );
-        }
-
-        return (
-            <div className='course-pagination'>
-                {pages}
-            </div>
-        );
-    }
-
     render() {
         return (
             <div className='table-responsive'>
@@ -241,7 +217,13 @@ class CourseList extends React.Component {
                         {this.renderCourseRows()}
                     </tbody>
                 </table>
-                {this.renderPagination()}
+
+                <Pagination items={this.state.totalPages}
+                            activePage={this.state.page + 1}
+                            onSelect={this.onPageClick}
+                            maxButtons={30} first={true} last={true}
+                            next={true} prev={true} />
+
                 {this.renderCourseDetails(this.state.courses)}
             </div>
         );
