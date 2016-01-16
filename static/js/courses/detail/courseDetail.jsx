@@ -62,7 +62,7 @@ class CourseDetail extends React.Component {
                 <p><strong>Cross Listed: </strong>
                 {course.getCrossListed().map(crossCourse => {
                     return crossCourse.getCourseID();
-                })}</p>
+                }).join(', ')}</p>
             );
 
         return (
