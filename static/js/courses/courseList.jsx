@@ -1,12 +1,13 @@
 import React, {PropTypes} from 'react';
 import reactMixin from 'react-mixin';
 import update from 'react-addons-update';
+import classNames from 'classnames';
 
 import Course from './course';
 import CourseDetailMixin from './detail/courseDetail';
 import UserCourses from './userCourses';
 import FilterManager from './filter/filterManager';
-import {makeClasses, wrapComponentClass} from '../util';
+import {wrapComponentClass} from '../util';
 
 class CourseList extends React.Component {
     constructor() {
@@ -120,7 +121,7 @@ class CourseList extends React.Component {
 
         const headers = columns.map(column => {
             const [key, name, center] = column;
-            const classes = makeClasses({
+            const classes = classNames({
                 'sort-asc': this.state.order.substring(1) === key,
                 'sort-desc': this.state.order === key,
                 'text-center': center
@@ -151,22 +152,20 @@ class CourseList extends React.Component {
         return this.state.courses.map(course => {
             const isUserCourse = this.isUserCourse(course);
 
-            const userClasses = makeClasses({
+            const userClasses = classNames({
                 'user-course': isUserCourse,
                 'not-user-course': !isUserCourse
             });
 
-            const heartClasses = makeClasses({
-                'glyphicon': true,
+            const heartClasses = classNames('glyphicon', {
                 'glyphicon-heart': isUserCourse,
                 'glyphicon-heart-empty': !isUserCourse
             });
 
             const percent = course.getEnrollmentPercentage();
-            const enrollClasses = makeClasses({
+            const enrollClasses = classNames('text-center', {
                 'enroll-warning': percent >= 75 && percent < 100,
-                'enroll-full': percent === 100,
-                'text-center': true
+                'enroll-full': percent === 100
             });
 
             return (
@@ -212,8 +211,7 @@ class CourseList extends React.Component {
         let pages = [];
 
         for (let i = 0; i < this.state.totalPages; i++) {
-            const classes = makeClasses({
-                'course-page-button': true,
+            const classes = classNames('course-page-button', {
                 'course-current-page': i == this.state.page
             });
 

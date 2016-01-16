@@ -9,6 +9,7 @@
   "author": "Brett Patterson",
   "dependencies": {
     "bootstrap-sass": "^3.3.6",
+    "classnames": "^2.2.3",
     "highcharts": "^4.2.1",
     "jquery": "^2.2.0",
     "moment": "^2.11.1",

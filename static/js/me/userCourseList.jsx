@@ -3,11 +3,12 @@ import reactMixin from 'react-mixin';
 import jQuery from 'jquery';
 import {Badge} from 'react-bootstrap';
 import ZeroClipboard from 'zeroclipboard';
+import classNames from 'classnames';
 
 import Scheduler from './scheduler';
 import Course from '../courses/course';
 import CourseDetailMixin from '../courses/detail/courseDetail';
-import {makeClasses, propTypeHas, wrapComponentClass} from '../util';
+import {propTypeHas, wrapComponentClass} from '../util';
 
 
 class UserCourseList extends React.Component {
@@ -149,17 +150,15 @@ class UserCourseList extends React.Component {
                 courseShown = this.props.scheduler.getMap()[course.getCRN()];
 
             const buttonClass = courseShown ? 'toggle-btn-show' : 'toggle-btn-hide';
-            const eyeClasses = makeClasses({
-                'glyphicon': true,
+            const eyeClasses = classNames('glyphicon', {
                 'glyphicon-eye-open': courseShown,
                 'glyphicon-eye-close': !courseShown
             });
 
             const percent = course.getEnrollmentPercentage();
-            const enrollClasses = makeClasses({
+            const enrollClasses = classNames('text-center', {
                 'enroll-warning': percent >= 75 && percent < 100,
-                'enroll-full': percent === 100,
-                'text-center': true
+                'enroll-full': percent === 100
             });
 
             return (

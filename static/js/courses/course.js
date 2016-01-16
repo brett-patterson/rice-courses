@@ -1,4 +1,6 @@
 import Moment from 'moment';
+
+import {eventOverlap} from '../me/planner/event';
 import {ajaxCSRF} from '../util';
 
 
@@ -11,6 +13,31 @@ const DAY_ABBR_MAP = {
     'Saturday': 'S',
     'Sunday': 'U'
 };
+
+/**
+ * Check if two courses overlap in time.
+ * @param {Course} courseOne
+ * @param {Course} courseTwo
+ * @param {boolean} Whether or not the two courses' times overlap
+ */
+export function courseOverlap(courseOne, courseTwo) {
+    const oneMeetings = courseOne.getMeetings();
+    const twoMeetings = courseTwo.getMeetings();
+
+    for (let i = 0; i < oneMeetings.length; i++) {
+        let one = oneMeetings[i];
+
+        for (let j = 0; j < twoMeetings.length; j++) {
+            let two = twoMeetings[j];
+
+            if (eventOverlap(one, two)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
 
 export default class Course {
     constructor(crn, subject, number, section, title, instructor, description,
