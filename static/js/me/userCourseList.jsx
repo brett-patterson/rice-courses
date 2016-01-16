@@ -1,23 +1,16 @@
 import React, {PropTypes} from 'react';
 import reactMixin from 'react-mixin';
-import jQuery from 'jquery';
 import {Badge} from 'react-bootstrap';
-import ZeroClipboard from 'zeroclipboard';
 import classNames from 'classnames';
 
 import Scheduler from './scheduler';
 import Course from '../courses/course';
 import CourseDetailMixin from '../courses/detail/courseDetail';
+import ClipboardTrigger from '../clipboardTrigger';
 import {propTypeHas, wrapComponentClass} from '../util';
 
 
 class UserCourseList extends React.Component {
-    componentDidUpdate() {
-        jQuery('.copy-btn').each((index, button) => {
-            this.clip = new ZeroClipboard(button);
-        });
-    }
-
     toggleCourseShownFactory(course) {
         return () => {
             const scheduler = this.props.scheduler;
@@ -127,14 +120,6 @@ class UserCourseList extends React.Component {
         return [creditsSum, label, distCredits];
     }
 
-    copyButtonClicked(event) {
-        let crn = jQuery(event.target).attr('data-clipboard-text');
-
-        const msg = `Copied CRN <strong>${crn}</strong> to clipboard.`;
-        this.props.delegate.addAlert(msg, 'success');
-        event.stopPropagation();
-    }
-
     showCourseFactory(course) {
         return () => {
             this.showCourseDetail(course);
@@ -171,11 +156,9 @@ class UserCourseList extends React.Component {
                     <td onClick={this.showCourseFactory(course)}>
                         <span>
                             {course.getCRN() + ' '}
-                            <a className='copy-btn'
-                               data-clipboard-text={course.getCRN()}
-                               onClick={this.copyButtonClicked}>
+                            <ClipboardTrigger text={course.getCRN()} onClick={e => e.stopPropagation()}>
                                <span className='glyphicon glyphicon-paperclip' />
-                            </a>
+                            </ClipboardTrigger>
                         </span>
                     </td>
                     <td onClick={this.showCourseFactory(course)}>
