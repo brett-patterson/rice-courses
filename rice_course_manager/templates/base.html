@@ -13,19 +13,6 @@
 
         <script type="text/javascript">
         window.TUTORIAL_URL = "{% url 'tutorial' %}";
-        window.NAV_ITEMS = [{
-            url: "{% url 'courses' %}",
-            icon: "search",
-            text: "Search"
-        }, {
-            url: "{% url 'me' %}",
-            icon: "user",
-            text: "My Courses"
-        }, {
-            url: "{% url 'help' %}",
-            icon: "question-sign",
-            text: "Help"
-        }];
         </script>
         {% render_bundle 'tutorial' %}
 
