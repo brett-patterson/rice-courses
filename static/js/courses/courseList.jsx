@@ -218,11 +218,13 @@ class CourseList extends React.Component {
                     </tbody>
                 </table>
 
-                <Pagination items={this.state.totalPages}
-                            activePage={this.state.page + 1}
-                            onSelect={this.onPageClick}
-                            maxButtons={30} first={true} last={true}
-                            next={true} prev={true} />
+                <div className='text-center'>
+                    <Pagination items={this.state.totalPages}
+                                activePage={this.state.page + 1}
+                                onSelect={this.onPageClick}
+                                maxButtons={30} first={true} last={true}
+                                next={true} prev={true} />
+                </div>
 
                 {this.renderCourseDetails(this.state.courses)}
             </div>
