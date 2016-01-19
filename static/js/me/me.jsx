@@ -7,13 +7,13 @@ import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
 import Scheduler from './scheduler';
-import UserCourses from '../courses/userCourses';
+import UserCourses from 'courses/userCourses';
 import UserCourseList from './userCourseList';
 import SchedulerView from './schedulerView';
 import ExportDialog from './export';
 import ConflictsDialog from './conflicts';
-import AlertMixin from '../alertMixin';
-import {indexOf, courseOverlap, wrapComponentClass} from '../util';
+import AlertMixin from 'alertMixin';
+import {indexOf, courseOverlap, wrapComponentClass} from 'util';
 
 
 class Me extends React.Component {

@@ -1,9 +1,9 @@
 import React, {PropTypes} from 'react';
 import {Modal, Button} from 'react-bootstrap';
 
-import Course from '../courses/course';
+import Course from 'courses/course';
 import Scheduler from './scheduler';
-import {ajax, wrapComponentClass} from '../util';
+import {ajax, wrapComponentClass} from 'util';
 
 
 class ExportDialog extends React.Component {

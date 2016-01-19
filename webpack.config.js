@@ -7,14 +7,14 @@ var OUT_DIR = path.resolve('./static/bundles/');
 
 
 module.exports = {
-    context: __dirname,
+    context: path.resolve('./static/'),
 
     entry: {
-        courses: './static/js/courses/index',
-        me: './static/js/me/index',
-        tutorial: './static/js/tutorial',
+        courses: './js/courses/index',
+        me: './js/me/index',
+        tutorial: './js/tutorial',
 
-        base: './static/base'
+        base: './base'
     },
 
     output: {
@@ -48,7 +48,11 @@ module.exports = {
     ],
 
     resolve: {
-        modulesDirectories: ['node_modules'],
-        extensions: ['', '.js', '.jsx']
+        modulesDirectories: [
+            'node_modules',
+            path.resolve('./static/js/'),
+            path.resolve('./static/css/')
+        ],
+        extensions: ['', '.js', '.jsx', '.css']
     }
 };

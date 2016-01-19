@@ -1,4 +1,4 @@
-import {ajax} from '../util';
+import {ajax} from 'util';
 
 
 export default class Scheduler {

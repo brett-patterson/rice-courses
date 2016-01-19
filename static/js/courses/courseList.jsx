@@ -8,7 +8,7 @@ import Course from './course';
 import CourseDetailMixin from './detail/courseDetail';
 import UserCourses from './userCourses';
 import FilterManager from './filter/filterManager';
-import {wrapComponentClass} from '../util';
+import {wrapComponentClass} from 'util';
 
 class CourseList extends React.Component {
     constructor() {

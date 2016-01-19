@@ -1,7 +1,7 @@
 import Moment from 'moment';
 
-import {eventOverlap} from '../me/planner/event';
-import {ajax} from '../util';
+import {eventOverlap} from 'me/planner/event';
+import {ajax} from 'util';
 
 
 const DAY_ABBR_MAP = {

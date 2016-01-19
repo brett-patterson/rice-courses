@@ -4,10 +4,10 @@ import {Badge} from 'react-bootstrap';
 import classNames from 'classnames';
 
 import Scheduler from './scheduler';
-import Course from '../courses/course';
-import CourseDetailMixin from '../courses/detail/courseDetail';
-import ClipboardTrigger from '../clipboardTrigger';
-import {propTypeHas, wrapComponentClass} from '../util';
+import Course from 'courses/course';
+import CourseDetailMixin from 'courses/detail/courseDetail';
+import ClipboardTrigger from 'clipboardTrigger';
+import {propTypeHas, wrapComponentClass} from 'util';
 
 
 class UserCourseList extends React.Component {

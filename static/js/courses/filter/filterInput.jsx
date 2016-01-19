@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import ReactDOM from 'react-dom';
 import jQuery from 'jquery';
 import CourseFilter from './courseFilter';
-import {propTypeHas, wrapComponentClass} from '../../util';
+import {propTypeHas, wrapComponentClass} from 'util';
 
 
 class FilterInput extends React.Component {

@@ -1,8 +1,8 @@
 import React, {PropTypes} from 'react';
 import {Modal, Button} from 'react-bootstrap';
 
-import Course from '../courses/course';
-import {ajax, wrapComponentClass} from '../util';
+import Course from 'courses/course';
+import {ajax, wrapComponentClass} from 'util';
 
 
 class ConflictsDialog extends React.Component {

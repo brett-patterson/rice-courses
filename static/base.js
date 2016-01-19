@@ -1,2 +1,2 @@
 require('bootstrap-loader');
-require('./css/main.css');
+require('main.css');

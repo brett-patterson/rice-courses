@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import FilterButton from './filterButton';
 import FilterInput from './filterInput';
 import FilterManager from './filterManager';
-import {getHueByIndex, wrapComponentClass} from '../../util';
+import {getHueByIndex, wrapComponentClass} from 'util';
 
 class FilterWidget extends React.Component {
     constructor(props) {

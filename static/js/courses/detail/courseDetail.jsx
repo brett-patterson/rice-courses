@@ -1,9 +1,9 @@
 import React, {PropTypes} from 'react';
 import {Tabs, Tab, Modal} from 'react-bootstrap';
 
-import Course from '../course';
+import Course from 'courses/course';
 import EvaluationChart from './evaluationChart';
-import {ajax, wrapComponentClass} from '../../util';
+import {ajax, wrapComponentClass} from 'util';
 
 
 class CourseDetail extends React.Component {

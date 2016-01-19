@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 
 import CourseFilter from './courseFilter';
-import {hsvToRgb, rgbToHex, propTypeHas, wrapComponentClass} from '../../util';
+import {hsvToRgb, rgbToHex, propTypeHas, wrapComponentClass} from 'util';
 
 class FilterButton extends React.Component {
     constructor(props) {
