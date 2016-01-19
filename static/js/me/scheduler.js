@@ -131,12 +131,7 @@ export default class Scheduler {
             method: 'POST',
             dataType: 'json'
         }).done(data => {
-            let result = [];
-
-            for (let i = 0;i < data.length; i++)
-                result.push(Scheduler.fromJSON(data[i]));
-
-            cb(result);
+            cb(data.map(Scheduler.fromJSON));
         });
     }
 
