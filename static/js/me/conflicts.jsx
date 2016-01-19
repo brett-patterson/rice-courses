@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import {Modal, Button} from 'react-bootstrap';
 
 import Course from '../courses/course';
-import {ajaxCSRF, wrapComponentClass} from '../util';
+import {ajax, wrapComponentClass} from '../util';
 
 
 class ConflictsDialog extends React.Component {
@@ -67,14 +67,14 @@ ConflictsDialog.defaultProps = {
 };
 
 // jQuery('input:checked', this).each((i, input) => {
-//     ajaxCSRF({
+//     ajax({
 //         url: '/me/api/alternate/',
 //         method: 'POST',
 //         data: {
 //             crn: input.value
 //         },
 //         dataType: 'json'
-//     }).done(result => {
+//     }).then(result => {
 //         cb(Course.fromJSON(result.course),
 //             result.alternates.map(courseJSON => {
 //                 return Course.fromJSON(courseJSON);

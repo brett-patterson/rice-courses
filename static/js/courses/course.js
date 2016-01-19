@@ -1,7 +1,7 @@
 import Moment from 'moment';
 
 import {eventOverlap} from '../me/planner/event';
-import {ajaxCSRF} from '../util';
+import {ajax} from '../util';
 
 
 const DAY_ABBR_MAP = {
@@ -100,12 +100,12 @@ export default class Course {
             data.order = order;
         }
 
-        ajaxCSRF({
+        ajax({
             url: '/courses/api/courses/',
             method: 'POST',
             dataType: 'json',
             data
-        }).done(result => {
+        }).then(result => {
             if (cb) {
                 result.courses = result.courses.map(Course.fromJSON);
                 cb(result);
@@ -114,7 +114,7 @@ export default class Course {
     }
 
     getOtherSections(cb) {
-        ajaxCSRF({
+        ajax({
             url: '/courses/api/sections/',
             method: 'POST',
             dataType: 'json',
@@ -122,7 +122,7 @@ export default class Course {
                 subject: this.subject,
                 number: this.number
             }
-        }).done(result => {
+        }).then(result => {
             if (cb)
                 cb(result.filter(data => {
                     return data.section !== this.section;

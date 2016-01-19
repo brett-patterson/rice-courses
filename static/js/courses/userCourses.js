@@ -1,5 +1,5 @@
 import Course from './course';
-import {ajaxCSRF} from '../util';
+import {ajax} from '../util';
 
 
 export default class UserCourses {
@@ -8,11 +8,11 @@ export default class UserCourses {
      * @param {function} cb - A callback invoked with the results of the request
      */
     static get(cb) {
-        ajaxCSRF({
+        ajax({
             url: '/me/api/courses/',
             method: 'POST',
             dataType: 'json'
-        }).done(data => {
+        }).then(data => {
             let result = [];
 
             for (let i = 0; i < data.length; i++)
@@ -28,15 +28,12 @@ export default class UserCourses {
      * @param {function} cb - A callback invoked with the results of the request
      */
     static add(course, cb) {
-        ajaxCSRF({
+        ajax({
             url: '/me/api/courses/add/',
             method: 'POST',
             data: {crn: course.getCRN()},
             dataType: 'json'
-        }).done(data => {
-            if (cb)
-                cb(data);
-        });
+        }).then(cb);
     }
 
     /**
@@ -45,14 +42,11 @@ export default class UserCourses {
      * @param {function} cb - A callback invoked with the results of the request
      */
     static remove(course, cb) {
-        ajaxCSRF({
+        ajax({
             url: '/me/api/courses/remove/',
             method: 'POST',
             data: {crn: course.getCRN()},
             dataType: 'json'
-        }).done(data => {
-            if (cb)
-                cb(data);
-        });
+        }).then(cb);
     }
 }

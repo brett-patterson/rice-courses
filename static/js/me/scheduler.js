@@ -1,4 +1,4 @@
-import {ajaxCSRF} from '../util';
+import {ajax} from '../util';
 
 
 export default class Scheduler {
@@ -25,7 +25,7 @@ export default class Scheduler {
     setName(name, cb) {
         this.name = name;
 
-        ajaxCSRF({
+        ajax({
             url: '/me/api/scheduler/rename/',
             method: 'POST',
             data: {
@@ -33,10 +33,7 @@ export default class Scheduler {
                 name: name
             },
             dataType: 'json'
-        }).done(data => {
-            if (cb)
-                cb(data);
-        });
+        }).then(cb);
     }
 
     getMap() {
@@ -46,7 +43,7 @@ export default class Scheduler {
     setCourseShown(course, shown, cb) {
         this.map[course.getCRN()] = shown;
 
-        ajaxCSRF({
+        ajax({
             url: '/me/api/scheduler/course/',
             method: 'POST',
             data: {
@@ -55,10 +52,7 @@ export default class Scheduler {
                 shown: shown
             },
             dataType: 'json'
-        }).done(data => {
-            if (cb)
-                cb(data);
-        });
+        }).then(cb);
     }
 
     removeCourse(course, cb) {
@@ -66,7 +60,7 @@ export default class Scheduler {
             delete this.map[course];
         }
 
-        ajaxCSRF({
+        ajax({
             url: '/me/api/scheduler/remove-course/',
             method: 'POST',
             data: {
@@ -74,10 +68,7 @@ export default class Scheduler {
                 crn: course.getCRN()
             },
             dataType: 'json'
-        }).done(data => {
-            if (cb)
-                cb(data);
-        });
+        }).then(cb);
     }
 
     getShown() {
@@ -87,7 +78,7 @@ export default class Scheduler {
     setShown(shown, cb) {
         this.shown = shown;
 
-        ajaxCSRF({
+        ajax({
             url: '/me/api/scheduler/set/',
             method: 'POST',
             data: {
@@ -95,10 +86,7 @@ export default class Scheduler {
                 shown: shown
             },
             dataType: 'json'
-        }).done(data => {
-            if (cb)
-                cb(data);
-        });
+        }).then(cb);
     }
 
     getEditing() {
@@ -110,15 +98,12 @@ export default class Scheduler {
     }
 
     remove(cb) {
-        ajaxCSRF({
+        ajax({
             url: '/me/api/scheduler/remove/',
             method: 'POST',
             data: {id: this.id},
             dataType: 'json'
-        }).done(data => {
-            if (cb)
-                cb(data);
-        });
+        }).then(cb);
     }
 
     /**
@@ -126,11 +111,11 @@ export default class Scheduler {
      * @param {function} cb - A callback invoked with the results of the request
      */
     static fetchAll(cb) {
-        ajaxCSRF({
+        ajax({
             url: '/me/api/scheduler/all/',
             method: 'POST',
             dataType: 'json'
-        }).done(data => {
+        }).then(data => {
             cb(data.map(Scheduler.fromJSON));
         });
     }
@@ -141,12 +126,12 @@ export default class Scheduler {
      * @param {function} cb - A callback invoked with the results of the request
      */
     static addScheduler(name, cb) {
-        ajaxCSRF({
+        ajax({
             url: '/me/api/scheduler/add/',
             method: 'POST',
             data: {name: name},
             dataType: 'json'
-        }).done(data => {
+        }).then(data => {
             if (cb)
                 cb(Scheduler.fromJSON(data.scheduler));
         });

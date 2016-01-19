@@ -4,19 +4,17 @@ import FilterManager from './filter/filterManager';
 import FilterWidget from './filter/filterWidget';
 import CourseFilter from './filter/courseFilter';
 import CourseList from './courseList';
-import {ajaxCSRF, wrapComponentClass} from '../util';
+import {ajax, wrapComponentClass} from '../util';
 
 
 const FILTERS = [
     new CourseFilter('crn', 'CRN'),
     new CourseFilter('courseID', 'Course', ['course'], '', callback => {
-        ajaxCSRF({
+        ajax({
             url: '/courses/api/subjects/',
             method: 'POST',
             dataType: 'json'
-        }).done(result => {
-            callback(result);
-        });
+        }).then(callback);
     }),
     new CourseFilter('title', 'Title'),
     new CourseFilter('instructor', 'Instructor'),

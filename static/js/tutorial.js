@@ -2,17 +2,17 @@ import 'tutorialize/dist/css/tutorialize.min.css';
 
 import jQuery from 'jquery';
 import Tutorialize from 'tutorialize';
-import {ajaxCSRF} from './util';
+import {ajax} from './util';
 
 jQuery(() => {
-    ajaxCSRF({
+    ajax({
         url: window.TUTORIAL_URL,
         method: 'POST',
         data: {
             tutorial: location.pathname
         },
         dataType: 'json'
-    }).done(data => {
+    }).then(data => {
         if (!data.error) {
             var tutorial = new Tutorialize(data.tutorial, data);
             window.startTutorial = () => {

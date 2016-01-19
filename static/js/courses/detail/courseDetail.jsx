@@ -3,7 +3,7 @@ import {Tabs, Tab, Modal} from 'react-bootstrap';
 
 import Course from '../course';
 import EvaluationChart from './evaluationChart';
-import {ajaxCSRF, wrapComponentClass} from '../../util';
+import {ajax, wrapComponentClass} from '../../util';
 
 
 class CourseDetail extends React.Component {
@@ -18,28 +18,28 @@ class CourseDetail extends React.Component {
             chartType: 'pie'
         };
 
-        // ajaxCSRF({
+        // ajax({
         //     url: '/evaluation/api/course/',
         //     method: 'POST',
         //     data: {
         //         crn: props.course.getCRN()
         //     },
         //     responseType: 'json'
-        // }).done(result => {
+        // }).then(result => {
         //     this.setState({
         //         courseQuestions: result.questions,
         //         courseComments: result.comments
         //     });
         // });
         //
-        // ajaxCSRF({
+        // ajax({
         //     url: '/evaluation/api/instructor/',
         //     method: 'POST',
         //     data: {
         //         crn: props.course.getCRN()
         //     },
         //     responseType: 'json'
-        // }).done(result => {
+        // }).then(result => {
         //     this.setState({
         //         instructorQuestions: result.questions,
         //         instructorComments: result.comments

@@ -3,7 +3,7 @@ import {Modal, Button} from 'react-bootstrap';
 
 import Course from '../courses/course';
 import Scheduler from './scheduler';
-import {ajaxCSRF, wrapComponentClass} from '../util';
+import {ajax, wrapComponentClass} from '../util';
 
 
 class ExportDialog extends React.Component {
@@ -14,13 +14,13 @@ class ExportDialog extends React.Component {
             courses: []
         };
 
-        ajaxCSRF({
+        ajax({
             url: '/me/api/scheduler/export/',
             method: 'POST',
             data: {
                 id: props.scheduler.getID()
             }
-        }).done(data => {
+        }).then(data => {
             this.setState({
                 courses: data.map(Course.fromJSON)
             });

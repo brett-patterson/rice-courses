@@ -1,4 +1,5 @@
 import jQuery from 'jquery';
+import Promise from 'promise';
 
 /**
  * A modified indexOf function with an optional key function.
@@ -130,16 +131,18 @@ export function getCookie(name) {
 /**
  * Make an AJAX request with the proper CSRF authentication.
  * @param {object} config - The config object for the jQuery AJAX request.
- * @return {Promise} A jQuery promise object for the request
+ * @return {Promise} A promise object for the request
  */
-export function ajaxCSRF(config) {
+export function ajax(config) {
     const requestConfig = jQuery.extend(config, {
         headers: {
             'X-CSRFToken': getCookie('csrftoken')
         }
     });
 
-    return jQuery.ajax(requestConfig);
+    return new Promise((resolve, reject) => {
+        jQuery.ajax(requestConfig).then(resolve, reject);
+    });
 }
 
 /**
