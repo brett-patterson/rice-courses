@@ -115,7 +115,10 @@ class Me extends React.Component {
 
     schedulerSelectFactory(scheduler) {
         return () => {
-            this.state.currentScheduler.setShown(false);
+            if (this.state.currentScheduler) {
+                this.state.currentScheduler.setShown(false);
+            }
+
             scheduler.setShown(true);
             this.setState({
                 currentScheduler: scheduler

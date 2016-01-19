@@ -168,7 +168,7 @@ def add_scheduler(request):
 
     if name is not None:
         scheduler = request.user.userprofile.create_scheduler(name)
-        return JsonResponse({'scheduler': scheduler})
+        return JsonResponse({'scheduler': scheduler.json()})
 
     return JsonResponse({'error': 'No name specified'}, status=400)
 

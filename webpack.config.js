@@ -1,5 +1,9 @@
 var path = require('path');
 var BundleTracker = require('webpack-bundle-tracker');
+var CleanWebpackPlugin = require('clean-webpack-plugin');
+
+
+var OUT_DIR = path.resolve('./static/bundles/');
 
 
 module.exports = {
@@ -14,7 +18,7 @@ module.exports = {
     },
 
     output: {
-        path: path.resolve('./static/bundles/'),
+        path: OUT_DIR,
         filename: '[name]-[hash].js'
     },
 
@@ -39,7 +43,8 @@ module.exports = {
     },
 
     plugins: [
-        new BundleTracker({filename: './webpack-stats.json'})
+        new BundleTracker({filename: './webpack-stats.json'}),
+        new CleanWebpackPlugin([OUT_DIR])
     ],
 
     resolve: {
