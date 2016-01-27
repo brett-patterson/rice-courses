@@ -1,3 +1,5 @@
+import 'me.css';
+
 import React from 'react';
 import update from 'react-addons-update';
 import jQuery from 'jquery';

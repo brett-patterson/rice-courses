@@ -1,8 +1,8 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from evaluation import views
 
-urlpatterns = patterns('',
-    url(r'^api/course/$', views.course_evaluation),
-    url(r'^api/instructor/$', views.instructor_evaluation),
-)
+urlpatterns = [
+    url(r'^course/$', views.course_evaluation),
+    url(r'^instructor/$', views.instructor_evaluation),
+]

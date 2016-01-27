@@ -15,7 +15,7 @@ class ExportDialog extends React.Component {
         };
 
         ajax({
-            url: '/me/api/scheduler/export/',
+            url: '/api/me/scheduler/export/',
             method: 'POST',
             data: {
                 id: props.scheduler.getID()

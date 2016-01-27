@@ -34,6 +34,13 @@ class HelpArticle(Sortable):
         with open(os.path.join(settings.HELP_DATA_DIR, self.filename)) as f:
             return markdown.markdown(f.read())
 
+    def json(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'body': self.render_html()
+        }
+
 
 class Tutorial(models.Model):
     """ A model to represent a tutorial. A tutorial is a collection of

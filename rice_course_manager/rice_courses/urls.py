@@ -1,15 +1,17 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.contrib import admin
-from django.views.generic import RedirectView
+from views import home
 
 
-urlpatterns = patterns('',
-    url(r'^$', RedirectView.as_view(pattern_name='courses'), name='home'),
+urlpatterns = [
+    url(r'^$', home, name='home'),
     url(r'^login/$', 'django_cas.views.login', name='login'),
     url(r'^logout/$', 'django_cas.views.logout', name='logout'),
-    url(r'^courses/', include('courses.urls'), name='courses'),
-    url(r'^evaluation/', include('evaluation.urls')),
-    url(r'^help/', include('help.urls')),
-    url(r'^me/', include('me.urls')),
+
+    url(r'^api/courses/', include('courses.urls')),
+    url(r'^api/evaluation/', include('evaluation.urls')),
+    url(r'^api/me/', include('me.urls')),
+    url(r'^api/help/', include('help.urls')),
+
     url(r'^admin/', include(admin.site.urls)),
-)
+]

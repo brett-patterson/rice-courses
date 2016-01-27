@@ -26,7 +26,7 @@ export default class Scheduler {
         this.name = name;
 
         ajax({
-            url: '/me/api/scheduler/rename/',
+            url: '/api/me/scheduler/rename/',
             method: 'POST',
             data: {
                 id: this.id,
@@ -44,7 +44,7 @@ export default class Scheduler {
         this.map[course.getCRN()] = shown;
 
         ajax({
-            url: '/me/api/scheduler/course/',
+            url: '/api/me/scheduler/course/',
             method: 'POST',
             data: {
                 id: this.id,
@@ -61,7 +61,7 @@ export default class Scheduler {
         }
 
         ajax({
-            url: '/me/api/scheduler/remove-course/',
+            url: '/api/me/scheduler/remove-course/',
             method: 'POST',
             data: {
                 id: this.id,
@@ -79,7 +79,7 @@ export default class Scheduler {
         this.shown = shown;
 
         ajax({
-            url: '/me/api/scheduler/set/',
+            url: '/api/me/scheduler/set/',
             method: 'POST',
             data: {
                 id: this.id,
@@ -99,7 +99,7 @@ export default class Scheduler {
 
     remove(cb) {
         ajax({
-            url: '/me/api/scheduler/remove/',
+            url: '/api/me/scheduler/remove/',
             method: 'POST',
             data: {id: this.id},
             dataType: 'json'
@@ -112,7 +112,7 @@ export default class Scheduler {
      */
     static fetchAll(cb) {
         ajax({
-            url: '/me/api/scheduler/all/',
+            url: '/api/me/scheduler/all/',
             method: 'POST',
             dataType: 'json'
         }).then(data => {
@@ -127,7 +127,7 @@ export default class Scheduler {
      */
     static addScheduler(name, cb) {
         ajax({
-            url: '/me/api/scheduler/add/',
+            url: '/api/me/scheduler/add/',
             method: 'POST',
             data: {name: name},
             dataType: 'json'

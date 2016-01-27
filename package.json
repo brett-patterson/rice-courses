@@ -12,6 +12,7 @@
     "classnames": "^2.2.3",
     "clipboard": "^1.5.5",
     "highcharts": "^4.2.1",
+    "history": "^1.17.0",
     "jquery": "^2.2.0",
     "moment": "^2.11.1",
     "promise": "^7.1.1",
@@ -22,6 +23,7 @@
     "react-dnd-html5-backend": "^2.0.2",
     "react-dom": "^0.14.6",
     "react-mixin": "^3.0.3",
+    "react-router": "^1.0.3",
     "tutorialize": "^1.0.0"
   },
   "devDependencies": {

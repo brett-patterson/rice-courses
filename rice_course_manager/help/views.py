@@ -1,20 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
-from django.shortcuts import render
 
-from help.models import HelpArticle, Tutorial
-
-
-def index(request):
-    """ The index page for the 'Help' tab.
-
-    """
-    context = {
-        'nav_active': 'help',
-        'articles': HelpArticle.objects.all()
-    }
-
-    return render(request, 'help/index.html', context)
+from help.models import Tutorial
 
 
 def tutorial(request):

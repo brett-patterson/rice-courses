@@ -101,7 +101,7 @@ export default class Course {
         }
 
         ajax({
-            url: '/courses/api/courses/',
+            url: '/api/courses/',
             method: 'POST',
             dataType: 'json',
             data
@@ -115,7 +115,7 @@ export default class Course {
 
     getOtherSections(cb) {
         ajax({
-            url: '/courses/api/sections/',
+            url: '/api/courses/sections/',
             method: 'POST',
             dataType: 'json',
             data: {
