@@ -1,4 +1,4 @@
-import 'courseDetail.css';
+import 'courseDetail.scss';
 
 import React, {PropTypes} from 'react';
 import {Tabs, Tab, Modal} from 'react-bootstrap';

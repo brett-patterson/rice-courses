@@ -1,4 +1,4 @@
-import 'planner.css';
+import 'planner.scss';
 
 import React, {PropTypes} from 'react';
 

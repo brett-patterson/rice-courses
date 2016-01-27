@@ -1,4 +1,4 @@
-import 'me.css';
+import 'me.scss';
 
 import React from 'react';
 import update from 'react-addons-update';

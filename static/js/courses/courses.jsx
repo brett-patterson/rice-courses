@@ -1,4 +1,4 @@
-import 'courses.css';
+import 'courses.scss';
 
 import React from 'react';
 

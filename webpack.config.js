@@ -27,8 +27,8 @@ module.exports = {
                 presets: ['react', 'es2015', 'stage-0']
             }
         }, {
-            test: /\.css$/,
-            loader: 'style-loader!css-loader'
+            test: /\.scss$/,
+            loader: 'style-loader!css-loader!sass-loader'
         }, {
             test: /\.(woff2?|ttf|eot|svg)$/,
             loader: 'url'
@@ -49,6 +49,6 @@ module.exports = {
             path.resolve('./static/js/'),
             path.resolve('./static/css/')
         ],
-        extensions: ['', '.js', '.jsx', '.css']
+        extensions: ['', '.js', '.jsx', '.scss']
     }
 };
