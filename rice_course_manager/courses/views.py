@@ -3,7 +3,6 @@ import math
 
 from django.conf import settings
 from django.http import JsonResponse
-from django.shortcuts import render
 
 from django_cas.decorators import login_required
 
@@ -14,18 +13,6 @@ from courses.models import Course
 COURSE_ORDER = {
     'courseID': ('subject', 'course_number', 'section'),
 }
-
-
-@login_required
-def index(request):
-    """ The index page for the 'Courses' tab.
-
-    """
-    context = {
-        'nav_active': 'courses'
-    }
-
-    return render(request, 'courses/index.html', context)
 
 
 @login_required

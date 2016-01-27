@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+
+{% load static %}
+{% load render_bundle from webpack_loader %}
+
+<html>
+    <head>
+        <title>Rice Course Manager</title>
+
+        <link rel="icon" href="{% static 'img/icon.png' %}" type="image/png">
+        <script type="text/javascript">
+        window.HELP_ARTICLES = {{ help_articles | safe }};
+        window.USERNAME = "{{ request.user }}" || null;
+        </script>
+    </head>
+    <body>
+        <div id="app"></div>
+        {% render_bundle 'app' %}
+    </body>
+</html>

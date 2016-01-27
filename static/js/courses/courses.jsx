@@ -1,3 +1,5 @@
+import 'courses.css';
+
 import React from 'react';
 
 import FilterManager from './filter/filterManager';
@@ -11,7 +13,7 @@ const FILTERS = [
     new CourseFilter('crn', 'CRN'),
     new CourseFilter('courseID', 'Course', ['course'], '', callback => {
         ajax({
-            url: '/courses/api/subjects/',
+            url: '/api/courses/subjects/',
             method: 'POST',
             dataType: 'json'
         }).then(callback);

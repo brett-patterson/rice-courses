@@ -9,7 +9,7 @@ export default class UserCourses {
      */
     static get(cb) {
         ajax({
-            url: '/me/api/courses/',
+            url: '/api/me/courses/',
             method: 'POST',
             dataType: 'json'
         }).then(data => {
@@ -29,7 +29,7 @@ export default class UserCourses {
      */
     static add(course, cb) {
         ajax({
-            url: '/me/api/courses/add/',
+            url: '/api/me/courses/add/',
             method: 'POST',
             data: {crn: course.getCRN()},
             dataType: 'json'
@@ -43,7 +43,7 @@ export default class UserCourses {
      */
     static remove(course, cb) {
         ajax({
-            url: '/me/api/courses/remove/',
+            url: '/api/me/courses/remove/',
             method: 'POST',
             data: {crn: course.getCRN()},
             dataType: 'json'

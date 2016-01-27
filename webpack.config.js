@@ -7,14 +7,10 @@ var OUT_DIR = path.resolve('./static/bundles/');
 
 
 module.exports = {
-    context: path.resolve('./static/'),
+    context: path.resolve('./static/js/'),
 
     entry: {
-        courses: './js/courses/index',
-        me: './js/me/index',
-        tutorial: './js/tutorial',
-
-        base: './base'
+        app: './index'
     },
 
     output: {

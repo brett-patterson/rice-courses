@@ -1,8 +1,7 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
-from help import views
+from .views import tutorial
 
-urlpatterns = patterns('',
-    url(r'^$', views.index, name='help'),
-    url(r'^api/tutorial/$', views.tutorial, name='tutorial')
-)
+urlpatterns = [
+    url(r'^tutorial/$', tutorial, name='tutorial')
+]

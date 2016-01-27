@@ -205,6 +205,7 @@ export function wrapComponentClass(klass) {
 
     Constructor.propTypes = klass.propTypes;
     Constructor.defaultProps = klass.defaultProps;
+    Constructor.contextTypes = klass.contextTypes;
 
     return Constructor;
 }

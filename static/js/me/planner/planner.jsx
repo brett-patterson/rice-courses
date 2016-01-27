@@ -1,3 +1,5 @@
+import 'planner.css';
+
 import React, {PropTypes} from 'react';
 
 import Event, {eventOverlap} from './event';
