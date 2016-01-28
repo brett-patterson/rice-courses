@@ -1,9 +1,8 @@
 import json
 
 from adminsortable.admin import SortableAdmin
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.contrib import admin
-from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from nested_inline.admin import NestedStackedInline, NestedModelAdmin
@@ -60,11 +59,7 @@ class TutorialAdmin(NestedModelAdmin):
 
         """
         urls = super(TutorialAdmin, self).get_urls()
-
-        my_urls = patterns(
-            '',
-            url(r'^import/$', self.import_action)
-        )
+        my_urls = [url(r'^import/$', self.import_action)]
 
         return my_urls + urls
 

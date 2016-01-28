@@ -2,8 +2,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 
 from courses.models import Course
-from evaluation import get_course_evaluation, get_instructor_evaluation
-from models import Evaluation
+from .scraper import get_course_evaluation, get_instructor_evaluation
+from .models import Evaluation
 
 
 def evaluation_to_json(evaluation_type, crn):

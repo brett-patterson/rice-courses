@@ -25,8 +25,6 @@ class FloatRangeField(models.CharField):
     """ Implements a float range field.
 
     """
-    __metaclass__ = models.SubfieldBase
-
     def __init__(self, *args, **kwargs):
         """ Initialize the FloatRangeField.
 
@@ -55,6 +53,12 @@ class FloatRangeField(models.CharField):
         name, path, args, kwargs = super(FloatRangeField, self).deconstruct()
         del kwargs['max_length']
         return name, path, args, kwargs
+
+    def from_db_value(self, value, expression, connection, context):
+        """ Create a list of dates from the string in the database.
+
+        """
+        return self.to_python(value)
 
     def to_python(self, value):
         """ Create the approriate from the given value.
@@ -125,8 +129,6 @@ class DateTimeListField(models.CharField):
     """ Implements a Django field used to store a list of datetime objects.
 
     """
-    __metaclass__ = models.SubfieldBase
-
     def __init__(self, objects=[], *args, **kwargs):
         self.objects = objects
         kwargs['max_length'] = 300
@@ -155,7 +157,7 @@ class DateTimeListField(models.CharField):
 
         """
         if (isinstance(value, list) and len(value) > 0 and
-            isinstance(value[0], DateTimeInterval)) or value is None:
+                isinstance(value[0], DateTimeInterval)) or value is None:
             return value
 
         return [DateTimeInterval.from_string(i) for i in json.loads(value)]
