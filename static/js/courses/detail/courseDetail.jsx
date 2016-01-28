@@ -22,11 +22,10 @@ class CourseDetail extends React.Component {
 
         // ajax({
         //     url: '/evaluation/api/course/',
-        //     method: 'POST',
+        //     method: 'GET',
         //     data: {
         //         crn: props.course.getCRN()
-        //     },
-        //     responseType: 'json'
+        //     }
         // }).then(result => {
         //     this.setState({
         //         courseQuestions: result.questions,
@@ -36,11 +35,10 @@ class CourseDetail extends React.Component {
         //
         // ajax({
         //     url: '/evaluation/api/instructor/',
-        //     method: 'POST',
+        //     method: 'GET',
         //     data: {
         //         crn: props.course.getCRN()
-        //     },
-        //     responseType: 'json'
+        //     }
         // }).then(result => {
         //     this.setState({
         //         instructorQuestions: result.questions,

@@ -14,8 +14,7 @@ const FILTERS = [
     new CourseFilter('courseID', 'Course', ['course'], '', callback => {
         ajax({
             url: '/api/courses/subjects/',
-            method: 'POST',
-            dataType: 'json'
+            method: 'GET'
         }).then(callback);
     }),
     new CourseFilter('title', 'Title'),

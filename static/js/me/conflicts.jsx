@@ -68,8 +68,8 @@ ConflictsDialog.defaultProps = {
 
 // jQuery('input:checked', this).each((i, input) => {
 //     ajax({
-//         url: '/me/api/alternate/',
-//         method: 'POST',
+//         url: '/api/me/alternates/',
+//         method: 'GET',
 //         data: {
 //             crn: input.value
 //         },

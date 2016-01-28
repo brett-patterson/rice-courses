@@ -135,6 +135,8 @@ export function getCookie(name) {
  */
 export function ajax(config) {
     const requestConfig = jQuery.extend(config, {
+        dataType: 'json',
+        responseType: 'json',
         headers: {
             'X-CSRFToken': getCookie('csrftoken')
         }

@@ -1,8 +1,8 @@
 from django.conf.urls import url
 
-from evaluation import views
+from .views import CourseEvaluationView, InstructorEvaluationView
 
 urlpatterns = [
-    url(r'^course/$', views.course_evaluation),
-    url(r'^instructor/$', views.instructor_evaluation),
+    url(r'^course/$', CourseEvaluationView.as_view()),
+    url(r'^instructor/$', InstructorEvaluationView.as_view())
 ]

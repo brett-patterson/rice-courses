@@ -102,8 +102,7 @@ export default class Course {
 
         ajax({
             url: '/api/courses/',
-            method: 'POST',
-            dataType: 'json',
+            method: 'GET',
             data
         }).then(result => {
             if (cb) {
@@ -116,8 +115,7 @@ export default class Course {
     getOtherSections(cb) {
         ajax({
             url: '/api/courses/sections/',
-            method: 'POST',
-            dataType: 'json',
+            method: 'GET',
             data: {
                 subject: this.subject,
                 number: this.number

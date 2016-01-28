@@ -26,13 +26,11 @@ export default class Scheduler {
         this.name = name;
 
         ajax({
-            url: '/api/me/scheduler/rename/',
-            method: 'POST',
+            url: `/api/me/schedulers/${this.id}/`,
+            method: 'PUT',
             data: {
-                id: this.id,
                 name: name
-            },
-            dataType: 'json'
+            }
         }).then(cb);
     }
 
@@ -44,14 +42,12 @@ export default class Scheduler {
         this.map[course.getCRN()] = shown;
 
         ajax({
-            url: '/api/me/scheduler/course/',
-            method: 'POST',
+            url: `/api/me/schedulers/${this.id}/course/`,
+            method: 'PUT',
             data: {
-                id: this.id,
                 crn: course.getCRN(),
-                shown: shown
-            },
-            dataType: 'json'
+                shown
+            }
         }).then(cb);
     }
 
@@ -61,13 +57,11 @@ export default class Scheduler {
         }
 
         ajax({
-            url: '/api/me/scheduler/remove-course/',
-            method: 'POST',
+            url: `/api/me/schedulers/${this.id}/course/`,
+            method: 'DELETE',
             data: {
-                id: this.id,
                 crn: course.getCRN()
-            },
-            dataType: 'json'
+            }
         }).then(cb);
     }
 
@@ -79,13 +73,9 @@ export default class Scheduler {
         this.shown = shown;
 
         ajax({
-            url: '/api/me/scheduler/set/',
-            method: 'POST',
-            data: {
-                id: this.id,
-                shown: shown
-            },
-            dataType: 'json'
+            url: `/api/me/schedulers/${this.id}/`,
+            method: 'PUT',
+            data: { shown }
         }).then(cb);
     }
 
@@ -99,10 +89,8 @@ export default class Scheduler {
 
     remove(cb) {
         ajax({
-            url: '/api/me/scheduler/remove/',
-            method: 'POST',
-            data: {id: this.id},
-            dataType: 'json'
+            url: `/api/me/schedulers/${this.id}/`,
+            method: 'DELETE'
         }).then(cb);
     }
 
@@ -112,9 +100,8 @@ export default class Scheduler {
      */
     static fetchAll(cb) {
         ajax({
-            url: '/api/me/scheduler/all/',
-            method: 'POST',
-            dataType: 'json'
+            url: '/api/me/schedulers/',
+            method: 'GET'
         }).then(data => {
             cb(data.map(Scheduler.fromJSON));
         });
@@ -127,10 +114,9 @@ export default class Scheduler {
      */
     static addScheduler(name, cb) {
         ajax({
-            url: '/api/me/scheduler/add/',
+            url: '/api/me/schedulers/',
             method: 'POST',
-            data: {name: name},
-            dataType: 'json'
+            data: { name }
         }).then(data => {
             if (cb)
                 cb(Scheduler.fromJSON(data.scheduler));

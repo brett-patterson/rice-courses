@@ -15,11 +15,8 @@ class ExportDialog extends React.Component {
         };
 
         ajax({
-            url: '/api/me/scheduler/export/',
-            method: 'POST',
-            data: {
-                id: props.scheduler.getID()
-            }
+            url: `/api/me/schedulers/${props.scheduler.getID()}/export/`,
+            method: 'GET'
         }).then(data => {
             this.setState({
                 courses: data.map(Course.fromJSON)

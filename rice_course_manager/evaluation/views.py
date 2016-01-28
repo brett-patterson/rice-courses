@@ -1,7 +1,5 @@
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import JsonResponse
-
 from courses.models import Course
+from rice_courses.views import APIView
 from .scraper import get_course_evaluation, get_instructor_evaluation
 from .models import Evaluation
 
@@ -14,7 +12,7 @@ def evaluation_to_json(evaluation_type, crn):
     -----------
     evaluation_type : str
         The type of the evaluation (either 'c' or 'i').
-
+i
     crn : str
         The CRN of the course to look for.
 
@@ -28,7 +26,7 @@ def evaluation_to_json(evaluation_type, crn):
                                             crn=crn)
         return evaluation.json()
 
-    except ObjectDoesNotExist:
+    except Evaluation.DoesNotExist:
         return {
             'questions': [],
             'comments': []
@@ -49,25 +47,25 @@ def evaluation_to_json(evaluation_type, crn):
         # return evaluation.json()
 
 
-def course_evaluation(request):
-    """ Get the evaluation for a course.
+class CourseEvaluationView(APIView):
+    def get(self, request):
+        """ Get the evaluation for a course.
+        """
+        crn = request.GET.get('crn')
 
-    """
-    crn = request.POST.get('crn')
+        if crn is not None:
+            return self.success(evaluation_to_json('c', crn))
 
-    if crn is not None:
-        return JsonResponse(evaluation_to_json('c', crn))
-
-    return JsonResponse({'error': 'No CRN specified'}, status=400)
+        return self.failure('No CRN specified')
 
 
-def instructor_evaluation(request):
-    """ Get the evaluation for an instructor.
+class InstructorEvaluationView(APIView):
+    def get(self, request):
+        """ Get the evaluation for an instructor.
+        """
+        crn = request.GET.get('crn')
 
-    """
-    crn = request.POST.get('crn')
+        if crn is not None:
+            return self.success(evaluation_to_json('i', crn))
 
-    if crn is not None:
-        return JsonResponse(evaluation_to_json('i', crn))
-
-    return JsonResponse({'error': 'No CRN specified'}, status=400)
+        return self.failure('No CRN specified')

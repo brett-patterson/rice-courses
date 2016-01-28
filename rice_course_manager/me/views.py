@@ -1,269 +1,176 @@
-from django.http import JsonResponse
-from django.shortcuts import render
-
-from django_cas.decorators import login_required
+from django.http import QueryDict
 
 from courses.models import Course
-from models import Scheduler
+from rice_courses.views import APIView
+from .methods import overlap
+from .models import Scheduler
 
 
-@login_required(login_url='/login/')
-def index(request):
-    """ The index page for the 'Me' tab.
+class UserCoursesView(APIView):
+    def get(self, request):
+        """ Get all of the courses selected by the user.
+        """
+        course_list = request.user.userprofile.courses.all()
+        return self.success([c.json() for c in course_list], safe=False)
 
-    """
-    context = {
-        'nav_active': 'me'
-    }
-    return render(request, 'me/index.html', context)
+    def post(self, request):
+        """ Add a course for the user.
+        """
+        crn = request.POST.get('crn')
+
+        if crn is not None:
+            course = Course.objects.get(crn=crn)
+
+            profile = request.user.userprofile
+            profile.courses.add(course)
+
+            for scheduler in Scheduler.objects.filter(user_profile=profile):
+                scheduler.set_shown(course, True)
+
+            return self.success({})
+
+        return self.failure('No CRN specified')
+
+    def delete(self, request):
+        """ Remove a course for the user.
+        """
+        crn = QueryDict(request.body).get('crn')
+
+        if crn is not None:
+            course = Course.objects.get(crn=crn)
+            request.user.userprofile.courses.remove(course)
+
+            return self.success({})
+
+        return self.failure('No CRN specified')
 
 
-@login_required(login_url='/login/')
-def courses(request):
-    """ Get all of the courses selected by the user.
+class AlternateCourseView(APIView):
+    def get(self, request):
+        """ Suggest alternate sections for a given course.
+        """
+        crn = request.GET.get('crn')
 
-    """
-    course_list = request.user.userprofile.courses.all()
-    return JsonResponse([c.json() for c in course_list], safe=False)
+        if crn is not None:
+            course = Course.objects.get(crn=crn)
+
+            alternates = Course.objects.filter(
+                subject=course.subject, course_number=course.course_number
+            )
+            alternates = alternates.exclude(section=course.section)
+
+            scheduler = Scheduler.objects.get(shown=True)
+            user_courses = [Course.objects.get(crn=c.crn)
+                            for c in request.user.userprofile.courses.all()
+                            if c.crn != crn and scheduler.show_map()[c.crn]]
+
+            result = []
+            for alternate in alternates:
+                ok = True
+
+                for user_course in user_courses:
+                    if overlap(alternate, user_course):
+                        ok = False
+                        break
+
+                if ok:
+                    result.append(alternate.json())
+
+            return self.success({
+                'course': course.json(),
+                'alternates': result
+            })
+
+        return self.failure('No CRN specified')
 
 
-@login_required(login_url='/login/')
-def add_course(request):
-    """ Select a course for the user.
-
-    """
-    crn = request.POST.get('crn')
-
-    if crn is not None:
-        course = Course.objects.get(crn=crn)
-
+class SchedulerCollectionView(APIView):
+    def get(self, request):
+        """ Get all the schedulers for the user.
+        """
         profile = request.user.userprofile
-        profile.courses.add(course)
+        schedulers = [s.json()
+                      for s in Scheduler.objects.filter(user_profile=profile)]
 
-        for scheduler in Scheduler.objects.filter(user_profile=profile):
-            scheduler.set_shown(course, True)
+        return self.success(schedulers, safe=False)
 
-        return JsonResponse({})
+    def post(self, request):
+        """ Add a scheduler for the user.
+        """
+        name = request.POST.get('name')
 
-    return JsonResponse({'error': 'No CRN specified'}, status=400)
+        if name is not None:
+            scheduler = request.user.userprofile.create_scheduler(name)
+            return self.success({'scheduler': scheduler.json()})
 
-
-@login_required(login_url='/login/')
-def remove_course(request):
-    """ Deselect a course for the user.
-
-    """
-    crn = request.POST.get('crn')
-
-    if crn is not None:
-        course = Course.objects.get(crn=crn)
-        request.user.userprofile.courses.remove(course)
-
-        return JsonResponse({})
-
-    return JsonResponse({'error': 'No CRN specified'}, status=400)
+        return self.failure('No name specified')
 
 
-def overlap(course_one, course_two):
-    """ Check whether course one overlaps with course two.
+class SchedulerView(APIView):
+    def delete(self, request, scheduler_id):
+        """ Remove a scheduler for the user.
+        """
+        Scheduler.objects.get(id=scheduler_id).delete()
+        return self.success({})
 
-    Parameters:
-    -----------
-    course_one : Course
-        The first course.
+    def put(self, request, scheduler_id):
+        """ Rename a scheduler or set it shown or hidden.
+        """
+        PUT = QueryDict(request.body)
+        name = PUT.get('name')
+        shown = PUT.get('shown')
 
-    course_two : Course
-        The second course.
+        scheduler = Scheduler.objects.get(id=scheduler_id)
 
-    Returns:
-    --------
-    A boolean representing whether the two courses overlap in time.
+        if name is not None:
+            scheduler.name = name
 
-    """
-    for interval_one in course_one.meetings:
-        for interval_two in course_two.meetings:
-            if (interval_two.start < interval_one.start < interval_two.end or
-                    interval_two.start < interval_one.end < interval_two.end or
-                    interval_one.start == interval_two.start or
-                    interval_one.start == interval_two.end or
-                    interval_one.end == interval_two.start):
-                return True
+        if shown is not None:
+            scheduler.shown = shown == 'true'
 
-    return False
+        scheduler.save()
+        return self.success({})
 
 
-@login_required(login_url='/login/')
-def suggest_alternate(request):
-    """ Suggest alternate sections for a given course.
+class SchedulerCourseView(APIView):
+    def put(self, request, scheduler_id):
+        """ Set a course to be shown or hidden.
+        """
+        PUT = QueryDict(request.body)
+        crn = PUT.get('crn')
+        shown = PUT.get('shown')
 
-    """
-    crn = request.POST.get('crn')
+        if crn is None:
+            return self.failure('No CRN specified')
 
-    if crn is not None:
-        course = Course.objects.get(crn=crn)
+        if shown is None:
+            return self.failure('No shown flag specified')
 
-        alternates = Course.objects.filter(subject=course.subject,
-                                           course_number=course.course_number)
-        alternates = alternates.exclude(section=course.section)
+        scheduler = Scheduler.objects.get(id=scheduler_id)
+        scheduler.set_shown(Course.objects.get(crn=crn), shown == 'true')
+        return self.success({})
 
-        scheduler = Scheduler.objects.get(shown=True)
-        user_courses = [Course.objects.get(crn=c.crn)
-                        for c in request.user.userprofile.courses.all()
-                        if c.crn != crn and scheduler.show_map()[c.crn]]
+    def delete(self, request, scheduler_id):
+        """ Remove a course from a scheduler's show map.
+        """
+        crn = QueryDict(request.body).get('crn')
 
-        result = []
-        for alternate in alternates:
-            ok = True
+        if crn is None:
+            return self.failure('No CRN specified')
 
-            for user_course in user_courses:
-                if overlap(alternate, user_course):
-                    ok = False
-                    break
-
-            if ok:
-                result.append(alternate.json())
-
-        return JsonResponse({'course': course.json(), 'alternates': result})
-
-    return JsonResponse({'error': 'No CRN specified'}, status=400)
+        scheduler = Scheduler.objects.get(id=scheduler_id)
+        scheduler.remove_course(Course.objects.get(crn=crn))
+        return self.success({})
 
 
-@login_required(login_url='/login/')
-def schedulers(request):
-    """ Get all the schedulers for the user.
-
-    """
-    profile = request.user.userprofile
-    schedulers = [s.json()
-                  for s in Scheduler.objects.filter(user_profile=profile)]
-
-    return JsonResponse(schedulers, safe=False)
-
-
-@login_required(login_url='/login/')
-def export_scheduler(request):
-    """ Export a scheduler's CRNs for all shown courses.
-
-    """
-    s_id = request.POST.get('id')
-
-    if s_id is not None:
-        scheduler = Scheduler.objects.get(pk=s_id)
+class SchedulerExportView(APIView):
+    def get(self, request, scheduler_id):
+        """ Export a scheduler's CRNs for all shown courses.
+        """
+        scheduler = Scheduler.objects.get(id=scheduler_id)
         show_map = scheduler.show_map()
         courses = [course.json() for course in
                    request.user.userprofile.courses.all()
                    if show_map[course.crn]]
 
-        return JsonResponse(courses, safe=False)
-
-    return JsonResponse({'error': 'No CRN specified'}, status=400)
-
-
-@login_required(login_url='/login/')
-def add_scheduler(request):
-    """ Add a scheduler for the user.
-
-    """
-    name = request.POST.get('name')
-
-    if name is not None:
-        scheduler = request.user.userprofile.create_scheduler(name)
-        return JsonResponse({'scheduler': scheduler.json()})
-
-    return JsonResponse({'error': 'No name specified'}, status=400)
-
-
-@login_required(login_url='/login/')
-def remove_scheduler(request):
-    """ Remove a scheduler for the user.
-
-    """
-    s_id = request.POST.get('id')
-
-    if s_id is not None:
-        Scheduler.objects.get(pk=s_id).delete()
-        return JsonResponse({})
-
-    return JsonResponse({'error': 'No ID specified'}, status=400)
-
-
-@login_required(login_url='/login/')
-def set_course_shown(request):
-    """ Set a course to be shown or hidden.
-
-    """
-    s_id = request.POST.get('id')
-    crn = request.POST.get('crn')
-    shown = request.POST.get('shown')
-
-    if s_id is None:
-        return JsonResponse({'error': 'No ID specified'}, status=400)
-
-    if crn is None:
-        return JsonResponse({'error': 'No CRN specified'}, status=400)
-
-    if shown is None:
-        return JsonResponse({'error': 'No shown flag specified'}, status=400)
-
-    scheduler = Scheduler.objects.get(pk=s_id)
-    scheduler.set_shown(Course.objects.get(crn=crn), shown == 'true')
-    return JsonResponse({})
-
-
-@login_required(login_url='/login/')
-def remove_scheduler_course(request):
-    """ Remove a course from a scheduler's show map.
-
-    """
-    s_id = request.POST.get('id')
-    crn = request.POST.get('crn')
-
-    if s_id is None:
-        return JsonResponse({'error': 'No ID specified'}, status=400)
-
-    if crn is None:
-        return JsonResponse({'error': 'No CRN specified'}, status=400)
-
-    scheduler = Scheduler.objects.get(pk=s_id)
-    scheduler.remove_course(Course.objects.get(crn=crn))
-    return JsonResponse({})
-
-
-@login_required(login_url='/login/')
-def set_scheduler_shown(request):
-    """ Set a scheduler to be shown or hidden
-
-    """
-    s_id = request.POST.get('id')
-    shown = request.POST.get('shown')
-
-    if s_id is None:
-        return JsonResponse({'error': 'No ID specified'}, status=400)
-
-    if shown is None:
-        return JsonResponse({'error': 'No shown flag specified'}, status=400)
-
-    scheduler = Scheduler.objects.get(pk=s_id)
-    scheduler.shown = shown == 'true'
-    scheduler.save()
-    return JsonResponse({})
-
-
-@login_required(login_url='/login/')
-def rename_scheduler(request):
-    """ Rename a scheduler.
-
-    """
-    s_id = request.POST.get('id')
-    name = request.POST.get('name')
-
-    if s_id is None:
-        return JsonResponse({'error': 'No ID specified'}, status=400)
-
-    if name is None:
-        return JsonResponse({'error': 'No name specified'}, status=400)
-
-    scheduler = Scheduler.objects.get(pk=s_id)
-    scheduler.name = name
-    scheduler.save()
-    return JsonResponse({})
+        return self.success(courses, safe=False)

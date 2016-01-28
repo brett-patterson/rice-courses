@@ -1,9 +1,9 @@
 from django.conf.urls import url
 
-from courses import views
+from .views import CoursesView, SectionsView, SubjectsView
 
 urlpatterns = [
-    url(r'^$', views.courses),
-    url(r'^sections/$', views.get_sections),
-    url(r'^subjects/$', views.get_subjects),
+    url(r'^$', CoursesView.as_view()),
+    url(r'^sections/$', SectionsView.as_view()),
+    url(r'^subjects/$', SubjectsView.as_view()),
 ]

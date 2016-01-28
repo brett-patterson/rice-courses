@@ -2,12 +2,10 @@ import json
 import math
 
 from django.conf import settings
-from django.http import JsonResponse
 
-from django_cas.decorators import login_required
-
-from courses.filters import filter_courses
-from courses.models import Course
+from rice_courses.views import APIView
+from .filters import filter_courses
+from .models import Course
 
 
 COURSE_ORDER = {
@@ -15,77 +13,69 @@ COURSE_ORDER = {
 }
 
 
-@login_required
-def courses(request):
-    """ Returns a list of all courses as JSON objects.
+class CoursesView(APIView):
+    def get(self, request):
+        """ Returns a list of all courses as JSON objects.
+        """
+        filtersJson = request.GET.get('filters')
+        page = request.GET.get('page')
+        order = request.GET.get('order')
 
-    """
-    filtersJson = request.POST.get('filters')
-    page = request.POST.get('page')
-    order = request.POST.get('order')
+        if filtersJson is None:
+            filters = []
+        else:
+            try:
+                filters = json.loads(filtersJson)
+            except ValueError:
+                return self.failure('Improperly formatted filters')
 
-    if filtersJson is None:
-        filters = []
-    else:
-        try:
-            filters = json.loads(filtersJson)
-        except ValueError:
-            return JsonResponse({'error': 'Improperly formatted filters'},
-                                status=400)
+        if order is None:
+            order = 'courseID'
 
-    if page is None:
-        return JsonResponse([c.json() for c in Course.objects.all()],
-                            status=400)
+        if order.startswith('-'):
+            order_params = COURSE_ORDER.get(order[1:], (order[1:],))
+            all_courses = Course.objects.order_by(*order_params).reverse()
+        else:
+            order_params = COURSE_ORDER.get(order, (order,))
+            all_courses = Course.objects.order_by(*order_params)
 
-    if order is None:
-        order = 'courseID'
+        filtered_courses = filter_courses(all_courses, filters)
 
-    if order.startswith('-'):
-        order_params = COURSE_ORDER.get(order[1:], (order[1:],))
-        all_courses = Course.objects.order_by(*order_params).reverse()
-    else:
-        order_params = COURSE_ORDER.get(order, (order,))
-        all_courses = Course.objects.order_by(*order_params)
+        l = settings.COURSE_PAGE_LENGTH
 
-    filtered_courses = filter_courses(all_courses, filters)
+        if page is not None:
+            page = int(page)
+            filtered_courses = filtered_courses[l * page:l * (page + 1)]
 
-    pages = int(math.ceil(filtered_courses.count() /
-                          float(settings.COURSE_PAGE_LENGTH)))
+        pages = int(math.ceil(filtered_courses.count() / float(l)))
 
-    page = int(page)
-    start = settings.COURSE_PAGE_LENGTH * page
-    end = settings.COURSE_PAGE_LENGTH * (page + 1)
-
-    return JsonResponse({
-        'courses': [c.json() for c in filtered_courses[start:end]],
-        'pages': pages
-    }, safe=False)
+        return self.success({
+            'courses': [c.json() for c in filtered_courses],
+            'pages': pages
+        }, safe=False)
 
 
-@login_required
-def get_sections(request):
-    """ Get all sections of a course.
+class SectionsView(APIView):
+    def get(self, request):
+        """ Get all sections of a course.
+        """
+        subj = request.GET.get('subject')
+        num = request.GET.get('number')
 
-    """
-    subj = request.POST.get('subject')
-    num = request.POST.get('number')
+        if subj is None:
+            return self.failure('No subject specified')
 
-    if subj is None:
-        return JsonResponse({'error': 'No subject specified'}, status=400)
+        if num is None:
+            return self.failure('No course number specified')
 
-    if num is None:
-        return JsonResponse({'error': 'No course number specified'},
-                            status=400)
-
-    filtered = Course.objects.filter(subject=subj, course_number=num)
-    return JsonResponse([c.json() for c in filtered], safe=False)
+        filtered = Course.objects.filter(subject=subj, course_number=num)
+        return self.success([c.json() for c in filtered], safe=False)
 
 
-@login_required
-def get_subjects(request):
-    """ Get all unique course subjects.
-
-    """
-    subjects = sorted(map(lambda x: x['subject'],
-                          Course.objects.values('subject').distinct()))
-    return JsonResponse(subjects, safe=False)
+class SubjectsView(APIView):
+    def get(self, request):
+        """ Get all unique course subjects.
+        """
+        subjects = sorted(map(lambda x: x['subject'],
+                              Course.objects.values('subject').distinct()))
+        return self.success(subjects, safe=False)

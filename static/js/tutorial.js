@@ -6,12 +6,11 @@ import {ajax} from './util';
 
 jQuery(() => {
     ajax({
-        url: window.TUTORIAL_URL,
-        method: 'POST',
+        url: '/api/help/tutorial/',
+        method: 'GET',
         data: {
             tutorial: location.pathname
-        },
-        dataType: 'json'
+        }
     }).then(data => {
         if (!data.error) {
             var tutorial = new Tutorialize(data.tutorial, data);

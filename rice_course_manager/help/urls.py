@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
-from .views import tutorial
+from .views import TutorialView
 
 urlpatterns = [
-    url(r'^tutorial/$', tutorial, name='tutorial')
+    url(r'^tutorial/$', TutorialView.as_view())
 ]
