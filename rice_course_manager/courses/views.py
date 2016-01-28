@@ -42,12 +42,11 @@ class CoursesView(APIView):
         filtered_courses = filter_courses(all_courses, filters)
 
         l = settings.COURSE_PAGE_LENGTH
+        pages = int(math.ceil(filtered_courses.count() / float(l)))
 
         if page is not None:
             page = int(page)
             filtered_courses = filtered_courses[l * page:l * (page + 1)]
-
-        pages = int(math.ceil(filtered_courses.count() / float(l)))
 
         return self.success({
             'courses': [c.json() for c in filtered_courses],
