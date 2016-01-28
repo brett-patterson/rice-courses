@@ -5,7 +5,7 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from nested_inline.admin import NestedStackedInline, NestedModelAdmin
+from nested_admin import NestedStackedInline, NestedAdmin
 
 from forms import ImportForm
 from models import HelpArticle, Tutorial, Panel, Annotation
@@ -28,7 +28,7 @@ class PanelInline(NestedStackedInline):
     extra = 0
 
 
-class TutorialAdmin(NestedModelAdmin):
+class TutorialAdmin(NestedAdmin):
     """ A custom admin object to support the editing, export, and import
     of tutorials.
 

@@ -15,5 +15,6 @@ urlpatterns = [
     url(r'^api/me/', include('me.urls')),
     url(r'^api/help/', include('help.urls')),
 
+    url(r'^nested_admin/', include('nested_admin.urls')),
     url(r'^admin/', include(admin.site.urls)),
 ]
