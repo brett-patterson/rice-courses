@@ -3,15 +3,18 @@ import 'main.scss';
 
 import React from 'react';
 import {render} from 'react-dom';
-import {Router, Route, Redirect, browserHistory} from 'react-router';
+import {Router, Route, Redirect} from 'react-router';
+import createBrowserHistory from 'history/lib/createBrowserHistory';
 
 import App from './app';
 import Courses from './courses/courses';
 import Me from './me/me';
 import Help from './help/help';
 
+const history = createBrowserHistory();
+
 render(
-    <Router history={browserHistory}>
+    <Router history={history}>
         <Redirect from='/' to='/courses/' />
         <Route path='/' component={App}>
             <Route path='courses/' component={Courses} />
