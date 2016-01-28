@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'cas',
     'adminsortable',
     'nested_admin',
     'webpack_loader',
@@ -78,11 +79,11 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_cas.middleware.CASMiddleware',
+    'cas.middleware.CASMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (
-    'django_cas.backends.CASBackend',
+    'cas.backends.CASBackend',
 )
 
 LOGIN_URL = '/login/'
