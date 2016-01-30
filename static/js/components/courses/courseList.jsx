@@ -4,41 +4,37 @@ import update from 'react-addons-update';
 import {Pagination} from 'react-bootstrap';
 import classNames from 'classnames';
 
-import Course from './course';
 import CourseDetailMixin from './detail/courseDetail';
-import UserCourses from './userCourses';
+import UserCourses from 'models/userCourses';
 import FilterManager from './filter/filterManager';
 import {wrapComponentClass} from 'util';
 
 class CourseList extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
-            courses: undefined,
             courseShown: null,
             userCourses: [],
             page: 0,
-            totalPages: 0,
             order: 'courseID'
         };
     }
 
     componentWillMount() {
-        this.fetchCourses();
         this.fetchUserCourses();
     }
 
-    fetchCourses() {
-        Course.get(
-            this.props.filterManager.getFiltersForServer(), this.state.page,
-            this.state.order
-        ).then(data => {
-            this.setState({
-                courses: data.courses,
-                totalPages: data.pages
-            });
-        });
-    }
+    // fetchCourses() {
+    //     Course.get(
+    //         this.props.filterManager.getFiltersForServer(), this.state.page,
+    //         this.state.order
+    //     ).then(data => {
+    //         this.setState({
+    //             courses: data.courses,
+    //             totalPages: data.pages
+    //         });
+    //     });
+    // }
 
     fetchUserCourses(callback) {
         UserCourses.get().then(courses => {
@@ -140,12 +136,12 @@ class CourseList extends React.Component {
     }
 
     renderCourseRows() {
-        if (this.state.courses === undefined)
+        if (this.props.courses === undefined)
             return <tr><td>Loading courses...</td></tr>;
-        else if (this.state.courses.length === 0)
+        else if (this.props.courses.length === 0)
             return <tr><td>No courses found</td></tr>;
 
-        return this.state.courses.map(course => {
+        return this.props.courses.map(course => {
             const isUserCourse = this.isUserCourse(course);
 
             const userClasses = classNames({
@@ -216,20 +212,21 @@ class CourseList extends React.Component {
                 </table>
 
                 <div className='text-center'>
-                    <Pagination items={this.state.totalPages}
+                    <Pagination items={this.props.totalPages}
                                 activePage={this.state.page + 1}
                                 onSelect={this.onPageClick}
                                 maxButtons={30} first={true} last={true}
                                 next={true} prev={true} />
                 </div>
 
-                {this.renderCourseDetails(this.state.courses)}
+                {this.renderCourseDetails(this.props.courses)}
             </div>
         );
     }
 }
 
 CourseList.propTypes = {
+    courses: PropTypes.array,
     filterManager: PropTypes.instanceOf(FilterManager).isRequired
 };
 

@@ -1,7 +1,9 @@
 import 'courses.scss';
 
 import React from 'react';
+import {connect} from 'react-redux';
 
+import {fetchCourses} from 'actions/courses';
 import FilterManager from './filter/filterManager';
 import FilterWidget from './filter/filterWidget';
 import CourseFilter from './filter/courseFilter';
@@ -32,6 +34,10 @@ class Courses extends React.Component {
         };
     }
 
+    componentDidMount() {
+        this.props.dispatch(fetchCourses([], 0));
+    }
+
     onFiltersChanged() {
         if (this.refs && this.refs.courseList) {
             this.refs.courseList.fetchCourses();
@@ -42,10 +48,19 @@ class Courses extends React.Component {
         return (
             <div>
                 <FilterWidget manager={this.state.manager} filters={FILTERS} />
-                <CourseList ref='courseList' filterManager={this.state.manager} />
+                <CourseList ref='courseList' courses={this.props.courses}
+                            filterManager={this.state.manager}
+                            totalPages={this.props.totalPages} />
             </div>
         );
     }
 }
 
-export default wrapComponentClass(Courses);
+function mapStateToProps(state) {
+    return {
+        courses: state.courses.all,
+        totalPages: state.courses.pages
+    };
+}
+
+export default connect(mapStateToProps)(wrapComponentClass(Courses));

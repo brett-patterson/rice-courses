@@ -9,7 +9,7 @@ import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
 import Scheduler from './scheduler';
-import UserCourses from 'components/courses/userCourses';
+import UserCourses from 'models/userCourses';
 import UserCourseList from './userCourseList';
 import SchedulerView from './schedulerView';
 import ExportDialog from './export';

@@ -4,7 +4,7 @@ import {Badge} from 'react-bootstrap';
 import classNames from 'classnames';
 
 import Scheduler from './scheduler';
-import Course from 'components/courses/course';
+import Course from 'models/course';
 import CourseDetailMixin from 'components/courses/detail/courseDetail';
 import ClipboardTrigger from 'components/clipboardTrigger';
 import {propTypeHas, wrapComponentClass} from 'util';
