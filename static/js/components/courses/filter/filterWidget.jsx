@@ -5,34 +5,25 @@ import ReactDOM from 'react-dom';
 
 import FilterButton from './filterButton';
 import FilterInput from './filterInput';
-import FilterManager from './filterManager';
 import {getHueByIndex, wrapComponentClass} from 'util';
+
+let timerId = null;
 
 class FilterWidget extends React.Component {
     constructor(props) {
         super(props);
+        let keywords = {};
+        for (let filter of props.filters) {
+            for (let kw of filter.getKeywords())
+                keywords[kw.toLowerCase()] = filter;
+        }
+
         this.state = {
             outline: 'none',
             placeholder: 'Add Filters...',
-            keywords: {},
-            text: '',
-            currentFilters: props.manager.getFilters()
+            keywords,
+            text: ''
         };
-    }
-
-    componentWillMount() {
-        let keywords = {};
-        for (let i = 0; i < this.props.filters.length; i++) {
-            const filter = this.props.filters[i];
-            const filterKeywords = filter.getKeywords();
-
-            for (let j = 0; j < filterKeywords.length; j++)
-                keywords[filterKeywords[j].toLowerCase()] = filter;
-        }
-
-        this.setState({
-            keywords
-        });
     }
 
     onFocus() {
@@ -69,11 +60,11 @@ class FilterWidget extends React.Component {
     }
 
     onKeyDown(event) {
-        const filters = this.props.manager.getFilters();
+        const filters = this.props.filters;
 
         if (event.keyCode === 8 && filters.length > 0 &&
             this.state.text.length === 0) {
-            this.removeFilter(this.state.currentFilters[filters.length - 1]);
+            this.removeFilter(filters[filters.length - 1]);
         }
     }
 
@@ -81,45 +72,49 @@ class FilterWidget extends React.Component {
         ReactDOM.findDOMNode(this.refs.input).focus();
     }
 
+    filtersChanged() {
+        if (timerId !== null) {
+            clearTimeout(timerId);
+        }
+
+        timerId = setTimeout(() => {
+            this.props.filtersChanged(this.props.filters);
+        }, 500);
+    }
+
     addFilter(filter, value) {
         filter.setValue(value);
-        this.props.manager.addFilter(filter);
-
-        this.setState({
-            currentFilters: this.props.manager.getFilters()
-        }, () => {
-            const index = this.props.manager.getFilters().length - 1;
-            const id = `filter-${index+1}-${index}`;
-            ReactDOM.findDOMNode(this.refs[id].refs.input).focus();
-        });
+        this.props.filters.push(filter);
+        this.filtersChanged();
     }
 
     removeFilter(filter) {
-        this.props.manager.removeFilter(filter);
+        const index = this.props.filters.indexOf(filter);
 
-        this.setState({
-            currentFilters: this.props.manager.getFilters()
-        });
+        if (index > -1) {
+            this.props.filters.splice(index, 1);
+            this.filtersChanged();
+        }
     }
 
     updateFilter(filter, value) {
-        this.props.manager.updateFilter(filter, value);
+        filter.setValue(value);
+        this.filtersChanged();
     }
 
     renderFilterButtons() {
-        return this.props.filters.map((filter, index) => {
+        return this.props.allFilters.map((filter, index) => {
             return <FilterButton filter={filter}
-                         hue={getHueByIndex(index, this.props.filters.length)}
+                         hue={getHueByIndex(index, this.props.allFilters.length)}
                          key={`filterBtn${index}`}
                          delegate={this} />;
         });
     }
 
     renderFilterInputs() {
-        return this.state.currentFilters.map((filter, index) => {
-            const id = `filter-${this.state.currentFilters.length}-${index}`;
-            return <FilterInput filter={filter} key={id} ref={id}
-                                delegate={this} />;
+        return this.props.filters.map((filter, index) => {
+            const id = `filter-${this.props.filters.length}-${index}`;
+            return <FilterInput filter={filter} key={id} delegate={this} />;
         });
     }
 
@@ -149,8 +144,9 @@ class FilterWidget extends React.Component {
 
 FilterWidget.propTypes = {
     key: PropTypes.string,
+    allFilters: PropTypes.array,
     filters: PropTypes.array,
-    manager: PropTypes.instanceOf(FilterManager).isRequired
+    filtersChanged: PropTypes.func
 };
 
 FilterWidget.defaultProps = {

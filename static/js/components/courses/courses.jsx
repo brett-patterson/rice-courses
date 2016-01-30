@@ -4,7 +4,6 @@ import React from 'react';
 import {connect} from 'react-redux';
 
 import {fetchCourses} from 'actions/courses';
-import FilterManager from './filter/filterManager';
 import FilterWidget from './filter/filterWidget';
 import CourseFilter from './filter/courseFilter';
 import CourseList from './courseList';
@@ -27,30 +26,31 @@ const FILTERS = [
 ];
 
 class Courses extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            manager: new FilterManager(() => this.onFiltersChanged())
-        };
+    fetchCoursesByPage(page) {
+        let {filters, order} = this.props;
+        this.props.dispatch(fetchCourses(page, filters, order));
     }
 
-    componentDidMount() {
-        this.props.dispatch(fetchCourses([], 0));
+    fetchCoursesByOrder(order) {
+        let {page, filters} = this.props;
+        this.props.dispatch(fetchCourses(page, filters, order));
     }
 
-    onFiltersChanged() {
-        if (this.refs && this.refs.courseList) {
-            this.refs.courseList.fetchCourses();
-        }
+    fetchCoursesByFilters(filters) {
+        let {page, order} = this.props;
+        this.props.dispatch(fetchCourses(page, filters, order));
     }
 
     render() {
         return (
             <div>
-                <FilterWidget manager={this.state.manager} filters={FILTERS} />
-                <CourseList ref='courseList' courses={this.props.courses}
-                            filterManager={this.state.manager}
-                            totalPages={this.props.totalPages} />
+                <FilterWidget allFilters={FILTERS} filters={this.props.filters}
+                              filtersChanged={this.fetchCoursesByFilters} />
+                <CourseList courses={this.props.courses}
+                            page={this.props.page} order={this.props.order}
+                            totalPages={this.props.totalPages}
+                            pageChanged={this.fetchCoursesByPage}
+                            orderChanged={this.fetchCoursesByOrder} />
             </div>
         );
     }
@@ -59,7 +59,10 @@ class Courses extends React.Component {
 function mapStateToProps(state) {
     return {
         courses: state.courses.all,
-        totalPages: state.courses.pages
+        totalPages: state.courses.pages,
+        page: state.courses.page,
+        order: state.courses.order,
+        filters: state.courses.filters
     };
 }
 

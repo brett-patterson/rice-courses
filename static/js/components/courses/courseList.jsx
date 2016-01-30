@@ -4,37 +4,23 @@ import update from 'react-addons-update';
 import {Pagination} from 'react-bootstrap';
 import classNames from 'classnames';
 
-import CourseDetailMixin from './detail/courseDetail';
 import UserCourses from 'models/userCourses';
-import FilterManager from './filter/filterManager';
+import CourseDetailMixin from './detail/courseDetail';
 import {wrapComponentClass} from 'util';
+
 
 class CourseList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             courseShown: null,
-            userCourses: [],
-            page: 0,
-            order: 'courseID'
+            userCourses: []
         };
     }
 
     componentWillMount() {
         this.fetchUserCourses();
     }
-
-    // fetchCourses() {
-    //     Course.get(
-    //         this.props.filterManager.getFiltersForServer(), this.state.page,
-    //         this.state.order
-    //     ).then(data => {
-    //         this.setState({
-    //             courses: data.courses,
-    //             totalPages: data.pages
-    //         });
-    //     });
-    // }
 
     fetchUserCourses(callback) {
         UserCourses.get().then(courses => {
@@ -80,22 +66,18 @@ class CourseList extends React.Component {
     }
 
     onPageClick(event, selectedEvent) {
-        this.setState({
-            page: selectedEvent.eventKey - 1
-        }, this.fetchCourses);
+        this.props.pageChanged(selectedEvent.eventKey - 1);
     }
 
     onHeaderClickHandler(order) {
         return () => {
-            if (this.state.order == order && order.startsWith('-')) {
+            if (this.props.order == order && order.startsWith('-')) {
                 order = order.substring(1);
-            } else if (this.state.order == order) {
+            } else if (this.props.order == order) {
                 order = `-${order}`;
             }
 
-            this.setState({
-                order
-            }, this.fetchCourses);
+            this.props.orderChanged(order);
         };
     }
 
@@ -114,8 +96,8 @@ class CourseList extends React.Component {
         const headers = columns.map(column => {
             const [key, name, center] = column;
             const classes = classNames({
-                'sort-asc': this.state.order.substring(1) === key,
-                'sort-desc': this.state.order === key,
+                'sort-asc': this.props.order.substring(1) === key,
+                'sort-desc': this.props.order === key,
                 'text-center': center
             });
 
@@ -213,7 +195,7 @@ class CourseList extends React.Component {
 
                 <div className='text-center'>
                     <Pagination items={this.props.totalPages}
-                                activePage={this.state.page + 1}
+                                activePage={this.props.page + 1}
                                 onSelect={this.onPageClick}
                                 maxButtons={30} first={true} last={true}
                                 next={true} prev={true} />
@@ -227,7 +209,10 @@ class CourseList extends React.Component {
 
 CourseList.propTypes = {
     courses: PropTypes.array,
-    filterManager: PropTypes.instanceOf(FilterManager).isRequired
+    page: PropTypes.number,
+    order: PropTypes.string,
+    pageChanged: PropTypes.func,
+    orderChanged: PropTypes.func
 };
 
 reactMixin.onClass(CourseList, CourseDetailMixin);
