@@ -22,61 +22,59 @@ export default class Scheduler {
         return this.name;
     }
 
-    setName(name, cb) {
+    setName(name) {
         this.name = name;
 
-        ajax({
+        return ajax({
             url: `/api/me/schedulers/${this.id}/`,
             method: 'PUT',
-            data: {
-                name: name
-            }
-        }).then(cb);
+            data: { name }
+        });
     }
 
     getMap() {
         return this.map;
     }
 
-    setCourseShown(course, shown, cb) {
+    setCourseShown(course, shown) {
         this.map[course.getCRN()] = shown;
 
-        ajax({
+        return ajax({
             url: `/api/me/schedulers/${this.id}/course/`,
             method: 'PUT',
             data: {
                 crn: course.getCRN(),
                 shown
             }
-        }).then(cb);
+        });
     }
 
-    removeCourse(course, cb) {
+    removeCourse(course) {
         if (this.map[course] !== undefined) {
             delete this.map[course];
         }
 
-        ajax({
+        return ajax({
             url: `/api/me/schedulers/${this.id}/course/`,
             method: 'DELETE',
             data: {
                 crn: course.getCRN()
             }
-        }).then(cb);
+        });
     }
 
     getShown() {
         return this.shown;
     }
 
-    setShown(shown, cb) {
+    setShown(shown) {
         this.shown = shown;
 
-        ajax({
+        return ajax({
             url: `/api/me/schedulers/${this.id}/`,
             method: 'PUT',
             data: { shown }
-        }).then(cb);
+        });
     }
 
     getEditing() {
@@ -87,24 +85,22 @@ export default class Scheduler {
         this.editing = editing;
     }
 
-    remove(cb) {
-        ajax({
+    remove() {
+        return ajax({
             url: `/api/me/schedulers/${this.id}/`,
             method: 'DELETE'
-        }).then(cb);
+        });
     }
 
     /**
      * Get all schedulers for the user.
      * @param {function} cb - A callback invoked with the results of the request
      */
-    static fetchAll(cb) {
-        ajax({
+    static fetchAll() {
+        return ajax({
             url: '/api/me/schedulers/',
             method: 'GET'
-        }).then(data => {
-            cb(data.map(Scheduler.fromJSON));
-        });
+        }).then(data => data.map(Scheduler.fromJSON));
     }
 
     /**
@@ -112,14 +108,11 @@ export default class Scheduler {
      * @param {string} name - The name for the new scheduler.
      * @param {function} cb - A callback invoked with the results of the request
      */
-    static addScheduler(name, cb) {
-        ajax({
+    static addScheduler(name) {
+        return ajax({
             url: '/api/me/schedulers/',
             method: 'POST',
             data: { name }
-        }).then(data => {
-            if (cb)
-                cb(Scheduler.fromJSON(data.scheduler));
-        });
+        }).then(data => Scheduler.fromJSON(data.scheduler));
     }
 }

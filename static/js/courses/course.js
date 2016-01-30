@@ -87,7 +87,7 @@ export default class Course {
                           j.restrictions, crossListed);
     }
 
-    static get(cb, filters=[], page=-1, order=null) {
+    static get(filters=[], page=-1, order=null) {
         let data = {
             filters: JSON.stringify(filters)
         };
@@ -100,20 +100,18 @@ export default class Course {
             data.order = order;
         }
 
-        ajax({
+        return ajax({
             url: '/api/courses/',
             method: 'GET',
             data
         }).then(result => {
-            if (cb) {
-                result.courses = result.courses.map(Course.fromJSON);
-                cb(result);
-            }
+            result.courses = result.courses.map(Course.fromJSON);
+            return result;
         });
     }
 
-    getOtherSections(cb) {
-        ajax({
+    getOtherSections() {
+        return ajax({
             url: '/api/courses/sections/',
             method: 'GET',
             data: {
@@ -121,10 +119,8 @@ export default class Course {
                 number: this.number
             }
         }).then(result => {
-            if (cb)
-                cb(result.filter(data => {
-                    return data.section !== this.section;
-                }).map(Course.fromJSON));
+            return result.filter(data => data.section !== this.section)
+                .map(Course.fromJSON);
         });
     }
 

@@ -16,9 +16,10 @@ class UserCourseList extends React.Component {
             const scheduler = this.props.scheduler;
             if (scheduler) {
                 const shown = scheduler.getMap()[course.getCRN()];
-                scheduler.setCourseShown(course, !shown);
-                this.forceUpdate();
-                this.props.delegate.forceUpdate();
+                scheduler.setCourseShown(course, !shown).then(() => {
+                    this.forceUpdate();
+                    this.props.delegate.forceUpdate();
+                });
             }
         };
     }

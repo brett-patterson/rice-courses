@@ -7,18 +7,11 @@ export default class UserCourses {
      * Get all user selected courses.
      * @param {function} cb - A callback invoked with the results of the request
      */
-    static get(cb) {
-        ajax({
+    static get() {
+        return ajax({
             url: '/api/me/courses/',
             method: 'GET'
-        }).then(data => {
-            let result = [];
-
-            for (let i = 0; i < data.length; i++)
-                result.push(Course.fromJSON(data[i]));
-
-            cb(result);
-        });
+        }).then(data => data.map(Course.fromJSON));
     }
 
     /**
@@ -26,12 +19,12 @@ export default class UserCourses {
      * @param {Course} course - The course to add
      * @param {function} cb - A callback invoked with the results of the request
      */
-    static add(course, cb) {
-        ajax({
+    static add(course) {
+        return ajax({
             url: '/api/me/courses/',
             method: 'POST',
             data: {crn: course.getCRN()}
-        }).then(cb);
+        });
     }
 
     /**
@@ -39,11 +32,11 @@ export default class UserCourses {
      * @param {Course} course - The course to remove
      * @param {function} cb - A callback invoked with the results of the request
      */
-    static remove(course, cb) {
-        ajax({
+    static remove(course) {
+        return ajax({
             url: '/api/me/courses/',
             method: 'DELETE',
             data: {crn: course.getCRN()}
-        }).then(cb);
+        });
     }
 }

@@ -118,15 +118,13 @@ class SchedulerView extends React.Component {
     }
 
     eventDragStart(event) {
-        event.course.getOtherSections(courses => {
-            courses = courses.filter(course => {
-                return (this.props.scheduler === undefined ||
-                        (this.props.scheduler !== undefined &&
-                         !this.props.scheduler.getMap()[course.getCRN()]));
-            });
-
+        event.course.getOtherSections().then(courses => {
             this.setState({
-                alternates: courses
+                alternates: courses.filter(course => {
+                    return (this.props.scheduler === undefined ||
+                            (this.props.scheduler !== undefined &&
+                             !this.props.scheduler.getMap()[course.getCRN()]));
+                })
             });
         });
     }

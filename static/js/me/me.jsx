@@ -34,13 +34,11 @@ class Me extends React.Component {
     }
 
     fetchSchedulers() {
-        Scheduler.fetchAll(schedulers => {
+        Scheduler.fetchAll().then(schedulers => {
             this.setState({
                 schedulers
             }, () => {
-                for (let i = 0; i < this.state.schedulers.length; i++) {
-                    const scheduler = this.state.schedulers[i];
-
+                for (let scheduler of this.state.schedulers) {
                     if (scheduler.getShown())
                         this.setState({
                             currentScheduler: scheduler
@@ -51,7 +49,7 @@ class Me extends React.Component {
     }
 
     fetchUserCourses(callback) {
-        UserCourses.get(userCourses => {
+        UserCourses.get().then(userCourses => {
             userCourses.sort((a, b) => {
                 const titleA = a.getCourseID(), titleB = b.getCourseID();
                 if (titleA < titleB)
@@ -84,47 +82,46 @@ class Me extends React.Component {
         const index = this.state.userCourses.indexOf(course);
 
         if (index > -1) {
-            UserCourses.remove(course);
-
-            for (let i = 0; i < this.state.schedulers.length; i++) {
-                this.state.schedulers[i].removeCourse(course);
-            }
-
-            this.setState(update(this.state, {
-                userCourses: {
-                    $splice: [[index, 1]]
-                }
-            }));
+            Promise.all([
+                UserCourses.remove(course)
+            ].concat(this.state.schedulers
+                .map(s => s.removeCourse(course))
+            )).then(() => {
+                this.setState(update(this.state, {
+                    userCourses: {
+                        $splice: [[index, 1]]
+                    }
+                }));
+            });
         }
     }
 
     replaceSection(oldSection, newSection) {
-        this.addUserCourse(newSection);
-        this.state.currentScheduler.setCourseShown(oldSection, false);
-        this.state.currentScheduler.setCourseShown(newSection, true);
-        UserCourses.add(newSection);
-
-        for (let i = 0; i < this.state.schedulers.length; i++) {
-            const scheduler = this.state.schedulers[i];
-
-            if (scheduler !== this.state.currentScheduler) {
-                scheduler.setCourseShown(newSection, false);
-            }
-        }
-
-        this.forceUpdate();
+        Promise.all([
+            this.addUserCourse(newSection),
+            this.state.currentScheduler.setCourseShown(oldSection, false),
+            this.state.currentScheduler.setCourseShown(newSection, true),
+            UserCourses.add(newSection)
+        ].concat(this.state.schedulers
+            .filter(s => s !== this.state.currentScheduler)
+            .map(s => s.setCourseShown(newSection, false))
+        )).then(this.forceUpdate);
     }
 
     schedulerSelectFactory(scheduler) {
         return () => {
+            let promise = Promise.resolve();
             if (this.state.currentScheduler) {
-                this.state.currentScheduler.setShown(false);
+                promise = this.state.currentScheduler.setShown(false);
             }
 
-            scheduler.setShown(true);
-            this.setState({
-                currentScheduler: scheduler
-            });
+            promise
+                .then(() => scheduler.setShown(true))
+                .then(() => {
+                    this.setState({
+                        currentScheduler: scheduler
+                    });
+                });
         };
     }
 
@@ -147,8 +144,7 @@ class Me extends React.Component {
     schedulerEditFinishFactory(scheduler) {
         return event => {
             scheduler.setEditing(false);
-            scheduler.setName(event.target.value);
-            this.forceUpdate();
+            scheduler.setName(event.target.value).then(this.forceUpdate);
         };
     }
 
@@ -158,41 +154,47 @@ class Me extends React.Component {
 
             if (index > -1) {
                 event.stopPropagation();
-                scheduler.remove();
-                this.setState(update(this.state, {
-                    schedulers: {
-                        $splice: [[index, 1]]
-                    }
-                }), () => {
-                    if (this.state.currentScheduler === scheduler) {
-                        const schedulers = this.state.schedulers;
-                        let current = schedulers[index];
-                        if (current === undefined)
-                            current = schedulers[schedulers.length - 1];
 
-                        current.setShown(true);
-                        this.setState({
-                            currentScheduler: current
-                        });
-                    }
+                scheduler.remove().then(() => {
+                    this.setState(update(this.state, {
+                        schedulers: {
+                            $splice: [[index, 1]]
+                        }
+                    }), () => {
+                        if (this.state.currentScheduler === scheduler) {
+                            const schedulers = this.state.schedulers;
+                            let current = schedulers[index];
+                            if (current === undefined)
+                                current = schedulers[schedulers.length - 1];
+
+                            current.setShown(true).then(() => {
+                                this.setState({
+                                    currentScheduler: current
+                                });
+                            });
+                        }
+                    });
                 });
             }
         };
     }
 
     addScheduler() {
-        Scheduler.addScheduler('New Schedule', scheduler => {
-            this.state.currentScheduler.setShown(false);
-            scheduler.setShown(true);
-            this.setState(update(this.state, {
-                schedulers: {
-                    $push: [scheduler]
-                },
-                currentScheduler: {
-                    $set: scheduler
-                }
-            }));
-        });
+        Scheduler.addScheduler('New Schedule')
+            .then(scheduler => {
+                this.state.currentScheduler.setShown(false)
+                    .then(() => scheduler.setShown(true))
+                    .then(() => {
+                        this.setState(update(this.state, {
+                            schedulers: {
+                                $push: [scheduler]
+                            },
+                            currentScheduler: {
+                                $set: scheduler
+                            }
+                        }));
+                    });
+            });
     }
 
     showExportDialog() {
@@ -214,10 +216,8 @@ class Me extends React.Component {
 
         let conflicts = [];
 
-        for (let i = 0; i < courses.length; i++) {
-            let courseOne = courses[i];
-            for (let j = i; j < courses.length; j++) {
-                let courseTwo = courses[j];
+        for (let courseOne of courses) {
+            for (let courseTwo of courses) {
                 if (courseOne !== courseTwo &&
                     courseOverlap(courseOne, courseTwo)) {
                     conflicts.push([courseOne, courseTwo]);

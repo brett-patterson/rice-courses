@@ -29,24 +29,21 @@ class CourseList extends React.Component {
     }
 
     fetchCourses() {
-        Course.get(data => {
+        Course.get(
+            this.props.filterManager.getFiltersForServer(), this.state.page,
+            this.state.order
+        ).then(data => {
             this.setState({
                 courses: data.courses,
                 totalPages: data.pages
             });
-        }, this.props.filterManager.getFiltersForServer(), this.state.page,
-           this.state.order);
+        });
     }
 
     fetchUserCourses(callback) {
-        UserCourses.get(courses => {
-            let userCourses = [];
-
-            for (let i = 0; i < courses.length; i++)
-                userCourses.push(courses[i].getCRN());
-
+        UserCourses.get().then(courses => {
             this.setState({
-                userCourses
+                userCourses: courses.map(c => c.getCRN())
             }, callback);
         });
     }
