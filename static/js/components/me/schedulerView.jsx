@@ -3,7 +3,7 @@ import reactMixin from 'react-mixin';
 
 import Planner from './planner/planner';
 import Scheduler from './scheduler';
-import CourseDetailMixin from 'courses/detail/courseDetail';
+import CourseDetailMixin from 'components/courses/detail/courseDetail';
 import {getHueByIndex, hsvToRgb, propTypeHas, wrapComponentClass} from 'util';
 
 

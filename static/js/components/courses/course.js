@@ -1,6 +1,6 @@
 import Moment from 'moment';
 
-import {eventOverlap} from 'me/planner/event';
+import {eventOverlap} from 'components/me/planner/event';
 import {ajax} from 'util';
 
 

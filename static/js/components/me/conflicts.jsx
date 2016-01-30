@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import {Modal, Button} from 'react-bootstrap';
 
-import Course from 'courses/course';
+import Course from 'components/courses/course';
 import {ajax, wrapComponentClass} from 'util';
 
 

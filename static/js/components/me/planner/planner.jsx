@@ -3,7 +3,7 @@ import 'planner.scss';
 import React, {PropTypes} from 'react';
 
 import Event, {eventOverlap} from './event';
-import {wrapComponentClass} from '../../util';
+import {wrapComponentClass} from 'util';
 
 
 class Planner extends React.Component {

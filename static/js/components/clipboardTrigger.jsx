@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import {Overlay, Tooltip} from 'react-bootstrap';
 import Clipboard from 'clipboard';
 
-import {wrapComponentClass} from './util';
+import {wrapComponentClass} from 'util';
 
 
 class ClipboardTrigger extends React.Component {

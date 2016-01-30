@@ -3,7 +3,7 @@ import 'courseDetail.scss';
 import React, {PropTypes} from 'react';
 import {Tabs, Tab, Modal} from 'react-bootstrap';
 
-import Course from 'courses/course';
+import Course from 'components/courses/course';
 import EvaluationChart from './evaluationChart';
 import {ajax, wrapComponentClass} from 'util';
 

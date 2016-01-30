@@ -6,10 +6,10 @@ import {render} from 'react-dom';
 import {Router, Route, Redirect} from 'react-router';
 import createBrowserHistory from 'history/lib/createBrowserHistory';
 
-import App from './app';
-import Courses from './courses/courses';
-import Me from './me/me';
-import Help from './help/help';
+import App from './components/app';
+import Courses from './components/courses/courses';
+import Me from './components/me/me';
+import Help from './components/help/help';
 
 const history = createBrowserHistory();
 

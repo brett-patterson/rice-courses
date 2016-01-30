@@ -6,7 +6,7 @@ import FilterManager from './filter/filterManager';
 import FilterWidget from './filter/filterWidget';
 import CourseFilter from './filter/courseFilter';
 import CourseList from './courseList';
-import {ajax, wrapComponentClass} from '../util';
+import {ajax, wrapComponentClass} from 'util';
 
 
 const FILTERS = [

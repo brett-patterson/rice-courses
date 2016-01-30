@@ -1,7 +1,7 @@
 import React from 'react';
 import update from 'react-addons-update';
 import {Alert} from 'react-bootstrap';
-import {indexOf} from './util';
+import {indexOf} from 'util';
 
 
 export default {

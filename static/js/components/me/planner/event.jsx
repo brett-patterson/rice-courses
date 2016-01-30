@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import {DragSource, DropTarget} from 'react-dnd';
 import classNames from 'classnames';
 
-import {wrapComponentClass, collapsePartials} from '../../util';
+import {wrapComponentClass, collapsePartials} from 'util';
 
 /**
  * Check if two events overlap in time.
