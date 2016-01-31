@@ -51,6 +51,7 @@ class Courses extends React.Component {
                             totalPages={this.props.totalPages}
                             pageChanged={this.fetchCoursesByPage}
                             orderChanged={this.fetchCoursesByOrder} />
+                {this.props.children}
             </div>
         );
     }

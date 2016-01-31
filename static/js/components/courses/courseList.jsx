@@ -1,11 +1,9 @@
 import React, {PropTypes} from 'react';
-import reactMixin from 'react-mixin';
 import update from 'react-addons-update';
 import {Pagination} from 'react-bootstrap';
 import classNames from 'classnames';
 
 import UserCourses from 'models/userCourses';
-import CourseDetailMixin from './detail/courseDetail';
 import {wrapComponentClass} from 'util';
 
 
@@ -61,7 +59,8 @@ class CourseList extends React.Component {
 
     showCourseDetailFactory(course) {
         return () => {
-            this.showCourseDetail(course);
+            let location = `/courses/${course.getCRN()}/`;
+            this.context.history.push(location);
         };
     }
 
@@ -200,8 +199,6 @@ class CourseList extends React.Component {
                                 maxButtons={30} first={true} last={true}
                                 next={true} prev={true} />
                 </div>
-
-                {this.renderCourseDetails(this.props.courses)}
             </div>
         );
     }
@@ -215,6 +212,8 @@ CourseList.propTypes = {
     orderChanged: PropTypes.func
 };
 
-reactMixin.onClass(CourseList, CourseDetailMixin);
+CourseList.contextTypes = {
+    history: PropTypes.object.isRequired
+};
 
 export default wrapComponentClass(CourseList);

@@ -2,6 +2,7 @@ import 'courseDetail.scss';
 
 import React, {PropTypes} from 'react';
 import {Tabs, Tab, Modal} from 'react-bootstrap';
+import {connect} from 'react-redux';
 
 import Course from 'models/course';
 import EvaluationChart from './evaluationChart';
@@ -9,16 +10,30 @@ import {ajax, wrapComponentClass} from 'util';
 
 
 class CourseDetail extends React.Component {
-    constructor(props) {
-        super(props);
+    constructor(props, context) {
+        super(props, context);
+
+        let crn = props.params.crn;
 
         this.state = {
+            course: props.courses[crn],
             courseQuestions: undefined,
             courseComments: undefined,
             instructorQuestions: undefined,
             instructorComments: undefined,
             chartType: 'pie'
         };
+
+        if (this.state.course === undefined) {
+            ajax({
+                url: `/api/courses/${crn}/`,
+                method: 'GET'
+            }).then(data => {
+                this.setState({
+                    course: Course.fromJSON(data)
+                });
+            });
+        }
 
         // ajax({
         //     url: '/evaluation/api/course/',
@@ -47,38 +62,42 @@ class CourseDetail extends React.Component {
         // });
     }
 
+    onClose() {
+        this.context.history.goBack();
+    }
+
     renderInfo() {
-        const course = this.props.course;
+        const c = this.state.course;
 
         let prerequisites, corequisites, restrictions, crossList;
-        if (course.getPrerequisites().length > 0)
-            prerequisites = <p><strong>Prerequisites:</strong> {course.getPrerequisites()}</p>;
-        if (course.getCorequisites().length > 0)
-            corequisites = <p><strong>Corequisites:</strong> {course.getCorequisites()}</p>;
-        if (course.getRestrictions().length > 0)
-            restrictions = <p><strong>Restrictions:</strong> {course.getRestrictions()}</p>;
-        if (course.getCrossListed().length > 0)
+        if (c.getPrerequisites().length > 0)
+            prerequisites = <p><strong>Prerequisites:</strong> {c.getPrerequisites()}</p>;
+        if (c.getCorequisites().length > 0)
+            corequisites = <p><strong>Corequisites:</strong> {c.getCorequisites()}</p>;
+        if (c.getRestrictions().length > 0)
+            restrictions = <p><strong>Restrictions:</strong> {c.getRestrictions()}</p>;
+        if (c.getCrossListed().length > 0)
             crossList = (
                 <p><strong>Cross Listed: </strong>
-                {course.getCrossListed().map(crossCourse => {
+                {c.getCrossListed().map(crossCourse => {
                     return crossCourse.getCourseID();
                 }).join(', ')}</p>
             );
 
         return (
             <div>
-                <p><strong>CRN:</strong> {course.getCRN()}</p>
-                <p><strong>Credits:</strong> {course.getCredits()}</p>
-                <p><strong>Distribution:</strong> {course.getDistributionString()}</p>
-                <p><strong>Meetings:</strong> {course.getMeetingsString()}</p>
-                <p><strong>Location:</strong> {course.getLocation()}</p>
-                <p><strong>Enrollment:</strong> {course.getEnrollmentString()}</p>
-                <p><strong>Waitlist:</strong> {course.getWaitlistString()}</p>
+                <p><strong>CRN:</strong> {c.getCRN()}</p>
+                <p><strong>Credits:</strong> {c.getCredits()}</p>
+                <p><strong>Distribution:</strong> {c.getDistributionString()}</p>
+                <p><strong>Meetings:</strong> {c.getMeetingsString()}</p>
+                <p><strong>Location:</strong> {c.getLocation()}</p>
+                <p><strong>Enrollment:</strong> {c.getEnrollmentString()}</p>
+                <p><strong>Waitlist:</strong> {c.getWaitlistString()}</p>
                 {prerequisites}
                 {corequisites}
                 {restrictions}
                 {crossList}
-                <p>{course.getDescription()}</p>
+                <p>{c.getDescription()}</p>
             </div>
         );
     }
@@ -148,10 +167,15 @@ class CourseDetail extends React.Component {
     }
 
     render() {
-        const c = this.props.course;
+        const c = this.state.course;
 
-        return <Modal show={this.props.shown} onHide={this.props.onClose}
-                      dialogClassName='course-modal-dialog' bsSize='lg'>
+        if (c === undefined) {
+            return <div></div>;
+        }
+
+        return <Modal show={this.props.shown} onHide={this.onClose}
+                      animation={false} bsSize='lg'
+                      dialogClassName='course-modal-dialog'>
             <Modal.Header closeButton>
                 <Modal.Title>
                     {c.getCourseID()} - {c.getTitle()}<br/>
@@ -186,8 +210,7 @@ class CourseDetail extends React.Component {
 }
 
 CourseDetail.propTypes = {
-    course: PropTypes.instanceOf(Course).isRequired,
-    onClose: PropTypes.func.isRequired,
+    courses: PropTypes.object,
     shown: PropTypes.bool
 };
 
@@ -195,36 +218,19 @@ CourseDetail.defaultProps = {
     shown: true
 };
 
-CourseDetail = wrapComponentClass(CourseDetail);
-
-export default {
-    getInitialState() {
-        return {
-            courseShown: null
-        };
-    },
-
-    showCourseDetail(course) {
-        this.setState({
-            courseShown: course
-        });
-    },
-
-    hideCourseDetail() {
-        this.setState({
-            courseShown: null
-        });
-    },
-
-    renderCourseDetails(courses) {
-        if (!courses || courses.length === 0) {
-            return null;
-        }
-
-        return courses.map(course => {
-            const shown = this.state.courseShown !== null && this.state.courseShown.getCRN() === course.getCRN();
-            return <CourseDetail key={`detail-${course.getCRN()}`} course={course}
-                                 shown={shown} onClose={this.hideCourseDetail} />;
-        });
-    }
+CourseDetail.contextTypes = {
+    history: PropTypes.object.isRequired
 };
+
+function mapStateToProps(state) {
+    let all = state.courses.all || [];
+    let courses = all.reduce((map, c) => {
+        return map.set(c.getCRN(), c);
+    }, new Map());
+
+    return {
+        courses
+    };
+}
+
+export default connect(mapStateToProps)(wrapComponentClass(CourseDetail));

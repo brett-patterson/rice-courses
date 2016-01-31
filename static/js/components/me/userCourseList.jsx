@@ -1,11 +1,9 @@
 import React, {PropTypes} from 'react';
-import reactMixin from 'react-mixin';
 import {Badge} from 'react-bootstrap';
 import classNames from 'classnames';
 
 import Scheduler from './scheduler';
 import Course from 'models/course';
-import CourseDetailMixin from 'components/courses/detail/courseDetail';
 import ClipboardTrigger from 'components/clipboardTrigger';
 import {propTypeHas, wrapComponentClass} from 'util';
 
@@ -245,7 +243,6 @@ class UserCourseList extends React.Component {
             <div>
                 {this.renderCourseTable()}
                 {this.renderCourseCredits()}
-                {this.renderCourseDetails(this.props.courses)}
             </div>
         );
     }
@@ -260,7 +257,5 @@ UserCourseList.propTypes = {
 UserCourseList.defaultProps = {
     courses: []
 };
-
-reactMixin.onClass(UserCourseList, CourseDetailMixin);
 
 export default wrapComponentClass(UserCourseList);

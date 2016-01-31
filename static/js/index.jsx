@@ -1,5 +1,6 @@
 import 'bootstrap-loader';
 import 'main.scss';
+import 'es6-shim';
 
 import React from 'react';
 import {render} from 'react-dom';
@@ -12,6 +13,7 @@ import configureStore from './store';
 import App from './components/app';
 import Courses from './components/courses/courses';
 import Me from './components/me/me';
+import CourseDetail from './components/detail/courseDetail';
 import Help from './components/help/help';
 
 
@@ -21,13 +23,17 @@ const store = configureStore();
 render(
     <Provider store={store}>
         <Router history={history}>
-            <Redirect from='/' to='/courses/' />
+            <Redirect from='/' to='/courses' />
             <Route path='/' component={App}>
-                <Route path='courses/' component={Courses} />
-                <Route path='me/' component={Me} />
-                <Route path='help/' component={Help} />
+                <Route path='courses' component={Courses}>
+                    <Route path=':crn' component={CourseDetail} />
+                </Route>
+
+                <Route path='me' component={Me} />
+                <Route path='help' component={Help} />
             </Route>
         </Router>
     </Provider>,
+
     document.getElementById('app')
 );

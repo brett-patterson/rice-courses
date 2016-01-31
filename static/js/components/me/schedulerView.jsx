@@ -1,9 +1,7 @@
 import React, {PropTypes} from 'react';
-import reactMixin from 'react-mixin';
 
 import Planner from './planner/planner';
 import Scheduler from './scheduler';
-import CourseDetailMixin from 'components/courses/detail/courseDetail';
 import {getHueByIndex, hsvToRgb, propTypeHas, wrapComponentClass} from 'util';
 
 
@@ -156,7 +154,6 @@ class SchedulerView extends React.Component {
                      onEventDragStart={this.eventDragStart}
                      onEventDragCancel={this.eventDragCancel}
                      onEventDrop={this.eventDrop} />
-            {this.renderCourseDetails(this.state.courses)}
         </div>;
     }
 }
@@ -170,7 +167,5 @@ SchedulerView.propTypes = {
 SchedulerView.defaultProps = {
     courses: []
 };
-
-reactMixin.onClass(SchedulerView, CourseDetailMixin);
 
 export default wrapComponentClass(SchedulerView);
