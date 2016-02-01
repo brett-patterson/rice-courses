@@ -13,36 +13,35 @@ class UserCoursesView(APIView):
         course_list = request.user.userprofile.courses.all()
         return self.success([c.json() for c in course_list], safe=False)
 
-    def post(self, request):
+    def put(self, request):
         """ Add a course for the user.
         """
-        crn = request.POST.get('crn')
+        PUT = QueryDict(request.body)
 
-        if crn is not None:
-            course = Course.objects.get(crn=crn)
+        crn = PUT.get('crn')
+        if crn is None:
+            return self.failure('No CRN specified')
 
-            profile = request.user.userprofile
+        flag = PUT.get('flag')
+        if flag is None:
+            return self.failure('User course flag must be specified')
+
+        course = Course.objects.get(crn=crn)
+
+        profile = request.user.userprofile
+
+        if flag == 'true':
             profile.courses.add(course)
 
             for scheduler in Scheduler.objects.filter(user_profile=profile):
                 scheduler.set_shown(course, True)
 
-            return self.success({})
+        else:
+            profile.courses.remove(course)
 
-        return self.failure('No CRN specified')
-
-    def delete(self, request):
-        """ Remove a course for the user.
-        """
-        crn = QueryDict(request.body).get('crn')
-
-        if crn is not None:
-            course = Course.objects.get(crn=crn)
-            request.user.userprofile.courses.remove(course)
-
-            return self.success({})
-
-        return self.failure('No CRN specified')
+        return self.success(
+            [c.json() for c in profile.courses.all()], safe=False
+        )
 
 
 class AlternateCourseView(APIView):

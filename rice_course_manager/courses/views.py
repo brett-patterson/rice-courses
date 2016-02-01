@@ -49,7 +49,7 @@ class CourseCollectionView(APIView):
             filtered_courses = filtered_courses[l * page:l * (page + 1)]
 
         return self.success({
-            'courses': [c.json(user=request.user) for c in filtered_courses],
+            'courses': [c.json() for c in filtered_courses],
             'pages': pages
         }, safe=False)
 
@@ -63,7 +63,7 @@ class CourseView(APIView):
         except Course.DoesNotExist:
             return self.failure('Course does not exist')
 
-        return self.success(course.json(user=request.user))
+        return self.success(course.json())
 
 
 class SectionsView(APIView):

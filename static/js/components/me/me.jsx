@@ -8,6 +8,7 @@ import reactMixin from 'react-mixin';
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
+import UserCourses from 'models/userCourses';
 import Scheduler from './scheduler';
 import UserCourseList from './userCourseList';
 import SchedulerView from './schedulerView';
@@ -48,22 +49,24 @@ class Me extends React.Component {
     }
 
     fetchUserCourses(callback) {
-        // UserCourses.get().then(userCourses => {
-        //     userCourses.sort((a, b) => {
-        //         const titleA = a.getCourseID(), titleB = b.getCourseID();
-        //         if (titleA < titleB)
-        //             return -1;
-        //
-        //         if (titleA > titleB)
-        //             return 1;
-        //
-        //         return 0;
-        //     });
-        //
-        //     this.setState({
-        //         userCourses
-        //     }, callback);
-        // });
+        UserCourses.get().then(userCourses => {
+            userCourses = Array.from(userCourses.values());
+
+            userCourses.sort((a, b) => {
+                const titleA = a.getCourseID(), titleB = b.getCourseID();
+                if (titleA < titleB)
+                    return -1;
+
+                if (titleA > titleB)
+                    return 1;
+
+                return 0;
+            });
+
+            this.setState({
+                userCourses
+            }, callback);
+        });
     }
 
     addUserCourse(course) {

@@ -15,8 +15,12 @@ class CourseList extends React.Component {
 
     toggleUserCourseFactory(course) {
         return () => {
-            // this.props.setUserCourse(course, !course.isUserCourse());
+            this.props.setUserCourse(course, !this.isUserCourse(course));
         };
+    }
+
+    isUserCourse(course) {
+        return this.props.userCourses.has(course.getCRN());
     }
 
     showCourseDetailFactory(course) {
@@ -89,7 +93,7 @@ class CourseList extends React.Component {
             return <tr><td>No courses found</td></tr>;
 
         return Array.from(this.props.courses.values()).map(course => {
-            const isUserCourse = course.isUserCourse();
+            const isUserCourse = this.isUserCourse(course);
 
             const userClasses = classNames({
                 'user-course': isUserCourse,
@@ -172,10 +176,12 @@ class CourseList extends React.Component {
 
 CourseList.propTypes = {
     courses: PropTypes.instanceOf(Map),
+    userCourses: PropTypes.instanceOf(Map),
     page: PropTypes.number,
     order: PropTypes.string,
     pageChanged: PropTypes.func,
-    orderChanged: PropTypes.func
+    orderChanged: PropTypes.func,
+    setUserCourse: PropTypes.func
 };
 
 CourseList.contextTypes = {

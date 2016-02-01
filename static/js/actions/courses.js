@@ -1,7 +1,7 @@
 import Course from 'models/course';
+import UserCourses from 'models/userCourses';
 
 
-export const FETCH_COURSES = 'FETCH_COURSES';
 export function fetchCourses(page, filters, order) {
     return dispatch => {
         let serverFilters = filters.map(filter => {
@@ -26,5 +26,29 @@ export function completeFetchCourses(courses, pages, page, filters, order) {
         page,
         filters,
         order
+    };
+}
+
+export function fetchUserCourses() {
+    return dispatch => {
+        UserCourses.get().then(courses => {
+            dispatch(completeFetchUserCourses(courses));
+        });
+    };
+}
+
+export function setUserCourse(course, flag) {
+    return dispatch => {
+        UserCourses.set(course, flag).then(courses => {
+            dispatch(completeFetchUserCourses(courses));
+        });
+    };
+}
+
+export const FETCH_USER_COURSES_COMPLETE = 'SET_USER_COURSE_COMPLETE';
+export function completeFetchUserCourses(courses) {
+    return {
+        type: FETCH_USER_COURSES_COMPLETE,
+        courses
     };
 }

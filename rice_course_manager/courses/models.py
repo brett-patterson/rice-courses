@@ -195,7 +195,7 @@ class Course(models.Model):
         """
         return '%s %i %s' % (self.subject, self.course_number, self.section)
 
-    def json(self, cross_list=True, user=None):
+    def json(self, cross_list=True):
         """ Convert the course to a JSON-serializable dictionary.
 
         """
@@ -223,9 +223,6 @@ class Course(models.Model):
         if cross_list:
             result['cross_list_group'] = [c.json(cross_list=False)
                                           for c in self.cross_listed_group()]
-
-        if user:
-            result['user_course'] = self in user.userprofile.courses.all()
 
         return result
 

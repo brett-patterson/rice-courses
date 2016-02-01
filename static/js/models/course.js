@@ -40,12 +40,11 @@ export function courseOverlap(courseOne, courseTwo) {
 }
 
 export default class Course {
-    constructor(crn, userCourse, subject, number, section, title, instructor,
-                description, meetings, location, credits, distribution,
-                enrollment, maxEnrollment, waitlist, maxWaitlist,
-                prerequisites, corequisites, restrictions, crossListed) {
+    constructor(crn, subject, number, section, title, instructor, description,
+                meetings, location, credits, distribution, enrollment,
+                maxEnrollment, waitlist, maxWaitlist, prerequisites,
+                corequisites, restrictions, crossListed) {
         this.crn = crn;
-        this.userCourse = userCourse;
         this.subject = subject;
         this.number = number;
         this.section = section;
@@ -64,12 +63,6 @@ export default class Course {
         this.corequisites = corequisites;
         this.restrictions = restrictions;
         this.crossListed = crossListed;
-
-        this.filterMapping = {
-            distribution: `${this.getDistributionString()} ${this.distribution}`,
-            courseID: this.getCourseID(),
-            meetings: this.getMeetingsString()
-        };
     }
 
     static fromJSON(j) {
@@ -80,12 +73,12 @@ export default class Course {
                 return Course.fromJSON(courseJSON);
             });
 
-        return new Course(j.crn, j.user_course, j.subject, j.course_number,
-                          j.section, j.title, j.instructor, j.description,
-                          j.meetings, j.location, j.credits, j.distribution,
-                          j.enrollment, j.max_enrollment, j.waitlist,
-                          j.max_waitlist, j.prerequisites, j.corequisites,
-                          j.restrictions, crossListed);
+        return new Course(j.crn, j.subject, j.course_number, j.section,
+                          j.title, j.instructor, j.description, j.meetings,
+                          j.location, j.credits, j.distribution, j.enrollment,
+                          j.max_enrollment, j.waitlist, j.max_waitlist,
+                          j.prerequisites, j.corequisites, j.restrictions,
+                          crossListed);
     }
 
     static get(filters=[], page=-1, order=null) {
@@ -145,19 +138,8 @@ export default class Course {
         return dates;
     }
 
-    filterValue(key) {
-        let value = this.filterMapping[key];
-        if (value === undefined)
-            value = this[key];
-        return value;
-    }
-
     getCRN() {
         return this.crn;
-    }
-
-    isUserCourse() {
-        return this.userCourse;
     }
 
     getSubject() {

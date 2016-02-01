@@ -3,7 +3,7 @@ import 'courses.scss';
 import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 
-import {fetchCourses} from 'actions/courses';
+import {fetchCourses, setUserCourse} from 'actions/courses';
 import FilterWidget from './filter/filterWidget';
 import CourseFilter from './filter/courseFilter';
 import CourseList from './courseList';
@@ -41,16 +41,22 @@ class Courses extends React.Component {
         this.props.dispatch(fetchCourses(page, filters, order));
     }
 
+    setUserCourse(course, flag) {
+        this.props.dispatch(setUserCourse(course, flag));
+    }
+
     render() {
         return (
             <div>
                 <FilterWidget allFilters={FILTERS} filters={this.props.filters}
                               filtersChanged={this.fetchCoursesByFilters} />
                 <CourseList courses={this.props.courses}
+                            userCourses={this.props.userCourses}
                             page={this.props.page} order={this.props.order}
                             totalPages={this.props.totalPages}
                             pageChanged={this.fetchCoursesByPage}
-                            orderChanged={this.fetchCoursesByOrder} />
+                            orderChanged={this.fetchCoursesByOrder}
+                            setUserCourse={this.setUserCourse} />
                 {this.props.children}
             </div>
         );
@@ -61,7 +67,8 @@ Courses.propTypes = {
     courses: PropTypes.instanceOf(Map),
     totalPages: PropTypes.number,
     page: PropTypes.number,
-    filters: PropTypes.array
+    filters: PropTypes.array,
+    userCourses: PropTypes.instanceOf(Map)
 };
 
 function mapStateToProps(state) {
@@ -70,7 +77,8 @@ function mapStateToProps(state) {
         totalPages: state.courses.pages,
         page: state.courses.page,
         order: state.courses.order,
-        filters: state.courses.filters
+        filters: state.courses.filters,
+        userCourses: state.courses.userCourses
     };
 }
 
