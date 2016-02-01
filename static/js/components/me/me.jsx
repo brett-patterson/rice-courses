@@ -13,9 +13,8 @@ import Scheduler from './scheduler';
 import UserCourseList from './userCourseList';
 import SchedulerView from './schedulerView';
 import ExportDialog from './export';
-import ConflictsDialog from './conflicts';
 import AlertMixin from 'components/alertMixin';
-import {indexOf, courseOverlap, wrapComponentClass} from 'util';
+import {indexOf, wrapComponentClass} from 'util';
 
 
 class Me extends React.Component {
@@ -25,8 +24,7 @@ class Me extends React.Component {
             schedulers: [],
             userCourses: [],
             currentScheduler: undefined,
-            exported: null,
-            conflicts: []
+            exported: null
         };
 
         this.fetchUserCourses();
@@ -211,41 +209,6 @@ class Me extends React.Component {
         });
     }
 
-    fixMySchedule() {
-        let courses = this.state.userCourses.filter(course => {
-            return this.state.currentScheduler.getMap()[course.getCRN()];
-        });
-
-        let conflicts = [];
-
-        for (let courseOne of courses) {
-            for (let courseTwo of courses) {
-                if (courseOne !== courseTwo &&
-                    courseOverlap(courseOne, courseTwo)) {
-                    conflicts.push([courseOne, courseTwo]);
-                }
-            }
-        }
-
-        if (conflicts.length > 0) {
-            this.showConflictsDialog(conflicts);
-        } else {
-            this.addAlert('No conflicts found in your schedule!', 'success');
-        }
-    }
-
-    showConflictsDialog(conflicts) {
-        this.setState({
-            conflicts: conflicts
-        });
-    }
-
-    hideConflictsDialog() {
-        this.setState({
-            conflicts: []
-        });
-    }
-
     renderSchedulerTabs() {
         const schedulerTabs = this.state.schedulers.map(scheduler => {
             let closeButton;
@@ -293,11 +256,6 @@ class Me extends React.Component {
             exportDialog = <ExportDialog scheduler={this.state.exported} onClose={this.hideExportDialog} />;
         }
 
-        let conflictsDialog;
-        if (this.state.conflicts.length > 0) {
-            conflictsDialog = <ConflictsDialog conflicts={this.state.conflicts} onCancel={this.hideConflictsDialog} />;
-        }
-
         return <div>
             {this.renderAlerts()}
 
@@ -310,12 +268,6 @@ class Me extends React.Component {
             <UserCourseList scheduler={this.state.currentScheduler}
                             courses={this.state.userCourses}
                             delegate={this} />
-
-            <Button className='fix-schedule-btn' bsStyle='info'
-                    onClick={this.fixMySchedule}>
-                Fix My Schedule!
-            </Button>
-            {conflictsDialog}
 
             {this.renderSchedulerTabs()}
 
