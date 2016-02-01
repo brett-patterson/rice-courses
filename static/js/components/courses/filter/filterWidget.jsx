@@ -2,6 +2,7 @@ import 'filterWidget.scss';
 
 import React, {PropTypes} from 'react';
 import ReactDOM from 'react-dom';
+import update from 'react-addons-update';
 
 import FilterButton from './filterButton';
 import FilterInput from './filterInput';
@@ -13,12 +14,13 @@ class FilterWidget extends React.Component {
     constructor(props) {
         super(props);
         let keywords = {};
-        for (let filter of props.filters) {
+        for (let filter of props.allFilters) {
             for (let kw of filter.getKeywords())
                 keywords[kw.toLowerCase()] = filter;
         }
 
         this.state = {
+            filters: props.filters,
             outline: 'none',
             placeholder: 'Add Filters...',
             keywords,
@@ -46,13 +48,14 @@ class FilterWidget extends React.Component {
 
             if (index > -1) {
                 const field = text.substring(0, index).toLowerCase();
-                const filter = this.state.keywords[field];
+                const filter = this.state.keywords[field].copy();
 
                 if (field.length > 0 && filter !== undefined) {
                     this.setState({
                         text: ''
                     }, () => {
-                        this.addFilter(filter, '');
+                        filter.setValue('');
+                        this.addFilter(filter);
                     });
                 }
             }
@@ -72,34 +75,43 @@ class FilterWidget extends React.Component {
         ReactDOM.findDOMNode(this.refs.input).focus();
     }
 
-    filtersChanged() {
-        if (timerId !== null) {
-            clearTimeout(timerId);
-        }
+    filtersChanged(delay=0) {
+        if (delay > 0) {
+            if (timerId !== null) {
+                clearTimeout(timerId);
+            }
 
-        timerId = setTimeout(() => {
-            this.props.filtersChanged(this.props.filters);
-        }, 500);
+            timerId = setTimeout(() => {
+                this.props.filtersChanged(this.state.filters);
+            }, delay);
+        } else {
+            this.props.filtersChanged(this.state.filters);
+        }
     }
 
-    addFilter(filter, value) {
-        filter.setValue(value);
-        this.props.filters.push(filter);
-        this.filtersChanged();
+    addFilter(filter) {
+        this.setState(update(this.state, {
+            filters: {
+                $push: [filter]
+            }
+        }));
     }
 
     removeFilter(filter) {
-        const index = this.props.filters.indexOf(filter);
+        const index = this.state.filters.indexOf(filter);
 
         if (index > -1) {
-            this.props.filters.splice(index, 1);
-            this.filtersChanged();
+            this.setState(update(this.state, {
+                filters: {
+                    $splice: [[index, 1]]
+                }
+            }), this.filtersChanged);
         }
     }
 
     updateFilter(filter, value) {
         filter.setValue(value);
-        this.filtersChanged();
+        this.filtersChanged(500);
     }
 
     renderFilterButtons() {
@@ -112,9 +124,11 @@ class FilterWidget extends React.Component {
     }
 
     renderFilterInputs() {
-        return this.props.filters.map((filter, index) => {
+        return this.state.filters.map((filter, index) => {
             const id = `filter-${this.props.filters.length}-${index}`;
-            return <FilterInput filter={filter} key={id} delegate={this} />;
+            const active = index === this.state.filters.length - 1;
+            return <FilterInput active={active} filter={filter} key={id}
+                                delegate={this} />;
         });
     }
 

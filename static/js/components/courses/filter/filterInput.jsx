@@ -16,6 +16,12 @@ class FilterInput extends React.Component {
         };
     }
 
+    componentDidMount() {
+        if (this.props.active) {
+            jQuery(ReactDOM.findDOMNode(this.refs.input)).focus();
+        }
+    }
+
     remove() {
         this.props.delegate.removeFilter(this.props.filter);
     }
@@ -182,7 +188,12 @@ class FilterInput extends React.Component {
 
 FilterInput.propTypes = {
     filter: PropTypes.instanceOf(CourseFilter).isRequired,
-    delegate: propTypeHas(['removeFilter', 'updateFilter'])
+    delegate: propTypeHas(['removeFilter', 'updateFilter']),
+    active: PropTypes.bool
+};
+
+FilterInput.defaultProps = {
+    active: false
 };
 
 export default wrapComponentClass(FilterInput);
