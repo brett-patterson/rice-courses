@@ -40,11 +40,12 @@ export function courseOverlap(courseOne, courseTwo) {
 }
 
 export default class Course {
-    constructor(crn, subject, number, section, title, instructor, description,
-                meetings, location, credits, distribution, enrollment,
-                maxEnrollment, waitlist, maxWaitlist, prerequisites,
-                corequisites, restrictions, crossListed) {
+    constructor(crn, userCourse, subject, number, section, title, instructor,
+                description, meetings, location, credits, distribution,
+                enrollment, maxEnrollment, waitlist, maxWaitlist,
+                prerequisites, corequisites, restrictions, crossListed) {
         this.crn = crn;
+        this.userCourse = userCourse;
         this.subject = subject;
         this.number = number;
         this.section = section;
@@ -79,9 +80,9 @@ export default class Course {
                 return Course.fromJSON(courseJSON);
             });
 
-        return new Course(j.crn, j.subject, j.course_number, j.section,
-                          j.title, j.instructor, j.description, j.meetings,
-                          j.location, j.credits, j.distribution,
+        return new Course(j.crn, j.user_course, j.subject, j.course_number,
+                          j.section, j.title, j.instructor, j.description,
+                          j.meetings, j.location, j.credits, j.distribution,
                           j.enrollment, j.max_enrollment, j.waitlist,
                           j.max_waitlist, j.prerequisites, j.corequisites,
                           j.restrictions, crossListed);
@@ -105,7 +106,12 @@ export default class Course {
             method: 'GET',
             data
         }).then(result => {
-            result.courses = result.courses.map(Course.fromJSON);
+            result.courses = new Map(
+                result.courses
+                    .map(Course.fromJSON)
+                    .map(c => [c.getCRN(), c])
+            );
+
             return result;
         });
     }
@@ -148,6 +154,10 @@ export default class Course {
 
     getCRN() {
         return this.crn;
+    }
+
+    isUserCourse() {
+        return this.userCourse;
     }
 
     getSubject() {

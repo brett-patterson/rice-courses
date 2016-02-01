@@ -1,9 +1,7 @@
 import React, {PropTypes} from 'react';
-import update from 'react-addons-update';
 import {Pagination} from 'react-bootstrap';
 import classNames from 'classnames';
 
-import UserCourses from 'models/userCourses';
 import {wrapComponentClass} from 'util';
 
 
@@ -11,49 +9,13 @@ class CourseList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            courseShown: null,
-            userCourses: []
+            courseShown: null
         };
-    }
-
-    componentWillMount() {
-        this.fetchUserCourses();
-    }
-
-    fetchUserCourses(callback) {
-        UserCourses.get().then(courses => {
-            this.setState({
-                userCourses: courses.map(c => c.getCRN())
-            }, callback);
-        });
-    }
-
-    isUserCourse(course) {
-        return this.state.userCourses.indexOf(course.getCRN()) > -1;
     }
 
     toggleUserCourseFactory(course) {
         return () => {
-            const crn = course.getCRN();
-            const index = this.state.userCourses.indexOf(crn);
-
-            if (index > -1) {
-                this.setState(update(this.state, {
-                    userCourses: {
-                        $splice: [[index, 1]]
-                    }
-                }));
-
-                UserCourses.remove(course);
-            } else {
-                this.setState(update(this.state, {
-                    userCourses: {
-                        $push: [crn]
-                    }
-                }));
-
-                UserCourses.add(course);
-            }
+            // this.props.setUserCourse(course, !course.isUserCourse());
         };
     }
 
@@ -70,13 +32,17 @@ class CourseList extends React.Component {
 
     onHeaderClickHandler(order) {
         return () => {
+            let next;
+
             if (this.props.order == order && order.startsWith('-')) {
-                order = order.substring(1);
+                next = order.substring(1);
             } else if (this.props.order == order) {
-                order = `-${order}`;
+                next = `-${order}`;
+            } else {
+                next = order;
             }
 
-            this.props.orderChanged(order);
+            this.props.orderChanged(next);
         };
     }
 
@@ -119,11 +85,11 @@ class CourseList extends React.Component {
     renderCourseRows() {
         if (this.props.courses === undefined)
             return <tr><td>Loading courses...</td></tr>;
-        else if (this.props.courses.length === 0)
+        else if (this.props.courses.size === 0)
             return <tr><td>No courses found</td></tr>;
 
-        return this.props.courses.map(course => {
-            const isUserCourse = this.isUserCourse(course);
+        return Array.from(this.props.courses.values()).map(course => {
+            const isUserCourse = course.isUserCourse();
 
             const userClasses = classNames({
                 'user-course': isUserCourse,
@@ -205,7 +171,7 @@ class CourseList extends React.Component {
 }
 
 CourseList.propTypes = {
-    courses: PropTypes.array,
+    courses: PropTypes.instanceOf(Map),
     page: PropTypes.number,
     order: PropTypes.string,
     pageChanged: PropTypes.func,

@@ -16,7 +16,7 @@ class CourseDetail extends React.Component {
         let crn = props.params.crn;
 
         this.state = {
-            course: props.courses[crn],
+            course: props.courses.get(crn),
             courseQuestions: undefined,
             courseComments: undefined,
             instructorQuestions: undefined,
@@ -223,13 +223,8 @@ CourseDetail.contextTypes = {
 };
 
 function mapStateToProps(state) {
-    let all = state.courses.all || [];
-    let courses = all.reduce((map, c) => {
-        return map.set(c.getCRN(), c);
-    }, new Map());
-
     return {
-        courses
+        courses: state.courses.all
     };
 }
 

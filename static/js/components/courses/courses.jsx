@@ -1,6 +1,6 @@
 import 'courses.scss';
 
-import React from 'react';
+import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 
 import {fetchCourses} from 'actions/courses';
@@ -56,6 +56,13 @@ class Courses extends React.Component {
         );
     }
 }
+
+Courses.propTypes = {
+    courses: PropTypes.instanceOf(Map),
+    totalPages: PropTypes.number,
+    page: PropTypes.number,
+    filters: PropTypes.array
+};
 
 function mapStateToProps(state) {
     return {
