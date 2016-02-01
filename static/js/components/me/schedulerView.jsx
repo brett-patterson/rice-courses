@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 
 import Planner from './planner/planner';
-import Scheduler from './scheduler';
+import Scheduler from 'models/scheduler';
 import {getHueByIndex, hsvToRgb, propTypeHas, wrapComponentClass} from 'util';
 
 

@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import {Badge} from 'react-bootstrap';
 import classNames from 'classnames';
 
-import Scheduler from './scheduler';
+import Scheduler from 'models/scheduler';
 import Course from 'models/course';
 import ClipboardTrigger from 'components/clipboardTrigger';
 import {propTypeHas, wrapComponentClass} from 'util';

@@ -1,6 +1,4 @@
-import {
-    FETCH_COURSES_COMPLETE, FETCH_USER_COURSES_COMPLETE
-} from 'actions/courses';
+import {FETCH_COURSES_COMPLETE} from 'actions/courses';
 
 
 const initialState = {
@@ -21,11 +19,6 @@ export default function(state=initialState, action) {
             page: action.page,
             order: action.order,
             filters: action.filters
-        });
-
-    case FETCH_USER_COURSES_COMPLETE:
-        return Object.assign({}, state, {
-            userCourses: action.courses
         });
 
     default:

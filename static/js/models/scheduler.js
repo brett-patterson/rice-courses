@@ -2,16 +2,16 @@ import {ajax} from 'util';
 
 
 export default class Scheduler {
-    constructor(id, name, map={}, shown=false, editing=false) {
+    constructor(id, name, map={}, active=false, editing=false) {
         this.id = id;
         this.name = name;
         this.map = map;
-        this.shown = shown;
+        this.active = active;
         this.editing = editing;
     }
 
     static fromJSON(j) {
-        return new Scheduler(j.id, j.name, j.map, j.shown);
+        return new Scheduler(j.id, j.name, j.map, j.active);
     }
 
     getID() {
@@ -29,7 +29,7 @@ export default class Scheduler {
             url: `/api/me/schedulers/${this.id}/`,
             method: 'PUT',
             data: { name }
-        });
+        }).then(data => data.map(Scheduler.fromJSON));
     }
 
     getMap() {
@@ -46,7 +46,7 @@ export default class Scheduler {
                 crn: course.getCRN(),
                 shown
             }
-        });
+        }).then(data => data.map(Scheduler.fromJSON));
     }
 
     removeCourse(course) {
@@ -60,21 +60,21 @@ export default class Scheduler {
             data: {
                 crn: course.getCRN()
             }
-        });
+        }).then(data => data.map(Scheduler.fromJSON));
     }
 
-    getShown() {
-        return this.shown;
+    isActive() {
+        return this.active;
     }
 
-    setShown(shown) {
-        this.shown = shown;
+    setActive(active) {
+        this.active = active;
 
         return ajax({
             url: `/api/me/schedulers/${this.id}/`,
             method: 'PUT',
-            data: { shown }
-        });
+            data: { active }
+        }).then(data => data.map(Scheduler.fromJSON));
     }
 
     getEditing() {
@@ -89,12 +89,11 @@ export default class Scheduler {
         return ajax({
             url: `/api/me/schedulers/${this.id}/`,
             method: 'DELETE'
-        });
+        }).then(data => data.map(Scheduler.fromJSON));
     }
 
     /**
      * Get all schedulers for the user.
-     * @param {function} cb - A callback invoked with the results of the request
      */
     static fetchAll() {
         return ajax({
@@ -106,13 +105,12 @@ export default class Scheduler {
     /**
      * Add a new scheduler.
      * @param {string} name - The name for the new scheduler.
-     * @param {function} cb - A callback invoked with the results of the request
      */
-    static addScheduler(name) {
+    static add(name) {
         return ajax({
             url: '/api/me/schedulers/',
             method: 'POST',
             data: { name }
-        }).then(data => Scheduler.fromJSON(data.scheduler));
+        }).then(data => data.map(Scheduler.fromJSON));
     }
 }

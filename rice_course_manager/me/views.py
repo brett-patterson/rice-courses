@@ -99,8 +99,11 @@ class SchedulerCollectionView(APIView):
         name = request.POST.get('name')
 
         if name is not None:
-            scheduler = request.user.userprofile.create_scheduler(name)
-            return self.success({'scheduler': scheduler.json()})
+            request.user.userprofile.create_scheduler(name, active=True)
+            return self.success(
+                [s.json() for s in Scheduler.objects.all()],
+                safe=False
+            )
 
         return self.failure('No name specified')
 
@@ -110,7 +113,10 @@ class SchedulerView(APIView):
         """ Remove a scheduler for the user.
         """
         Scheduler.objects.get(id=scheduler_id).delete()
-        return self.success({})
+        return self.success(
+            [s.json() for s in Scheduler.objects.all()],
+            safe=False
+        )
 
     def put(self, request, scheduler_id):
         """ Rename a scheduler or set it shown or hidden.
@@ -128,7 +134,10 @@ class SchedulerView(APIView):
             scheduler.shown = shown == 'true'
 
         scheduler.save()
-        return self.success({})
+        return self.success(
+            [s.json() for s in Scheduler.objects.all()],
+            safe=False
+        )
 
 
 class SchedulerCourseView(APIView):
@@ -147,7 +156,10 @@ class SchedulerCourseView(APIView):
 
         scheduler = Scheduler.objects.get(id=scheduler_id)
         scheduler.set_shown(Course.objects.get(crn=crn), shown == 'true')
-        return self.success({})
+        return self.success(
+            [s.json() for s in Scheduler.objects.all()],
+            safe=False
+        )
 
     def delete(self, request, scheduler_id):
         """ Remove a course from a scheduler's show map.
@@ -159,7 +171,10 @@ class SchedulerCourseView(APIView):
 
         scheduler = Scheduler.objects.get(id=scheduler_id)
         scheduler.remove_course(Course.objects.get(crn=crn))
-        return self.success({})
+        return self.success(
+            [s.json() for s in Scheduler.objects.all()],
+            safe=False
+        )
 
 
 class SchedulerExportView(APIView):

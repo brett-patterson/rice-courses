@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import {Modal, Button} from 'react-bootstrap';
 
 import Course from 'models/course';
-import Scheduler from './scheduler';
+import Scheduler from 'models/scheduler';
 import {ajax, wrapComponentClass} from 'util';
 
 

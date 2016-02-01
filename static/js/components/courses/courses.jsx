@@ -3,7 +3,8 @@ import 'courses.scss';
 import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 
-import {fetchCourses, setUserCourse} from 'actions/courses';
+import {fetchCourses} from 'actions/courses';
+import {setUserCourse} from 'actions/me';
 import FilterWidget from './filter/filterWidget';
 import CourseFilter from './filter/courseFilter';
 import CourseList from './courseList';
@@ -78,7 +79,7 @@ function mapStateToProps(state) {
         page: state.courses.page,
         order: state.courses.order,
         filters: state.courses.filters,
-        userCourses: state.courses.userCourses
+        userCourses: state.me.userCourses
     };
 }
 

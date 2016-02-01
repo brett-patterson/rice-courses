@@ -12,7 +12,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User)
     courses = models.ManyToManyField(Course)
 
-    def create_scheduler(self, name):
+    def create_scheduler(self, name, active=False):
         """ Create a new scheduler with a given name. The scheduler initially
         shows all courses.
 
@@ -26,7 +26,7 @@ class UserProfile(models.Model):
         The new scheduler object.
 
         """
-        scheduler = self.scheduler_set.create(name=name)
+        scheduler = self.scheduler_set.create(name=name, active=active)
 
         for course in self.courses.all():
             scheduler.set_shown(course, True)
@@ -42,8 +42,8 @@ class Scheduler(models.Model):
     # The name of the scheduler.
     name = models.CharField(max_length=255)
 
-    # Whether or not this scheduler is currently shown.
-    shown = models.BooleanField(default=False)
+    # Whether or not this scheduler is currently active.
+    active = models.BooleanField(default=False)
 
     # The user profile this scheduler corresponds to.
     user_profile = models.ForeignKey(UserProfile)
@@ -55,9 +55,9 @@ class Scheduler(models.Model):
         """ On save, ensure that only one Scheduler object is shown.
 
         """
-        if self.shown:
+        if self.active:
             Scheduler.objects.filter(user_profile=self.user_profile,
-                                     shown=True).update(shown=False)
+                                     active=True).update(active=False)
         super(Scheduler, self).save(*args, **kwargs)
 
     def show_map(self):
@@ -105,7 +105,7 @@ class Scheduler(models.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'shown': self.shown,
+            'active': self.active,
             'map': self.show_map()
         }
 
@@ -133,8 +133,7 @@ def create_user_profile(sender, instance, created, **kwargs):
     """
     if created:
         profile, created = UserProfile.objects.get_or_create(user=instance)
-        scheduler = profile.create_scheduler('Schedule 1')
-        scheduler.shown = True
+        scheduler = profile.create_scheduler('Schedule 1', active=True)
         scheduler.save()
 
 
