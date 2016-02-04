@@ -1,5 +1,6 @@
 Rice Course Manager
 ===
+A course scheduling tool for Rice University.
 
 Requirements
 ---

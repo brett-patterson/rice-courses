@@ -6,6 +6,8 @@ Schedules provide a way to see your courses laid out over a week. Clicking on a 
 
 The `Fix My Schedule` button provides an easy way to resolve conflicts in your schedule. When clicked, a dialog will appear showing all pairs of courses that conflict in your schedule. Within each pair, choose the course you want to be moved. Once the `Ok` button is clicked, the chosen courses will be automatically moved to different, non-conflicting sections if possible.
 
+Within a schedule, clicking on a course will bring up the course details. Dragging a course allows you to view other sections of that same course. Dropping the course on an alternate section will switch the current course to the alternate section.
+
 __CRNs__
 
 The table at the top of the page provides easy ways to copy CRNs for use in Esther and other tools. Individual CRNs can be copied to the clipboard using the <span class='glyphicon glyphicon-paperclip'></span> to right of each CRN. Click the `Export Current CRNs` button to bring up a list of the CRNs for all courses that are shown in the current schedule.
