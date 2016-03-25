@@ -87,6 +87,5 @@ class Command(BaseCommand):
         parser.add_argument('term', type=str)
 
     def handle(self, *args, **options):
-        term = args[0]
         verbose = int(options['verbosity']) > 1
-        fetch_courses(term, verbose=verbose)
+        fetch_courses(options['term'], verbose=verbose)
