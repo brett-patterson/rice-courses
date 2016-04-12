@@ -61,6 +61,9 @@ def fetch_courses(term, verbose=False):
 
     bar_count = 40
 
+    old_crns = set([c.crn for c in Course.objects.all()])
+    crns = set()
+
     for i, course in enumerate(root):
         if verbose:
             count = int(float(i + 1) / course_count * bar_count)
@@ -73,7 +76,13 @@ def fetch_courses(term, verbose=False):
             name = ATTRIBUTE_MAP.get(attr.tag, attr.tag)
             course_json[name] = attr.text
 
-        Course.from_json(course_json).save()
+        course = Course.from_json(course_json)
+        crns.add(course.crn)
+        course.save()
+
+    # Remove stale courses
+    for crn in old_crns - crns:
+        Course.objects.get(crn=crn).delete()
 
 
 class Command(BaseCommand):
