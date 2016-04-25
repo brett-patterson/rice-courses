@@ -177,6 +177,14 @@ export function propTypeHas(propertyNames, required=true) {
 }
 
 /**
+ * A custom React PropTypes validator that checks that the prop value is
+ * an immutablejs Map.
+ */
+export function propTypeIsMap(prop) {
+
+}
+
+/**
  * Wrap an ES6 React Component class to autobind methods like React.createClass
  * does.
  * @param {klass} class - The class to wrap

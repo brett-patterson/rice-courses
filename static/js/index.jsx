@@ -29,7 +29,9 @@ render(
                     <Route path=':crn' component={CourseDetail} />
                 </Route>
 
-                <Route path='me' component={Me} />
+                <Route path='me' component={Me}>
+                    <Route path=':crn' component={CourseDetail} />
+                </Route>
                 <Route path='help' component={Help} />
             </Route>
         </Router>

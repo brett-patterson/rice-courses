@@ -188,7 +188,8 @@ class Me extends React.Component {
 
             <UserCourseList scheduler={this.props.currentScheduler}
                             courses={this.props.userCourses}
-                            delegate={this} />
+                            setCourseShown={this.setCourseShown}
+                            removeUserCourse={this.removeUserCourse} />
 
             {this.renderSchedulerTabs()}
 
@@ -196,6 +197,8 @@ class Me extends React.Component {
                            courses={this.props.userCourses}
                            scheduler={this.props.currentScheduler}
                            courseDelegate={this} />
+
+            {this.props.children}
         </div>;
     }
 }
@@ -205,7 +208,8 @@ reactMixin.onClass(Me, AlertMixin);
 Me.propTypes = {
     userCourses: PropTypes.array,
     schedulers: PropTypes.arrayOf(PropTypes.instanceOf(Scheduler)),
-    currentScheduler: PropTypes.instanceOf(Scheduler)
+    currentScheduler: PropTypes.instanceOf(Scheduler),
+    dispatch: PropTypes.func
 };
 
 function mapStateToProps(state) {

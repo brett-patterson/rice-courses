@@ -4,36 +4,28 @@ import React, {PropTypes} from 'react';
 import {Tabs, Tab, Modal} from 'react-bootstrap';
 import {connect} from 'react-redux';
 
-import Course from 'models/course';
+import {fetchCourse} from 'actions/courses';
 import EvaluationChart from './evaluationChart';
-import {ajax, wrapComponentClass} from 'util';
+import {wrapComponentClass} from 'util';
 
 
 class CourseDetail extends React.Component {
     constructor(props, context) {
         super(props, context);
 
-        let crn = props.params.crn;
+        let course = this.getCourse(props);
+        if (!course) {
+            props.dispatch(fetchCourse(props.params.crn));
+        }
 
         this.state = {
-            course: props.courses.get(crn),
+            course,
             courseQuestions: undefined,
             courseComments: undefined,
             instructorQuestions: undefined,
             instructorComments: undefined,
             chartType: 'pie'
         };
-
-        if (this.state.course === undefined) {
-            ajax({
-                url: `/api/courses/${crn}/`,
-                method: 'GET'
-            }).then(data => {
-                this.setState({
-                    course: Course.fromJSON(data)
-                });
-            });
-        }
 
         // ajax({
         //     url: '/evaluation/api/course/',
@@ -60,6 +52,20 @@ class CourseDetail extends React.Component {
         //         instructorComments: result.comments
         //     });
         // });
+    }
+
+    componentWillReceiveProps(props) {
+        this.setState({
+            course: this.getCourse(props)
+        });
+    }
+
+    getCourse(props) {
+        if (!props.courses) {
+            return undefined;
+        }
+
+        return props.courses.get(props.params.crn);
     }
 
     onClose() {
@@ -211,7 +217,9 @@ class CourseDetail extends React.Component {
 
 CourseDetail.propTypes = {
     courses: PropTypes.object,
-    shown: PropTypes.bool
+    shown: PropTypes.bool,
+    dispatch: PropTypes.func,
+    params: PropTypes.object
 };
 
 CourseDetail.defaultProps = {

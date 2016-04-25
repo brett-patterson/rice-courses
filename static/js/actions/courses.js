@@ -7,7 +7,7 @@ export function fetchCourses(page, filters, order) {
             return [filter.getKey(), filter.getValue()];
         });
 
-        Course.get(serverFilters, page, order).then(result => {
+        Course.list(serverFilters, page, order).then(result => {
             let {courses, pages} = result;
             dispatch(
                 completeFetchCourses(courses, pages, page, filters, order)
@@ -25,5 +25,21 @@ export function completeFetchCourses(courses, pages, page, filters, order) {
         page,
         filters,
         order
+    };
+}
+
+export function fetchCourse(crn) {
+    return dispatch => {
+        Course.get(crn).then(course => {
+            dispatch(completeFetchCourse(course));
+        });
+    };
+}
+
+export const FETCH_COURSE_COMPLETE = 'FETCH_COURSE_COMPLETE';
+export function completeFetchCourse(course) {
+    return {
+        type: FETCH_COURSE_COMPLETE,
+        course
     };
 }

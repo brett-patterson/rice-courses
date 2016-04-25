@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import Scheduler from 'models/scheduler';
 import Course from 'models/course';
 import ClipboardTrigger from 'components/clipboardTrigger';
-import {propTypeHas, wrapComponentClass} from 'util';
+import {wrapComponentClass} from 'util';
 
 
 class UserCourseList extends React.Component {
@@ -14,10 +14,7 @@ class UserCourseList extends React.Component {
             const scheduler = this.props.scheduler;
             if (scheduler) {
                 const shown = scheduler.getMap()[course.getCRN()];
-                scheduler.setCourseShown(course, !shown).then(() => {
-                    this.forceUpdate();
-                    this.props.delegate.forceUpdate();
-                });
+                this.props.setCourseShown(scheduler, course, !shown);
             }
         };
     }
@@ -25,7 +22,7 @@ class UserCourseList extends React.Component {
     removeCourseFactory(course) {
         return event => {
             event.stopPropagation();
-            this.props.delegate.removeUserCourse(course);
+            this.props.removeUserCourse(course);
         };
     }
 
@@ -121,7 +118,8 @@ class UserCourseList extends React.Component {
 
     showCourseFactory(course) {
         return () => {
-            this.showCourseDetail(course);
+            let location = `/me/${course.getCRN()}/`;
+            this.context.history.push(location);
         };
     }
 
@@ -250,12 +248,19 @@ class UserCourseList extends React.Component {
 
 UserCourseList.propTypes = {
     scheduler: PropTypes.instanceOf(Scheduler),
-    delegate: propTypeHas(['forceUpdate', 'removeUserCourse', 'addAlert']),
-    courses: PropTypes.arrayOf(PropTypes.instanceOf(Course))
+    courses: PropTypes.arrayOf(PropTypes.instanceOf(Course)),
+    setCourseShown: PropTypes.func,
+    removeUserCourse: PropTypes.func
 };
 
 UserCourseList.defaultProps = {
-    courses: []
+    courses: [],
+    setCourseShown: () => {},
+    removeUserCourse: () => {}
+};
+
+UserCourseList.contextTypes = {
+    history: PropTypes.object.isRequired
 };
 
 export default wrapComponentClass(UserCourseList);

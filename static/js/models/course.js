@@ -1,4 +1,5 @@
 import Moment from 'moment';
+import {Map} from 'immutable';
 
 import {ajax} from 'util';
 
@@ -56,7 +57,7 @@ export default class Course {
                           crossListed);
     }
 
-    static get(filters=[], page=-1, order=null) {
+    static list(filters=[], page=-1, order=null) {
         let data = {
             filters: JSON.stringify(filters)
         };
@@ -81,6 +82,15 @@ export default class Course {
             );
 
             return result;
+        });
+    }
+
+    static get(crn) {
+        return ajax({
+            url: `/api/courses/${crn}/`,
+            method: 'GET'
+        }).then(result => {
+            return Course.fromJSON(result);
         });
     }
 

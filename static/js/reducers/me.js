@@ -1,3 +1,5 @@
+import {Map} from 'immutable';
+
 import {
     FETCH_USER_COURSES_COMPLETE, FETCH_SCHEDULERS_COMPLETE
 } from 'actions/me';
