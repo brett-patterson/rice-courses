@@ -8,7 +8,7 @@ import {setUserCourse} from 'actions/me';
 import FilterWidget from './filter/filterWidget';
 import CourseFilter from './filter/courseFilter';
 import CourseList from './courseList';
-import {ajax, wrapComponentClass} from 'util';
+import {ajax, wrapComponentClass, propTypeIsMap} from 'util';
 
 
 const FILTERS = [
@@ -65,11 +65,13 @@ class Courses extends React.Component {
 }
 
 Courses.propTypes = {
-    courses: PropTypes.instanceOf(Map),
+    courses: propTypeIsMap,
     totalPages: PropTypes.number,
     page: PropTypes.number,
     filters: PropTypes.array,
-    userCourses: PropTypes.instanceOf(Map)
+    order: PropTypes.string,
+    userCourses: propTypeIsMap,
+    dispatch: PropTypes.func
 };
 
 function mapStateToProps(state) {

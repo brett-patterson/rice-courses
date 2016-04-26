@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import {Pagination} from 'react-bootstrap';
 import classNames from 'classnames';
 
-import {wrapComponentClass} from 'util';
+import {wrapComponentClass, propTypeIsMap} from 'util';
 
 
 class CourseList extends React.Component {
@@ -175,9 +175,10 @@ class CourseList extends React.Component {
 }
 
 CourseList.propTypes = {
-    courses: PropTypes.instanceOf(Map),
-    userCourses: PropTypes.instanceOf(Map),
+    courses: propTypeIsMap,
+    userCourses: propTypeIsMap,
     page: PropTypes.number,
+    totalPages: PropTypes.number,
     order: PropTypes.string,
     pageChanged: PropTypes.func,
     orderChanged: PropTypes.func,

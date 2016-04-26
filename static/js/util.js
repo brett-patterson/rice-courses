@@ -180,8 +180,11 @@ export function propTypeHas(propertyNames, required=true) {
  * A custom React PropTypes validator that checks that the prop value is
  * an immutablejs Map.
  */
-export function propTypeIsMap(prop) {
-
+export function propTypeIsMap(props, propName) {
+    const prop = props[propName];
+    if (!Map.isMap(prop)) {
+        throw new Error(`${propName} must be a Map.`);
+    }
 }
 
 /**
