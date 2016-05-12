@@ -105,7 +105,6 @@ class Scheduler(models.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'active': self.active,
             'map': self.show_map()
         }
 

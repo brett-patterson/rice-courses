@@ -12,7 +12,9 @@ export default class UserCourses {
         return ajax({
             url: '/api/me/courses/',
             method: 'GET'
-        }).then(UserCourses.toMap);
+        }).then(arr => new Map(
+            arr.map(Course.fromJSON).map(c => [c.getCRN(), c])
+        ));
     }
 
     /**
@@ -25,12 +27,9 @@ export default class UserCourses {
             url: '/api/me/courses/',
             method: 'PUT',
             data: {crn: course.getCRN(), flag}
-        }).then(UserCourses.toMap);
-    }
-
-    static toMap(jsonArray) {
-        return new Map(
-            jsonArray.map(Course.fromJSON).map(c => [c.getCRN(), c])
-        );
+        }).then(payload => {
+            payload.course = Course.fromJSON(payload.course);
+            return payload;
+        });
     }
 }

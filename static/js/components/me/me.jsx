@@ -98,17 +98,19 @@ class Me extends React.Component {
     schedulerRemoveFactory(scheduler) {
         return event => {
             event.stopPropagation();
+            const {schedulers, currentScheduler} = this.props;
 
-            if (this.props.currentScheduler === scheduler) {
-                const schedulers = this.state.schedulers;
-                const index = schedulers.indexOf(scheduler) + 1;
+            if (scheduler.equals(currentScheduler)) {
+                const index = schedulers.indexOf(scheduler);
 
-                let current = schedulers.get(index);
+                let current = schedulers.get(index + 1);
                 if (current === undefined) {
-                    current = schedulers.get(schedulers.length - 1);
+                    current = schedulers.get(index - 1);
                 }
 
-                this.setSchedulerActive(current, true);
+                if (current !== undefined) {
+                    this.setSchedulerActive(current, true);
+                }
             }
 
             this.props.dispatch(removeScheduler(scheduler));
@@ -132,9 +134,11 @@ class Me extends React.Component {
     }
 
     renderSchedulerTabs() {
-        const schedulerTabs = this.props.schedulers.map(scheduler => {
+        const {schedulers, currentScheduler} = this.props;
+
+        const schedulerTabs = schedulers.map(scheduler => {
             let closeButton;
-            if (this.props.schedulers.count() > 1)
+            if (schedulers.count() > 1)
                 closeButton = (
                     <span className='scheduler-close glyphicon glyphicon-remove'
                           onClick={this.schedulerRemoveFactory(scheduler)} />
@@ -152,7 +156,7 @@ class Me extends React.Component {
 
             return (
                 <li key={scheduler.getID()}
-                    className={scheduler.isActive() ? 'active' : ''}>
+                    className={scheduler.equals(currentScheduler) ? 'active' : ''}>
                     <a onClick={this.schedulerSelectFactory(scheduler)}
                        onDoubleClick={this.schedulerEditStartFactory(scheduler)}>
                         {schedulerName}
@@ -175,7 +179,8 @@ class Me extends React.Component {
     render() {
         let exportDialog;
         if (this.state.exported !== null) {
-            exportDialog = <ExportDialog scheduler={this.state.exported} onClose={this.hideExportDialog} />;
+            exportDialog = <ExportDialog scheduler={this.state.exported}
+                                         onClose={this.hideExportDialog} />;
         }
 
         return <div>
@@ -221,12 +226,10 @@ function mapStateToProps(state) {
         return 0;
     });
 
-    let currentScheduler = state.me.schedulers.filter(s => s.isActive()).get(0);
-
     return {
         userCourses,
         schedulers: state.me.schedulers,
-        currentScheduler
+        currentScheduler: state.me.activeScheduler
     };
 }
 

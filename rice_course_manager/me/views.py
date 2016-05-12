@@ -36,12 +36,16 @@ class UserCoursesView(APIView):
             for scheduler in Scheduler.objects.filter(user_profile=profile):
                 scheduler.set_shown(course, True)
 
+            action = 'added'
+
         else:
             profile.courses.remove(course)
+            action = 'removed'
 
-        return self.success(
-            [c.json() for c in profile.courses.all()], safe=False
-        )
+        return self.success({
+            'action': action,
+            'course': course.json()
+        })
 
 
 class AlternateCourseView(APIView):
@@ -58,9 +62,12 @@ class AlternateCourseView(APIView):
             )
             alternates = alternates.exclude(section=course.section)
 
-            scheduler = Scheduler.objects.get(shown=True)
-            user_courses = [Course.objects.get(crn=c.crn)
-                            for c in request.user.userprofile.courses.all()
+            profile = request.user.userprofile
+            scheduler = (Scheduler.objects
+                                  .filter(user_profile=profile)
+                                  .get(shown=True))
+
+            user_courses = [c for c in request.user.userprofile.courses.all()
                             if c.crn != crn and scheduler.show_map()[c.crn]]
 
             result = []
@@ -88,10 +95,16 @@ class SchedulerCollectionView(APIView):
         """ Get all the schedulers for the user.
         """
         profile = request.user.userprofile
-        schedulers = [s.json()
-                      for s in Scheduler.objects.filter(user_profile=profile)]
+        schedulers = Scheduler.objects.filter(user_profile=profile)
 
-        return self.success(schedulers, safe=False)
+        active = Scheduler.objects.filter(active=True).first()
+        if active is not None:
+            active = active.id
+
+        return self.success({
+            'schedulers': [s.json() for s in schedulers],
+            'activeID': active
+        })
 
     def post(self, request):
         """ Add a scheduler for the user.
@@ -99,45 +112,53 @@ class SchedulerCollectionView(APIView):
         name = request.POST.get('name')
 
         if name is not None:
-            request.user.userprofile.create_scheduler(name, active=True)
-            return self.success(
-                [s.json() for s in Scheduler.objects.all()],
-                safe=False
-            )
+            s = request.user.userprofile.create_scheduler(name, active=True)
+            return self.success(s.json())
 
         return self.failure('No name specified')
+
+
+class ActiveSchedulerView(APIView):
+    def put(self, request):
+        """ Set a scheduler to be the active scheduler
+        """
+        PUT = QueryDict(request.body)
+        try:
+            id = int(PUT.get('id'))
+        except ValueError:
+            self.failure('Invalid ID')
+
+        s = Scheduler.objects.get(id=id)
+        s.active = True
+        s.save()
+
+        return self.success(s.json())
 
 
 class SchedulerView(APIView):
     def delete(self, request, scheduler_id):
         """ Remove a scheduler for the user.
         """
-        Scheduler.objects.get(id=scheduler_id).delete()
-        return self.success(
-            [s.json() for s in Scheduler.objects.all()],
-            safe=False
-        )
+        s = Scheduler.objects.get(id=scheduler_id)
+        payload = s.json()
+        s.delete()
+        return self.success(payload)
 
     def put(self, request, scheduler_id):
-        """ Rename a scheduler or set it shown or hidden.
+        """ Rename a scheduler.
         """
         PUT = QueryDict(request.body)
         name = PUT.get('name')
-        shown = PUT.get('shown')
 
         scheduler = Scheduler.objects.get(id=scheduler_id)
 
-        if name is not None:
-            scheduler.name = name
+        if name is None:
+            return self.failure('No name specified')
 
-        if shown is not None:
-            scheduler.shown = shown == 'true'
-
+        scheduler.name = name
         scheduler.save()
-        return self.success(
-            [s.json() for s in Scheduler.objects.all()],
-            safe=False
-        )
+
+        return self.success(scheduler.json())
 
 
 class SchedulerCourseView(APIView):
@@ -156,10 +177,8 @@ class SchedulerCourseView(APIView):
 
         scheduler = Scheduler.objects.get(id=scheduler_id)
         scheduler.set_shown(Course.objects.get(crn=crn), shown == 'true')
-        return self.success(
-            [s.json() for s in Scheduler.objects.all()],
-            safe=False
-        )
+
+        return self.success(scheduler.json())
 
     def delete(self, request, scheduler_id):
         """ Remove a course from a scheduler's show map.
@@ -171,10 +190,7 @@ class SchedulerCourseView(APIView):
 
         scheduler = Scheduler.objects.get(id=scheduler_id)
         scheduler.remove_course(Course.objects.get(crn=crn))
-        return self.success(
-            [s.json() for s in Scheduler.objects.all()],
-            safe=False
-        )
+        return self.success(scheduler.json())
 
 
 class SchedulerExportView(APIView):
