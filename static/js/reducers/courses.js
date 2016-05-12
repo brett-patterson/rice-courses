@@ -1,5 +1,5 @@
-import {FETCH_COURSES_COMPLETE, FETCH_COURSE_COMPLETE} from 'actions/courses';
-import {Map} from 'immutable';
+import {FETCH_COURSES, FETCH_COURSE} from 'actions/courses';
+import {OrderedMap} from 'immutable';
 
 
 const initialState = {
@@ -15,7 +15,7 @@ export default function(state=initialState, action) {
     let all, next;
 
     switch (action.type) {
-    case FETCH_COURSES_COMPLETE:
+    case FETCH_COURSES:
         if (state.all === undefined) {
             all = action.courses;
         } else {
@@ -30,8 +30,8 @@ export default function(state=initialState, action) {
             filters: action.filters
         });
 
-    case FETCH_COURSE_COMPLETE:
-        next = new Map([[action.course.getCRN(), action.course]]);
+    case FETCH_COURSE:
+        next = new OrderedMap([[action.course.getCRN(), action.course]]);
         if (state.all === undefined) {
             all = next;
         } else {

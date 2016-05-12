@@ -1,5 +1,5 @@
 import Moment from 'moment';
-import {Map} from 'immutable';
+import {OrderedMap} from 'immutable';
 
 import {ajax} from 'util';
 
@@ -75,7 +75,7 @@ export default class Course {
             method: 'GET',
             data
         }).then(result => {
-            result.courses = new Map(
+            result.courses = new OrderedMap(
                 result.courses
                     .map(Course.fromJSON)
                     .map(c => [c.getCRN(), c])

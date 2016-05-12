@@ -2,7 +2,7 @@ import 'courses.scss';
 
 import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {Map} from 'immutable';
+import {OrderedMap, Map} from 'immutable';
 
 import {fetchCourses} from 'actions/courses';
 import {setUserCourse} from 'actions/me';
@@ -66,7 +66,7 @@ class Courses extends React.Component {
 }
 
 Courses.propTypes = {
-    courses: propTypePredicate(Map.isMap, false),
+    courses: propTypePredicate(OrderedMap.isOrderedMap, false),
     totalPages: PropTypes.number,
     page: PropTypes.number,
     filters: PropTypes.array,

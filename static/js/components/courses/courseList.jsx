@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import {Pagination} from 'react-bootstrap';
 import classNames from 'classnames';
-import {Map} from 'immutable';
+import {Map, OrderedMap} from 'immutable';
 
 import {wrapComponentClass, propTypePredicate} from 'util';
 
@@ -88,12 +88,14 @@ class CourseList extends React.Component {
     }
 
     renderCourseRows() {
-        if (this.props.courses === undefined)
+        const {courses} = this.props;
+
+        if (courses === undefined)
             return <tr><td>Loading courses...</td></tr>;
-        else if (this.props.courses.size === 0)
+        else if (courses.count() === 0)
             return <tr><td>No courses found</td></tr>;
 
-        return Array.from(this.props.courses.values()).map(course => {
+        return courses.map(course => {
             const isUserCourse = this.isUserCourse(course);
 
             const userClasses = classNames({
@@ -176,7 +178,7 @@ class CourseList extends React.Component {
 }
 
 CourseList.propTypes = {
-    courses: propTypePredicate(Map.isMap, false),
+    courses: propTypePredicate(OrderedMap.isOrderedMap, false),
     userCourses: propTypePredicate(Map.isMap),
     page: PropTypes.number,
     totalPages: PropTypes.number,
