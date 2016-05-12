@@ -1,3 +1,5 @@
+import {Map} from 'immutable';
+
 import Course from './course';
 import {ajax} from '../util';
 

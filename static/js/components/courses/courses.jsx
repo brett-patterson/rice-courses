@@ -2,13 +2,14 @@ import 'courses.scss';
 
 import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
+import {Map} from 'immutable';
 
 import {fetchCourses} from 'actions/courses';
 import {setUserCourse} from 'actions/me';
 import FilterWidget from './filter/filterWidget';
 import CourseFilter from './filter/courseFilter';
 import CourseList from './courseList';
-import {ajax, wrapComponentClass, propTypeIsMap} from 'util';
+import {ajax, wrapComponentClass, propTypePredicate} from 'util';
 
 
 const FILTERS = [
@@ -65,12 +66,12 @@ class Courses extends React.Component {
 }
 
 Courses.propTypes = {
-    courses: propTypeIsMap,
+    courses: propTypePredicate(Map.isMap, false),
     totalPages: PropTypes.number,
     page: PropTypes.number,
     filters: PropTypes.array,
     order: PropTypes.string,
-    userCourses: propTypeIsMap,
+    userCourses: propTypePredicate(Map.isMap),
     dispatch: PropTypes.func
 };
 

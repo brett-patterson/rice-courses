@@ -160,7 +160,7 @@ class SchedulerView extends React.Component {
 
 SchedulerView.propTypes = {
     scheduler: PropTypes.instanceOf(Scheduler),
-    courses: PropTypes.array,
+    courses: PropTypes.any,
     courseDelegate: propTypeHas(['replaceSection'])
 };
 

@@ -1,3 +1,5 @@
+import {List} from 'immutable';
+
 import UserCourses from 'models/userCourses';
 import Scheduler from 'models/scheduler';
 
@@ -38,7 +40,7 @@ export const FETCH_SCHEDULERS_COMPLETE = 'FETCH_SCHEDULERS_COMPLETE';
 export function completeFetchSchedulers(schedulers) {
     return {
         type: FETCH_SCHEDULERS_COMPLETE,
-        schedulers
+        schedulers: new List(schedulers)
     };
 }
 

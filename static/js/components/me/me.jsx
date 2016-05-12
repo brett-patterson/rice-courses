@@ -7,6 +7,7 @@ import reactMixin from 'react-mixin';
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import {connect} from 'react-redux';
+import {Map, List} from 'immutable';
 
 import {
     setUserCourse, schedulerRemoveCourse, setCourseShown, setSchedulerActive,
@@ -17,7 +18,7 @@ import UserCourseList from './userCourseList';
 import SchedulerView from './schedulerView';
 import ExportDialog from './export';
 import AlertMixin from 'components/alertMixin';
-import {wrapComponentClass} from 'util';
+import {wrapComponentClass, propTypePredicate} from 'util';
 
 
 class Me extends React.Component {
@@ -35,9 +36,9 @@ class Me extends React.Component {
     removeUserCourse(course) {
         this.props.dispatch(setUserCourse(course, false));
 
-        for (let scheduler of this.props.schedulers) {
+        this.props.schedulers.forEach(scheduler => {
             this.props.dispatch(schedulerRemoveCourse(scheduler, course));
-        }
+        });
     }
 
     setCourseShown(scheduler, course, shown) {
@@ -51,11 +52,11 @@ class Me extends React.Component {
         this.setCourseShown(current, oldSection, false);
         this.setCourseShown(current, newSection, true);
 
-        for (let scheduler of this.props.schedulers) {
+        this.props.schedulers.forEach(scheduler => {
             if (scheduler !== current) {
                 this.setCourseShown(scheduler, newSection, false);
             }
-        }
+        });
     }
 
     setSchedulerActive(scheduler, active) {
@@ -102,9 +103,9 @@ class Me extends React.Component {
                 const schedulers = this.state.schedulers;
                 const index = schedulers.indexOf(scheduler) + 1;
 
-                let current = schedulers[index];
+                let current = schedulers.get(index);
                 if (current === undefined) {
-                    current = schedulers[schedulers.length - 1];
+                    current = schedulers.get(schedulers.length - 1);
                 }
 
                 this.setSchedulerActive(current, true);
@@ -133,7 +134,7 @@ class Me extends React.Component {
     renderSchedulerTabs() {
         const schedulerTabs = this.props.schedulers.map(scheduler => {
             let closeButton;
-            if (this.props.schedulers.length > 1)
+            if (this.props.schedulers.count() > 1)
                 closeButton = (
                     <span className='scheduler-close glyphicon glyphicon-remove'
                           onClick={this.schedulerRemoveFactory(scheduler)} />
@@ -206,22 +207,21 @@ class Me extends React.Component {
 reactMixin.onClass(Me, AlertMixin);
 
 Me.propTypes = {
-    userCourses: PropTypes.array,
-    schedulers: PropTypes.arrayOf(PropTypes.instanceOf(Scheduler)),
+    userCourses: propTypePredicate(Map.isMap),
+    schedulers: propTypePredicate(List.isList),
     currentScheduler: PropTypes.instanceOf(Scheduler),
     dispatch: PropTypes.func
 };
 
 function mapStateToProps(state) {
-    let userCourses = Array.from(state.me.userCourses.values());
-    userCourses.sort((a, b) => {
+    let userCourses = state.me.userCourses.sort((a, b) => {
         const titleA = a.getCourseID(), titleB = b.getCourseID();
         if (titleA < titleB) return -1;
         if (titleA > titleB) return 1;
         return 0;
     });
 
-    let currentScheduler = state.me.schedulers.filter(s => s.isActive())[0];
+    let currentScheduler = state.me.schedulers.filter(s => s.isActive()).get(0);
 
     return {
         userCourses,

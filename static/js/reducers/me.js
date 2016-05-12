@@ -1,4 +1,4 @@
-import {Map} from 'immutable';
+import {Map, List} from 'immutable';
 
 import {
     FETCH_USER_COURSES_COMPLETE, FETCH_SCHEDULERS_COMPLETE
@@ -6,7 +6,7 @@ import {
 
 const initialState = {
     userCourses: new Map(),
-    schedulers: []
+    schedulers: new List()
 };
 
 

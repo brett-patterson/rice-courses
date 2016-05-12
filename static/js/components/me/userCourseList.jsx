@@ -1,11 +1,11 @@
 import React, {PropTypes} from 'react';
 import {Badge} from 'react-bootstrap';
 import classNames from 'classnames';
+import {List, Map} from 'immutable';
 
 import Scheduler from 'models/scheduler';
-import Course from 'models/course';
 import ClipboardTrigger from 'components/clipboardTrigger';
-import {wrapComponentClass} from 'util';
+import {wrapComponentClass, propTypePredicate} from 'util';
 
 
 class UserCourseList extends React.Component {
@@ -27,17 +27,13 @@ class UserCourseList extends React.Component {
     }
 
     sumCredits(courses) {
-        let vary = false;
-        let total = 0;
-
-        for (let i = 0; i < courses.length; i++) {
-            const credits = courses[i].getCredits();
-
-            if (credits.indexOf('to') > -1)
-                vary = true;
-
-            total += parseFloat(credits);
-        }
+        let [total, vary] = courses.reduce((current, course) => {
+            const credits = course.getCredits();
+            return [
+                current[0] + parseFloat(credits),
+                current[1] || (credits.indexOf('to') > -1)
+            ];
+        }, [0, false]);
 
         return [total.toFixed(1), vary];
     }
@@ -46,7 +42,7 @@ class UserCourseList extends React.Component {
         let result = '';
 
         for (let i = 1; i <= 3; i++) {
-            const [credits, vary] = distributionMap[i];
+            const [credits, vary] = distributionMap.get(i);
             if (credits > 0) {
                 const label = this.buildCreditsLabel(`D${i}`, vary);
                 result += `${label} ${credits}, `;
@@ -61,26 +57,25 @@ class UserCourseList extends React.Component {
     }
 
     getDistributionMap(courses) {
-        let courseMap = {
-            1: [],
-            2: [],
-            3: []
-        };
+        let courseMap = new Map([
+            [1, new List()],
+            [2, new List()],
+            [3, new List()]
+        ]);
 
-        for (let i = 0; i < courses.length; i++) {
-            const course = courses[i];
+        courseMap = courses.reduce((current, course) => {
             const distribution = course.getDistribution();
-
             if (distribution > 0) {
-                courseMap[distribution].push(course);
+                return current.set(
+                    distribution,
+                    courseMap.get(distribution).push(course)
+                );
             }
-        }
+            return current;
 
-        return {
-            1: this.sumCredits(courseMap[1]),
-            2: this.sumCredits(courseMap[2]),
-            3: this.sumCredits(courseMap[3])
-        };
+        }, courseMap);
+
+        return courseMap.map(this.sumCredits);
     }
 
     buildCreditsLabel(name, vary) {
@@ -248,7 +243,7 @@ class UserCourseList extends React.Component {
 
 UserCourseList.propTypes = {
     scheduler: PropTypes.instanceOf(Scheduler),
-    courses: PropTypes.arrayOf(PropTypes.instanceOf(Course)),
+    courses: propTypePredicate(Map.isMap, false),
     setCourseShown: PropTypes.func,
     removeUserCourse: PropTypes.func
 };

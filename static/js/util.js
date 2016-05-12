@@ -177,14 +177,18 @@ export function propTypeHas(propertyNames, required=true) {
 }
 
 /**
- * A custom React PropTypes validator that checks that the prop value is
- * an immutablejs Map.
+ * A React PropTypes validator that checks that the prop value passes a given
+ * predicate function.
  */
-export function propTypeIsMap(props, propName) {
-    const prop = props[propName];
-    if (!Map.isMap(prop)) {
-        throw new Error(`${propName} must be a Map.`);
-    }
+export function propTypePredicate(predicate, required=true, errorMsg='must pass predicate.') {
+    return (props, propName) => {
+        const prop = props[propName];
+        if ((prop === undefined && required) ||
+            (prop !== undefined && !predicate(prop))) {
+            console.log(predicate, prop);
+            throw new Error(`${propName} ${errorMsg}`);
+        }
+    };
 }
 
 /**
@@ -219,7 +223,7 @@ export function wrapComponentClass(klass) {
     Constructor.propTypes = klass.propTypes;
     Constructor.defaultProps = klass.defaultProps;
     Constructor.contextTypes = klass.contextTypes;
-    Constructor.displayName = klass.name;
+    Constructor.displayName = klass.displayName || klass.name;
 
     return Constructor;
 }

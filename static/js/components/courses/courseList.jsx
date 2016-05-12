@@ -1,8 +1,9 @@
 import React, {PropTypes} from 'react';
 import {Pagination} from 'react-bootstrap';
 import classNames from 'classnames';
+import {Map} from 'immutable';
 
-import {wrapComponentClass, propTypeIsMap} from 'util';
+import {wrapComponentClass, propTypePredicate} from 'util';
 
 
 class CourseList extends React.Component {
@@ -175,8 +176,8 @@ class CourseList extends React.Component {
 }
 
 CourseList.propTypes = {
-    courses: propTypeIsMap,
-    userCourses: propTypeIsMap,
+    courses: propTypePredicate(Map.isMap, false),
+    userCourses: propTypePredicate(Map.isMap),
     page: PropTypes.number,
     totalPages: PropTypes.number,
     order: PropTypes.string,
