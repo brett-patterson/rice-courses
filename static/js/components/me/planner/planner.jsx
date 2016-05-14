@@ -7,52 +7,14 @@ import {wrapComponentClass} from 'util';
 
 
 class Planner extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            events: []
-        };
-    }
-
-    componentWillReceiveProps(nextProps) {
-        this.fetchEvents(nextProps.eventSource);
-    }
-
-    updateEvents() {
-        this.fetchEvents(this.props.eventSource);
-    }
-
-    fetchEvents(source) {
-        if (source === undefined) {
-            this.setState({
-                events: []
-            });
-        } else if (typeof source === 'function') {
-            source(events => {
-                this.setState({
-                    events
-                });
-            });
-        } else {
-            this.setState({
-                events: source
-            });
-        }
-    }
-
     militaryTo12Hour(military) {
         let twelveHour = military % 12;
-
-        if (twelveHour === 0) {
-            twelveHour = 12;
-        }
-
-        return twelveHour;
+        return twelveHour === 0 ? 12 : twelveHour;
     }
 
     getSlotWidthPercent() {
-        return (100 - this.props.timeWidthPercent) / this.props.days.length;
+        const {timeWidthPercent, days} = this.props;
+        return (100 - timeWidthPercent) / days.length;
     }
 
     getHeightForEvent(event) {
@@ -62,16 +24,16 @@ class Planner extends React.Component {
     }
 
     getLeftPercentForEvent(event) {
-        const index = this.props.days.indexOf(event.start.format('dddd'));
+        const {days, timeWidthPercent, eventInsetPercent} = this.props;
+        const i = days.indexOf(event.start.format('dddd'));
 
-        return this.props.timeWidthPercent +
-               index * this.getSlotWidthPercent() +
-               this.props.eventInsetPercent;
+        return timeWidthPercent + i * this.getSlotWidthPercent() + eventInsetPercent;
     }
 
     getTopForEvent(event) {
-        return (event.start.hour() + event.start.minutes() / 60.0 - this.props.startHour) *
-                2 * this.props.slotHeight + this.props.slotHeight + 1;
+        const {startHour, slotHeight} = this.props;
+        return (event.start.hour() + event.start.minutes() / 60.0 - startHour) *
+                2 * slotHeight + slotHeight + 1;
     }
 
     onEventClickHandler(event) {
@@ -93,18 +55,16 @@ class Planner extends React.Component {
     }
 
     renderEvents() {
-        const eventWidth = this.getSlotWidthPercent() -
-                           2 * this.props.eventInsetPercent;
+        const {events, eventInsetPercent, timeDisplayFormat} = this.props;
+
+        const eventWidth = this.getSlotWidthPercent() - 2 * eventInsetPercent;
 
         let eventsAtSameTime = {};
 
-        for (let i = 0; i < this.state.events.length; i++) {
-            const event = this.state.events[i];
+        for (let event of events) {
             eventsAtSameTime[event.id] = [event];
 
-            for (let j = 0; j < this.state.events.length; j++) {
-                const other = this.state.events[j];
-
+            for (let other of events) {
                 if (event !== other && eventOverlap(event, other)) {
                     eventsAtSameTime[event.id].push(other);
                 }
@@ -121,7 +81,7 @@ class Planner extends React.Component {
             });
         }
 
-        return this.state.events.map(event => {
+        return events.map(event => {
             const sameTime = eventsAtSameTime[event.id];
             const width = eventWidth / sameTime.length;
             const offset = width * sameTime.indexOf(event);
@@ -145,43 +105,45 @@ class Planner extends React.Component {
                 <div className='planner-event-underlay' style={overlayStyle} />,
                 <Event key={event.id}
                        event={event} style={eventStyle} planner={this}
-                       timeDisplayFormat={this.props.timeDisplayFormat}
+                       timeDisplayFormat={timeDisplayFormat}
                        onClick={this.onEventClickHandler(event)} />
             ];
         });
     }
 
     renderHeaderRows() {
-        const headers = this.props.days.map((day, i) => {
-            return <th height={this.props.slotHeight}
-                       key={`plannerHead${i}`}>{day}</th>;
+        const {days, slotHeight, timeWidthPercent} = this.props;
+
+        const headers = days.map((day, i) => {
+            return <th height={slotHeight} key={`plannerHead${i}`}>{day}</th>;
         });
 
-        return (
-            <tr>
-                <th width={`${this.props.timeWidthPercent}%`}></th>
-                {headers}
-            </tr>
-        );
+        return <tr>
+            <th width={`${timeWidthPercent}%`}></th>
+            {headers}
+        </tr>;
     }
 
     renderFillerRows(major=false) {
+        const {days, slotHeight} = this.props;
         const rowClass = major ? 'planner-slot-major' : 'planner-slot-minor';
-        return this.props.days.map((day, i) => {
+
+        return days.map((day, i) => {
             return <td key={`filler${i}`}
-                       height={this.props.slotHeight} className={rowClass} />;
+                       height={slotHeight} className={rowClass} />;
         });
     }
 
     renderPlannerRows() {
+        const {startHour, endHour, slotHeight} = this.props;
         let rows = [];
 
-        for (let i = this.props.startHour; i <= this.props.endHour; i++) {
+        for (let i = startHour; i <= endHour; i++) {
             const amPM = Math.floor(i / 12) === 0 ? 'am' : 'pm';
             rows.push(
                 <tr key={`plannerTime${i}-1`}>
                     <td className='planner-axis-time planner-slot-major'
-                        height={this.props.slotHeight}>
+                        height={slotHeight}>
                         {this.militaryTo12Hour(i)}
                         <span className='planner-am-pm'>{amPM}</span>
                     </td>
@@ -189,7 +151,7 @@ class Planner extends React.Component {
                 </tr>,
                 <tr key={`plannerTime${i}-2`}>
                     <td className='planner-axis-time planner-slot-minor'
-                        height={this.props.slotHeight}></td>
+                        height={slotHeight}></td>
                     {this.renderFillerRows()}
                 </tr>
             );
@@ -199,26 +161,24 @@ class Planner extends React.Component {
     }
 
     render() {
-        return (
-            <div className='planner'>
-                <div className='planner-overlay'>
-                    {this.renderEvents()}
-                </div>
-                <table>
-                    <thead>
-                        {this.renderHeaderRows()}
-                    </thead>
-                    <tbody>
-                        {this.renderPlannerRows()}
-                    </tbody>
-                </table>
+        return <div className='planner'>
+            <div className='planner-overlay'>
+                {this.renderEvents()}
             </div>
-        );
+            <table>
+                <thead>
+                    {this.renderHeaderRows()}
+                </thead>
+                <tbody>
+                    {this.renderPlannerRows()}
+                </tbody>
+            </table>
+        </div>;
     }
 }
 
 Planner.propTypes = {
-    eventSource: PropTypes.oneOfType([PropTypes.array, PropTypes.func]),
+    events: PropTypes.array,
     days: PropTypes.array,
     startHour: PropTypes.number,
     endHour: PropTypes.number,
@@ -233,7 +193,7 @@ Planner.propTypes = {
 };
 
 Planner.defaultProps = {
-    eventSource: [],
+    events: [],
     days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
     startHour: 8,
     endHour: 20,

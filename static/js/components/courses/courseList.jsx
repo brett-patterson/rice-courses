@@ -150,7 +150,7 @@ class CourseList extends React.Component {
                     </td>
                 </tr>
             );
-        });
+        }).toArray();
     }
 
     render() {

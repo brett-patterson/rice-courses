@@ -102,10 +102,10 @@ export default class Course {
                 subject: this.subject,
                 number: this.number
             }
-        }).then(result => {
-            return result.filter(data => data.section !== this.section)
-                .map(Course.fromJSON);
-        });
+        }).then(result => result
+            .map(Course.fromJSON)
+            .filter(c => c.getSection() !== this.section)
+        );
     }
 
     _convertMeetingsToDates(meetings) {

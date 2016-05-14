@@ -183,7 +183,7 @@ class UserCourseList extends React.Component {
                     </td>
                 </tr>
             );
-        });
+        }).toArray();
     }
 
     renderCourseHeaders() {
@@ -199,21 +199,6 @@ class UserCourseList extends React.Component {
                 <th className='text-center'>Enrollment</th>
                 <th className='text-center'>Credits</th>
             </tr>
-        );
-    }
-
-    renderCourseTable() {
-        return (
-            <div className='table-responsive'>
-                <table className='table table-hover course-table'>
-                    <thead>
-                        {this.renderCourseHeaders()}
-                    </thead>
-                    <tbody>
-                        {this.renderCourseRows()}
-                    </tbody>
-                </table>
-            </div>
         );
     }
 
@@ -234,7 +219,17 @@ class UserCourseList extends React.Component {
     render() {
         return (
             <div>
-                {this.renderCourseTable()}
+                <div className='table-responsive'>
+                    <table className='table table-hover course-table'>
+                        <thead>
+                            {this.renderCourseHeaders()}
+                        </thead>
+                        <tbody>
+                            {this.renderCourseRows()}
+                        </tbody>
+                    </table>
+                </div>
+
                 {this.renderCourseCredits()}
             </div>
         );
@@ -249,7 +244,7 @@ UserCourseList.propTypes = {
 };
 
 UserCourseList.defaultProps = {
-    courses: [],
+    courses: new Map(),
     setCourseShown: () => {},
     removeUserCourse: () => {}
 };

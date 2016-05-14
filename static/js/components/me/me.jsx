@@ -10,7 +10,7 @@ import {connect} from 'react-redux';
 import {Map, List} from 'immutable';
 
 import {
-    setUserCourse, schedulerRemoveCourse, setCourseShown, setSchedulerActive,
+    addUserCourse, removeUserCourse, setCourseShown, setSchedulerActive,
     removeScheduler, addScheduler, renameScheduler
 } from 'actions/me';
 import Scheduler from 'models/scheduler';
@@ -30,15 +30,11 @@ class Me extends React.Component {
     }
 
     addUserCourse(course) {
-        this.props.dispatch(setUserCourse(course, true));
+        this.props.dispatch(addUserCourse(course));
     }
 
     removeUserCourse(course) {
-        this.props.dispatch(setUserCourse(course, false));
-
-        this.props.schedulers.forEach(scheduler => {
-            this.props.dispatch(schedulerRemoveCourse(scheduler, course));
-        });
+        this.props.dispatch(removeUserCourse(course));
     }
 
     setCourseShown(scheduler, course, shown) {
@@ -46,14 +42,15 @@ class Me extends React.Component {
     }
 
     replaceSection(oldSection, newSection) {
+        const {schedulers, currentScheduler} = this.props;
+
         this.addUserCourse(newSection);
 
-        let current = this.props.currentScheduler;
-        this.setCourseShown(current, oldSection, false);
-        this.setCourseShown(current, newSection, true);
+        this.setCourseShown(currentScheduler, oldSection, false);
+        this.setCourseShown(currentScheduler, newSection, true);
 
-        this.props.schedulers.forEach(scheduler => {
-            if (scheduler !== current) {
+        schedulers.forEach(scheduler => {
+            if (!scheduler.equals(currentScheduler)) {
                 this.setCourseShown(scheduler, newSection, false);
             }
         });
@@ -202,7 +199,7 @@ class Me extends React.Component {
             <SchedulerView ref='schedulerView'
                            courses={this.props.userCourses}
                            scheduler={this.props.currentScheduler}
-                           courseDelegate={this} />
+                           replaceSection={this.replaceSection} />
 
             {this.props.children}
         </div>;

@@ -13,7 +13,7 @@ class UserCoursesView(APIView):
         course_list = request.user.userprofile.courses.all()
         return self.success([c.json() for c in course_list], safe=False)
 
-    def put(self, request):
+    def post(self, request):
         """ Add a course for the user.
         """
         PUT = QueryDict(request.body)
@@ -22,29 +22,39 @@ class UserCoursesView(APIView):
         if crn is None:
             return self.failure('No CRN specified')
 
-        flag = PUT.get('flag')
-        if flag is None:
-            return self.failure('User course flag must be specified')
-
         course = Course.objects.get(crn=crn)
-
         profile = request.user.userprofile
+        schedulers = Scheduler.objects.filter(user_profile=profile)
 
-        if flag == 'true':
-            profile.courses.add(course)
-
-            for scheduler in Scheduler.objects.filter(user_profile=profile):
-                scheduler.set_shown(course, True)
-
-            action = 'added'
-
-        else:
-            profile.courses.remove(course)
-            action = 'removed'
+        profile.courses.add(course)
+        for scheduler in schedulers:
+            scheduler.set_shown(course, True)
 
         return self.success({
-            'action': action,
-            'course': course.json()
+            'course': course.json(),
+            'schedulers': [s.json() for s in schedulers]
+        })
+
+    def delete(self, request):
+        """ Delete a course for the user.
+        """
+        DELETE = QueryDict(request.body)
+
+        crn = DELETE.get('crn')
+        if crn is None:
+            return self.failure('No CRN specified')
+
+        course = Course.objects.get(crn=crn)
+        profile = request.user.userprofile
+        schedulers = Scheduler.objects.filter(user_profile=profile)
+
+        for scheduler in schedulers:
+            scheduler.remove_course(course)
+        profile.courses.remove(course)
+
+        return self.success({
+            'course': course.json(),
+            'schedulers': [s.json() for s in schedulers]
         })
 
 

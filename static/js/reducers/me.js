@@ -1,8 +1,8 @@
 import {Map, List} from 'immutable';
 
 import {
-    FETCH_USER_COURSES, SET_USER_COURSE, FETCH_SCHEDULERS, ADD_SCHEDULER,
-    REMOVE_SCHEDULER, SET_ACTIVE_SCHEDULER, UPDATE_SCHEDULER
+    FETCH_USER_COURSES, ADD_USER_COURSE, REMOVE_USER_COURSE, FETCH_SCHEDULERS,
+    ADD_SCHEDULER, REMOVE_SCHEDULER, SET_ACTIVE_SCHEDULER, UPDATE_SCHEDULER
 } from 'actions/me';
 
 const initialState = {
@@ -13,7 +13,7 @@ const initialState = {
 
 
 export default function(state=initialState, action) {
-    let course, nextCourses;
+    let nextState, course, nextCourses, scheduler;
 
     switch (action.type) {
     case FETCH_USER_COURSES:
@@ -21,17 +21,27 @@ export default function(state=initialState, action) {
             userCourses: action.courses
         });
 
-    case SET_USER_COURSE:
+    case ADD_USER_COURSE:
         course = action.course;
-
-        if (action.action === 'added') {
-            nextCourses = state.userCourses.set(course.getCRN(), course);
-        } else {
-            nextCourses = state.userCourses.delete(course.getCRN());
-        }
+        nextCourses = state.userCourses.set(course.getCRN(), course);
+        scheduler = action.schedulers.find(s => s.equals(state.activeScheduler));
 
         return Object.assign({}, state, {
-            userCourses: nextCourses
+            userCourses: nextCourses,
+            schedulers: action.schedulers,
+            activeScheduler: scheduler
+        });
+
+
+    case REMOVE_USER_COURSE:
+        course = action.course;
+        nextCourses = state.userCourses.delete(course.getCRN());
+        scheduler = action.schedulers.find(s => s.equals(state.activeScheduler));
+
+        return Object.assign({}, state, {
+            userCourses: nextCourses,
+            schedulers: action.schedulers,
+            activeScheduler: scheduler
         });
 
     case FETCH_SCHEDULERS:
@@ -50,12 +60,19 @@ export default function(state=initialState, action) {
         });
 
     case UPDATE_SCHEDULER:
-        return Object.assign({}, state, {
+        scheduler = action.scheduler;
+        nextState = {
             schedulers: state.schedulers.map(s => {
-                if (s.equals(action.scheduler)) return action.scheduler;
+                if (s.equals(scheduler)) return scheduler;
                 return s;
             })
-        });
+        };
+
+        if (state.activeScheduler.equals(scheduler)) {
+            nextState.activeScheduler = scheduler;
+        }
+
+        return Object.assign({}, state, nextState);
 
     case SET_ACTIVE_SCHEDULER:
         return Object.assign({}, state, {

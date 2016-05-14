@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 import {OrderedMap, Map} from 'immutable';
 
 import {fetchCourses} from 'actions/courses';
-import {setUserCourse} from 'actions/me';
+import {addUserCourse, removeUserCourse} from 'actions/me';
 import FilterWidget from './filter/filterWidget';
 import CourseFilter from './filter/courseFilter';
 import CourseList from './courseList';
@@ -44,7 +44,15 @@ class Courses extends React.Component {
     }
 
     setUserCourse(course, flag) {
-        this.props.dispatch(setUserCourse(course, flag));
+        let action;
+
+        if (flag) {
+            action = addUserCourse(course);
+        } else {
+            action = removeUserCourse(course);
+        }
+
+        this.props.dispatch(action);
     }
 
     render() {

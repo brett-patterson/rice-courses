@@ -13,15 +13,31 @@ export function fetchUserCourses() {
     };
 }
 
-export const SET_USER_COURSE = 'SET_USER_COURSE';
-export function setUserCourse(course, flag) {
+export const ADD_USER_COURSE = 'ADD_USER_COURSE';
+export function addUserCourse(course) {
     return dispatch => {
-        UserCourses.set(course, flag).then(payload => {
-            const {action, course} = payload;
+        UserCourses.add(course).then(payload => {
+            const {action, course, schedulers} = payload;
             dispatch({
-                type: SET_USER_COURSE,
+                type: ADD_USER_COURSE,
                 action,
-                course
+                course,
+                schedulers
+            });
+        });
+    };
+}
+
+export const REMOVE_USER_COURSE = 'REMOVE_USER_COURSE';
+export function removeUserCourse(course) {
+    return dispatch => {
+        UserCourses.remove(course).then(payload => {
+            const {action, course, schedulers} = payload;
+            dispatch({
+                type: ADD_USER_COURSE,
+                action,
+                course,
+                schedulers
             });
         });
     };
