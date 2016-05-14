@@ -4,6 +4,7 @@ import {OrderedMap} from 'immutable';
 
 const initialState = {
     all: undefined,
+    filtered: undefined,
     pages: 0,
     page: -1,
     order: 'courseID',
@@ -24,6 +25,7 @@ export default function(state=initialState, action) {
 
         return Object.assign({}, state, {
             all,
+            filtered: action.courses,
             pages: action.pages,
             page: action.page,
             order: action.order,

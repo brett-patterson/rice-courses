@@ -85,7 +85,7 @@ Courses.propTypes = {
 
 function mapStateToProps(state) {
     return {
-        courses: state.courses.all,
+        courses: state.courses.filtered,
         totalPages: state.courses.pages,
         page: state.courses.page,
         order: state.courses.order,
