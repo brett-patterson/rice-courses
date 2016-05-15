@@ -76,9 +76,14 @@ def fetch_courses(term, verbose=False):
             name = ATTRIBUTE_MAP.get(attr.tag, attr.tag)
             course_json[name] = attr.text
 
-        course = Course.from_json(course_json)
-        crns.add(course.crn)
-        course.save()
+        try:
+            course = Course.from_json(course_json)
+            crns.add(course.crn)
+            course.save()
+        except:
+            print 'Error parsing course:'
+            print course_json
+            print
 
     # Remove stale courses
     for crn in old_crns - crns:
