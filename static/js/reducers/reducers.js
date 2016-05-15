@@ -1,7 +1,7 @@
 import courses from './courses';
-import me from './me';
+import schedules from './schedules';
 
 export default {
     courses,
-    me
+    schedules
 };

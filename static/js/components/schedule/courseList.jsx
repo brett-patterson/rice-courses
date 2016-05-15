@@ -3,19 +3,17 @@ import {Badge} from 'react-bootstrap';
 import classNames from 'classnames';
 import {List, Map} from 'immutable';
 
-import Scheduler from 'models/scheduler';
+import Schedule from 'models/schedule';
 import ClipboardTrigger from 'components/clipboardTrigger';
-import {wrapComponentClass, propTypePredicate} from 'util';
+import {wrapComponentClass} from 'util';
 
 
-class UserCourseList extends React.Component {
+class CourseList extends React.Component {
     toggleCourseShownFactory(course) {
         return () => {
-            const scheduler = this.props.scheduler;
-            if (scheduler) {
-                const shown = scheduler.getMap()[course.getCRN()];
-                this.props.setCourseShown(scheduler, course, !shown);
-            }
+            const {schedule, setCourseShown} = this.props;
+            const shown = schedule.getMap().get(course.getCRN());
+            setCourseShown(schedule, course, !shown);
         };
     }
 
@@ -86,22 +84,24 @@ class UserCourseList extends React.Component {
     }
 
     getTotalCredits() {
-        const distMap = this.getDistributionMap(this.props.courses);
+        const {schedule} = this.props;
+        const courses = schedule.getCourses();
+
+        const distMap = this.getDistributionMap(courses);
         const distCredits = this.getDistributionCreditsString(distMap);
-        const [creditsSum, vary] = this.sumCredits(this.props.courses);
+        const [creditsSum, vary] = this.sumCredits(courses);
         const label = this.buildCreditsLabel('Total Credits', vary);
+
         return [creditsSum, label, distCredits];
     }
 
     getCreditsShown() {
-        let courses = [];
+        const {schedule} = this.props;
 
-        if (this.props.scheduler !== undefined) {
-            const map = this.props.scheduler.getMap();
-            courses = this.props.courses.filter(course => {
-                return map[course.getCRN()];
-            });
-        }
+        const map = schedule.getMap();
+        const courses = schedule.getCourses().filter(course => {
+            return map[course.getCRN()];
+        });
 
         const distMap = this.getDistributionMap(courses);
         const distCredits = this.getDistributionCreditsString(distMap);
@@ -119,12 +119,10 @@ class UserCourseList extends React.Component {
     }
 
     renderCourseRows() {
-        return this.props.courses.map(course => {
-            let courseShown;
-            if (this.props.scheduler === undefined)
-                courseShown = true;
-            else
-                courseShown = this.props.scheduler.getMap()[course.getCRN()];
+        const {schedule} = this.props;
+
+        return schedule.getCourses().map(course => {
+            const courseShown = schedule.getMap().get(course.getCRN());
 
             const buttonClass = courseShown ? 'toggle-btn-show' : 'toggle-btn-hide';
             const eyeClasses = classNames('glyphicon', {
@@ -236,21 +234,19 @@ class UserCourseList extends React.Component {
     }
 }
 
-UserCourseList.propTypes = {
-    scheduler: PropTypes.instanceOf(Scheduler),
-    courses: propTypePredicate(Map.isMap, false),
+CourseList.propTypes = {
+    schedule: PropTypes.instanceOf(Schedule).isRequired,
     setCourseShown: PropTypes.func,
     removeUserCourse: PropTypes.func
 };
 
-UserCourseList.defaultProps = {
-    courses: new Map(),
+CourseList.defaultProps = {
     setCourseShown: () => {},
     removeUserCourse: () => {}
 };
 
-UserCourseList.contextTypes = {
+CourseList.contextTypes = {
     history: PropTypes.object.isRequired
 };
 
-export default wrapComponentClass(UserCourseList);
+export default wrapComponentClass(CourseList);

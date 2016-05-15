@@ -2,7 +2,7 @@ import {createStore, combineReducers, applyMiddleware} from 'redux';
 import thunkMiddleware from 'redux-thunk';
 
 import {fetchCourses} from 'actions/courses';
-import {fetchUserCourses, fetchSchedulers} from 'actions/me';
+import {fetchSchedules} from 'actions/schedules';
 import reducers from 'reducers/reducers';
 
 
@@ -15,8 +15,7 @@ export default function configureStore() {
     store.dispatch(
         fetchCourses(0, state.courses.filters, state.courses.order)
     );
-    store.dispatch(fetchUserCourses());
-    store.dispatch(fetchSchedulers());
+    store.dispatch(fetchSchedules());
 
     return store;
 }

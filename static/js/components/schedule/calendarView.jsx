@@ -1,16 +1,15 @@
 import React, {PropTypes} from 'react';
-import {Map} from 'immutable';
 
 import Planner from './planner/planner';
-import Scheduler from 'models/scheduler';
-import {getHueByIndex, hsvToRgb, propTypePredicate, wrapComponentClass} from 'util';
+import Schedule from 'models/schedule';
+import {getHueByIndex, hsvToRgb, wrapComponentClass} from 'util';
 
 
 const DAY_ORDER = [
     'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
 ];
 
-class SchedulerView extends React.Component {
+class CalendarView extends React.Component {
     constructor(props) {
         super(props);
 
@@ -36,17 +35,18 @@ class SchedulerView extends React.Component {
 
     getEvents() {
         let events = [];
-        const {scheduler, courses} = this.props;
+        const {schedule} = this.props;
         const {alternates} = this.state;
 
-        if (scheduler === undefined) {
+        if (schedule === undefined) {
             return events;
         }
 
-        const map = scheduler.getMap();
+        const map = schedule.getMap();
+        const courses = schedule.getCourses();
 
-        events = courses.toArray().reduce((events, course, i) => {
-            if (!map[course.getCRN()]) return events;
+        events = courses.reduce((events, course, i) => {
+            if (!map.get(course.getCRN())) return events;
 
             const hue = getHueByIndex(i, courses.count());
             const [r, g, b] = hsvToRgb(hue, 1, 0.65);
@@ -78,16 +78,17 @@ class SchedulerView extends React.Component {
     }
 
     getDays() {
-        const {scheduler, courses} = this.props;
+        const {schedule} = this.props;
         let days = [];
 
-        if (scheduler === undefined)
+        if (schedule === undefined)
             return days;
 
-        const map = scheduler.getMap();
+        const map = schedule.getMap();
+        const courses = schedule.getCourses();
 
         for (let course of courses.values()) {
-            if (map[course.getCRN()]) {
+            if (map.get(course.getCRN())) {
                 for (let j = 0; j < course.meetings.length; j++) {
                     const day = course.meetings[j].start.format('dddd');
                     if (days.indexOf(day) < 0) {
@@ -108,13 +109,12 @@ class SchedulerView extends React.Component {
     }
 
     eventDragStart(event) {
-        const {scheduler} = this.props;
-        if (scheduler === undefined) return;
+        const {schedule} = this.props;
 
         event.course.getOtherSections().then(courses => {
             this.setState({
                 alternates: courses.filter(course =>
-                    !scheduler.getMap()[course.getCRN()]
+                    !schedule.getMap().get(course.getCRN())
                 )
             });
         });
@@ -131,33 +131,30 @@ class SchedulerView extends React.Component {
             alternates: []
         });
 
-        this.props.replaceSection(oldEvent.course, newEvent.course);
+        const {schedule} = this.props;
+        this.props.replaceSection(schedule, oldEvent.course, newEvent.course);
     }
 
     render() {
-        return <div>
-            <Planner events={this.getEvents()} days={this.getDays()}
-                     onEventClick={this.eventClick}
-                     onEventDragStart={this.eventDragStart}
-                     onEventDragCancel={this.eventDragCancel}
-                     onEventDrop={this.eventDrop} />
-        </div>;
+        return <Planner events={this.getEvents()} days={this.getDays()}
+                        onEventClick={this.eventClick}
+                        onEventDragStart={this.eventDragStart}
+                        onEventDragCancel={this.eventDragCancel}
+                        onEventDrop={this.eventDrop} />;
     }
 }
 
-SchedulerView.propTypes = {
-    scheduler: PropTypes.instanceOf(Scheduler),
-    courses: propTypePredicate(Map.isMap),
+CalendarView.propTypes = {
+    schedule: PropTypes.instanceOf(Schedule).isRequired,
     replaceSection: PropTypes.func
 };
 
-SchedulerView.defaultProps = {
-    courses: new Map(),
+CalendarView.defaultProps = {
     replaceSection: () => {}
 };
 
-SchedulerView.contextTypes = {
+CalendarView.contextTypes = {
     history: PropTypes.object.isRequired
 };
 
-export default wrapComponentClass(SchedulerView);
+export default wrapComponentClass(CalendarView);

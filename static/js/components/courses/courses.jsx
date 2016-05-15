@@ -5,7 +5,6 @@ import {connect} from 'react-redux';
 import {OrderedMap, Map} from 'immutable';
 
 import {fetchCourses} from 'actions/courses';
-import {addUserCourse, removeUserCourse} from 'actions/me';
 import FilterWidget from './filter/filterWidget';
 import CourseFilter from './filter/courseFilter';
 import CourseList from './courseList';
@@ -29,30 +28,23 @@ const FILTERS = [
 
 class Courses extends React.Component {
     fetchCoursesByPage(page) {
-        let {filters, order} = this.props;
-        this.props.dispatch(fetchCourses(page, filters, order));
+        let {filters, order, dispatch} = this.props;
+        dispatch(fetchCourses(page, filters, order));
     }
 
     fetchCoursesByOrder(order) {
-        let {page, filters} = this.props;
-        this.props.dispatch(fetchCourses(page, filters, order));
+        let {page, filters, dispatch} = this.props;
+        dispatch(fetchCourses(page, filters, order));
     }
 
     fetchCoursesByFilters(filters) {
-        let {page, order} = this.props;
-        this.props.dispatch(fetchCourses(page, filters, order));
+        let {page, order, dispatch} = this.props;
+        dispatch(fetchCourses(page, filters, order));
     }
 
     setUserCourse(course, flag) {
-        let action;
-
-        if (flag) {
-            action = addUserCourse(course);
-        } else {
-            action = removeUserCourse(course);
-        }
-
-        this.props.dispatch(action);
+        // TODO: IMPLEMENT ME
+        console.log(course, flag);
     }
 
     render() {
@@ -90,7 +82,7 @@ function mapStateToProps(state) {
         page: state.courses.page,
         order: state.courses.order,
         filters: state.courses.filters,
-        userCourses: state.me.userCourses
+        userCourses: new Map()
     };
 }
 

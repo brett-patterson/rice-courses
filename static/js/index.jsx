@@ -12,7 +12,7 @@ import {Provider} from 'react-redux';
 import configureStore from './store';
 import App from './components/app';
 import Courses from './components/courses/courses';
-import Me from './components/me/me';
+import Schedule from './components/schedule/schedule';
 import CourseDetail from './components/detail/courseDetail';
 import Help from './components/help/help';
 
@@ -29,9 +29,10 @@ render(
                     <Route path=':crn' component={CourseDetail} />
                 </Route>
 
-                <Route path='me' component={Me}>
+                <Route path='schedule/:id' component={Schedule}>
                     <Route path=':crn' component={CourseDetail} />
                 </Route>
+
                 <Route path='help' component={Help} />
             </Route>
         </Router>

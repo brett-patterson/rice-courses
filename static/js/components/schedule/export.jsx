@@ -1,29 +1,11 @@
 import React, {PropTypes} from 'react';
 import {Modal, Button} from 'react-bootstrap';
 
-import Course from 'models/course';
-import Scheduler from 'models/scheduler';
-import {ajax, wrapComponentClass} from 'util';
+import Schedule from 'models/schedule';
+import {wrapComponentClass} from 'util';
 
 
 class ExportDialog extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            courses: []
-        };
-
-        ajax({
-            url: `/api/me/schedulers/${props.scheduler.getID()}/export/`,
-            method: 'GET'
-        }).then(data => {
-            this.setState({
-                courses: data.map(Course.fromJSON)
-            });
-        });
-    }
-
     selectCRN(event) {
         event.target.select();
     }
@@ -38,17 +20,22 @@ class ExportDialog extends React.Component {
     }
 
     render() {
-        return <Modal show={true} onHide={this.props.onClose}>
-            <Modal.Body>{this.state.courses.map(this.renderCourse)}</Modal.Body>
+        const {schedule, onClose} = this.props;
+        const courses = schedule.getCourses().filter(c =>
+            schedule.get(c.getCRN())
+        );
+
+        return <Modal show={true} onHide={onClose}>
+            <Modal.Body>{courses.map(this.renderCourse)}</Modal.Body>
             <Modal.Footer>
-                <Button onClick={this.props.onClose}>Close</Button>
+                <Button onClick={onClose}>Close</Button>
             </Modal.Footer>
         </Modal>;
     }
 }
 
 ExportDialog.propTypes = {
-    scheduler: PropTypes.instanceOf(Scheduler).isRequired,
+    schedule: PropTypes.instanceOf(Schedule).isRequired,
     onClose: PropTypes.func
 };
 
