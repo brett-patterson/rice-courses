@@ -1,15 +1,19 @@
-body {
-    padding-top: 20px;
+.navbar-brand.logo {
+    padding: 5px 10px;
 }
 
-.logo {
-    width: 100%;
-    max-height: 150px;
+.top-links {
+    .glyphicon {
+        margin-right: 4px;
+    }
 }
 
-.login-container {
-    padding-bottom: 20px;
-    text-align: center;
+.nav-username {
+    color: #000;
+}
+
+.content {
+    padding: 0 15px;
 }
 
 .help-button {
@@ -19,10 +23,6 @@ body {
     right: 15px;
     top: 10px;
     z-index: 100;
-}
-
-.main-nav {
-    text-align: center;
 }
 
 .enroll-warning {

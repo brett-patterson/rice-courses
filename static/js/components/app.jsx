@@ -1,68 +1,103 @@
 import React from 'react';
-import {Link} from 'react-router';
-import {Grid, Row, Col, Nav} from 'react-bootstrap';
+import {Grid, Row, Nav, Navbar} from 'react-bootstrap';
+import {connect} from 'react-redux';
+import {List} from 'immutable';
 
 import NavLink from './navLink';
-import {wrapComponentClass} from 'util';
+import {wrapComponentClass, propTypePredicate} from 'util';
 
 
 class App extends React.Component {
     renderLoginInfo() {
+        // TODO: don't pass through window :(
         const user = window.USERNAME;
         if (user) {
             return <span>
-                <strong>{user}</strong><br/>
-                (<a href='/logout/'>Sign out</a>)
+                <strong className='nav-username'>{user} </strong>
+                (<a className='navbar-link' href='/logout/'>Sign out</a>)
             </span>;
         }
 
-        return <a href='/login/'>Sign in</a>;
+        return <a className='navbar-link' href='/login/'>Sign in</a>;
+    }
+
+    renderScheduleLink(schedule) {
+        const style = {
+            color: 'green'
+        };
+
+        return <NavLink key={`schedule-${schedule.id}`}
+                        to={`/schedule/${schedule.id}`}>
+            <span className='glyphicon glyphicon-stop' style={style}></span>
+            {schedule.name}
+        </NavLink>;
+    }
+
+    renderNav() {
+        const scheduleLinks = this.props.schedules
+            .map(this.renderScheduleLink)
+            .toArray();
+
+        return <Navbar>
+            <Navbar.Header>
+                <Navbar.Brand>
+                    <img className='logo' src='/static/img/logo.png' />
+                </Navbar.Brand>
+                <Navbar.Toggle />
+            </Navbar.Header>
+            <Navbar.Collapse className='top-links'>
+                <Nav>
+                    <NavLink to='/courses/'>
+                        <span className='glyphicon glyphicon-search' />
+                        Search
+                    </NavLink>
+                    {scheduleLinks}
+                    <li><a href='#'>
+                        <span className='glyphicon glyphicon-plus-sign' />
+                        <span className='hidden-sm hidden-md hidden-lg'>New Schedule</span>
+                    </a></li>
+                </Nav>
+                <Nav pullRight>
+                    <li>
+                        <span className='navbar-text'>
+                            {this.renderLoginInfo()}
+                        </span>
+                    </li>
+                    <NavLink to='/help/'>
+                        <span className='glyphicon glyphicon-question-sign' />
+                        Help
+                    </NavLink>
+                </Nav>
+            </Navbar.Collapse>
+        </Navbar>;
     }
 
     render() {
-        return <Grid fluid={true}>
-            <Row>
-                <Col sm={1} className='main-nav'>
-                    <Link to='/'>
-                        <img className='logo' src='/static/img/logo_no_text.png' />
-                    </Link>
+        return <div>
+            {this.renderNav()}
 
-                    <div className='login-container'>
-                        {this.renderLoginInfo()}
-                    </div>
-
-                    <Nav bsStyle='pills' stacked>
-                        <NavLink to='/courses/'>
-                            <span className='glyphicon glyphicon-search'></span>
-                            <span className='hidden-sm'>
-                                <br/>Search
-                            </span>
-                        </NavLink>
-                        <NavLink to='/me/'>
-                            <span className='glyphicon glyphicon-user'></span>
-                            <span className='hidden-sm'>
-                                <br/>My Courses
-                            </span>
-                        </NavLink>
-                        <NavLink to='/help/'>
-                            <span className='glyphicon glyphicon-question-sign'></span>
-                            <span className='hidden-sm'>
-                                <br/>Help
-                            </span>
-                        </NavLink>
-                    </Nav>
-                </Col>
-                <Col sm={11}>
+            <Grid fluid={true}>
+                <Row className='content'>
                     {this.props.children}
-                </Col>
-            </Row>
-            <Row>
-                <h4 className='text-center'>
-                    <small>&copy; 2016 Brett Patterson</small>
-                </h4>
-            </Row>
-        </Grid>;
+                </Row>
+                <Row>
+                    <h4 className='text-center'>
+                        <small>&copy; 2016 Brett Patterson</small>
+                    </h4>
+                </Row>
+            </Grid>
+        </div>;
     }
 }
 
-export default wrapComponentClass(App);
+App.propTypes = {
+    schedules: propTypePredicate(List.isList)
+};
+
+function mapStateToProps(state) {
+    return {
+        schedules: state.schedules.all
+    };
+}
+
+export default connect(mapStateToProps)(wrapComponentClass(App));

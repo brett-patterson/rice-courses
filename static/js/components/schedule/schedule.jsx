@@ -1,4 +1,4 @@
-import 'me.scss';
+import 'schedule.scss';
 
 import React, {PropTypes} from 'react';
 import {Button} from 'react-bootstrap';
@@ -67,14 +67,13 @@ class ScheduleView extends React.Component {
 
         return <div>
             {this.renderAlerts()}
+            <h1>{schedule.name}</h1>
 
             <Button id='exportCRNButton'
                     bsStyle='info' onClick={this.showExportDialog}>
                 Export Current CRNs
             </Button>
             {exportDialog}
-
-            <h1>{schedule.name}</h1>
 
             <CourseList schedule={schedule}
                         setCourseShown={this.setCourseShown}
