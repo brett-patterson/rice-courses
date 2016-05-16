@@ -60,7 +60,7 @@ class ScheduleCollectionView(APIView):
         name = request.POST.get('name')
 
         if name is not None:
-            s = Schedule.objects.create(name=name)
+            s = Schedule.objects.create(name=name, user=request.user)
             return self.success(s.json())
 
         return self.failure('No name specified')

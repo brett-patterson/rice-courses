@@ -1,13 +1,19 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 import {Grid, Row, Nav, Navbar} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import {List} from 'immutable';
 
+import {addSchedule} from 'actions/schedules';
 import NavLink from './navLink';
 import {wrapComponentClass, propTypePredicate} from 'util';
 
 
 class App extends React.Component {
+    addSchedule() {
+        const {dispatch} = this.props;
+        dispatch(addSchedule('New schedule'));
+    }
+
     renderLoginInfo() {
         // TODO: don't pass through window :(
         const user = window.USERNAME;
@@ -52,7 +58,7 @@ class App extends React.Component {
                         Search
                     </NavLink>
                     {scheduleLinks}
-                    <li><a href='#'>
+                    <li><a href='#' onClick={this.addSchedule}>
                         <span className='glyphicon glyphicon-plus-sign' />
                         <span className='hidden-sm hidden-md hidden-lg'>New Schedule</span>
                     </a></li>
@@ -91,7 +97,8 @@ class App extends React.Component {
 }
 
 App.propTypes = {
-    schedules: propTypePredicate(List.isList)
+    schedules: propTypePredicate(List.isList),
+    dispatch: PropTypes.func
 };
 
 function mapStateToProps(state) {

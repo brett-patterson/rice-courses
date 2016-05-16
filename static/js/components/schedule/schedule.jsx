@@ -7,7 +7,7 @@ import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import {connect} from 'react-redux';
 
-import {addSchedule, setCourseShown, removeCourse} from 'actions/schedules';
+import {removeSchedule, setCourseShown,removeCourse} from 'actions/schedules';
 import Schedule from 'models/schedule';
 import CourseList from './courseList';
 import CalendarView from './calendarView';
@@ -37,8 +37,9 @@ class ScheduleView extends React.Component {
         this.setCourseShown(schedule, newSection, true);
     }
 
-    addScheduler() {
-        this.props.dispatch(addSchedule('New Schedule'));
+    deleteSchedule() {
+        const {schedule, dispatch} = this.props;
+        dispatch(removeSchedule(schedule));
     }
 
     showExportDialog() {
@@ -54,7 +55,7 @@ class ScheduleView extends React.Component {
     }
 
     render() {
-        const {schedule, children} = this.props;
+        const {schedule, canDelete, children} = this.props;
         const {exported} = this.state;
 
         if (schedule === undefined) return <div></div>;
@@ -65,12 +66,23 @@ class ScheduleView extends React.Component {
                                          onClose={this.hideExportDialog} />;
         }
 
+        let deleteButton;
+        if (canDelete) {
+            deleteButton = (
+                <Button bsStyle='danger' className='pull-right'
+                        onClick={this.deleteSchedule}>
+                    Delete schedule
+                </Button>
+            );
+        }
+
         return <div>
             {this.renderAlerts()}
+            {deleteButton}
+
             <h1>{schedule.name}</h1>
 
-            <Button id='exportCRNButton'
-                    bsStyle='info' onClick={this.showExportDialog}>
+            <Button bsStyle='info' onClick={this.showExportDialog}>
                 Export Current CRNs
             </Button>
             {exportDialog}
@@ -91,15 +103,22 @@ reactMixin.onClass(ScheduleView, AlertMixin);
 
 ScheduleView.propTypes = {
     schedule: PropTypes.instanceOf(Schedule),
+    canDelete: PropTypes.bool,
     dispatch: PropTypes.func
+};
+
+ScheduleView.defaultProps = {
+    canDelete: false
 };
 
 function mapStateToProps(state, ownProps) {
     const sid = parseInt(ownProps.params.id);
     const schedule = state.schedules.all.find(s => s.getID() === sid);
+    const canDelete = state.schedules.all.count() > 1;
 
     return {
-        schedule
+        schedule,
+        canDelete
     };
 }
 
