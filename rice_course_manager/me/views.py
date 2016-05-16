@@ -70,7 +70,7 @@ class ScheduleView(APIView):
     def delete(self, request, schedule_id):
         """ Remove a schedule for the user.
         """
-        Schedule.objects.get(id=schedule_id).delete()
+        Schedule.objects.get(id=schedule_id, user=request.user).delete()
         return self.success()
 
     def put(self, request, scheduler_id):
@@ -79,7 +79,7 @@ class ScheduleView(APIView):
         PUT = QueryDict(request.body)
         name = PUT.get('name')
 
-        schedule = Schedule.objects.get(id=scheduler_id)
+        schedule = Schedule.objects.get(id=scheduler_id, user=request.user)
 
         if name is None:
             return self.failure('No name specified')
@@ -98,7 +98,7 @@ class ScheduleCourseView(APIView):
         if crn is None:
             return self.failure('No CRN specified')
 
-        schedule = Schedule.objects.get(id=schedule_id)
+        schedule = Schedule.objects.get(id=schedule_id, user=request.user)
         schedule.set_shown(Course.objects.get(crn=crn), True)
         return self.success(schedule.json())
 
@@ -115,7 +115,7 @@ class ScheduleCourseView(APIView):
         if shown is None:
             return self.failure('No shown flag specified')
 
-        schedule = Schedule.objects.get(id=schedule_id)
+        schedule = Schedule.objects.get(id=schedule_id, user=request.user)
         schedule.set_shown(Course.objects.get(crn=crn), shown == 'true')
 
         return self.success(schedule.json())
@@ -128,17 +128,6 @@ class ScheduleCourseView(APIView):
         if crn is None:
             return self.failure('No CRN specified')
 
-        schedule = Schedule.objects.get(id=schedule_id)
+        schedule = Schedule.objects.get(id=schedule_id, user=request.user)
         schedule.remove_course(Course.objects.get(crn=crn))
         return self.success(schedule.json())
-
-
-class ScheduleExportView(APIView):
-    def get(self, request, scheduler_id):
-        """ Export a scheduler's CRNs for all shown courses.
-        """
-        schedule = Schedule.objects.get(id=scheduler_id)
-        show_map = schedule.show_map()
-        courses = [c.json() for c, shown in show_map.items() if shown]
-
-        return self.success(courses, safe=False)
