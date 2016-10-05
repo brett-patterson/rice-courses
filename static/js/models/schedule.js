@@ -5,9 +5,10 @@ import {ajax} from 'util';
 
 
 export default class Schedule {
-    constructor(id, name, courses=new List(), map=new Map()) {
+    constructor(id, name, color, courses=new List(), map=new Map()) {
         this.id = id;
         this.name = name;
+        this.color = color;
         this.courses = courses;
         this.map = map;
     }
@@ -19,7 +20,7 @@ export default class Schedule {
             return pair;
         }));
 
-        return new Schedule(j.id, j.name, courses, map);
+        return new Schedule(j.id, j.name, j.color, courses, map);
     }
 
     /**
@@ -80,6 +81,10 @@ export default class Schedule {
 
     getMap() {
         return this.map;
+    }
+
+    getColor() {
+        return this.color;
     }
 
     addCourse(course) {

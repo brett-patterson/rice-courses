@@ -1,7 +1,9 @@
 from django.contrib.auth.models import User
 from django.db import models
+from colorful.fields import RGBColorField
 
 from courses.models import Course
+from .util import random_hex_color
 
 
 class Schedule(models.Model):
@@ -13,6 +15,9 @@ class Schedule(models.Model):
 
     # The user profile this schedule corresponds to.
     user = models.ForeignKey(User)
+
+    # The color for this schedule.
+    color = RGBColorField(default=random_hex_color)
 
     class Meta:
         ordering = ['id']
@@ -59,6 +64,7 @@ class Schedule(models.Model):
         return {
             'id': self.id,
             'name': self.name,
+            'color': self.color,
             'map': [(c.json(), s) for c, s in self.show_map().items()]
         }
 

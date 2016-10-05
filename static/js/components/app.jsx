@@ -29,7 +29,7 @@ class App extends React.Component {
 
     renderScheduleLink(schedule) {
         const style = {
-            color: 'green'
+            color: schedule.getColor()
         };
 
         return <NavLink key={`schedule-${schedule.id}`}
