@@ -8,10 +8,10 @@ class Schedule(models.Model):
     """ A model to represent a schedule for a user.
 
     """
-    # The name of the scheduler.
+    # The name of the schedule.
     name = models.CharField(max_length=255)
 
-    # The user profile this scheduler corresponds to.
+    # The user profile this schedule corresponds to.
     user = models.ForeignKey(User)
 
     class Meta:

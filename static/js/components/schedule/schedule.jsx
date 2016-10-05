@@ -49,8 +49,8 @@ class ScheduleView extends React.Component {
         this.props.dispatch(removeCourse(schedule, course));
     }
 
-    setCourseShown(scheduler, course, shown) {
-        this.props.dispatch(setCourseShown(scheduler, course, shown));
+    setCourseShown(schedule, course, shown) {
+        this.props.dispatch(setCourseShown(schedule, course, shown));
     }
 
     replaceSection(schedule, oldSection, newSection) {

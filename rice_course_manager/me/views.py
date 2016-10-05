@@ -73,13 +73,13 @@ class ScheduleView(APIView):
         Schedule.objects.get(id=schedule_id, user=request.user).delete()
         return self.success()
 
-    def put(self, request, scheduler_id):
-        """ Rename a scheduler.
+    def put(self, request, schedule_id):
+        """ Rename a schedule.
         """
         PUT = QueryDict(request.body)
         name = PUT.get('name')
 
-        schedule = Schedule.objects.get(id=scheduler_id, user=request.user)
+        schedule = Schedule.objects.get(id=schedule_id, user=request.user)
 
         if name is None:
             return self.failure('No name specified')
@@ -121,7 +121,7 @@ class ScheduleCourseView(APIView):
         return self.success(schedule.json())
 
     def delete(self, request, schedule_id):
-        """ Remove a course from a scheduler's show map.
+        """ Remove a course from a schedule's show map.
         """
         crn = QueryDict(request.body).get('crn')
 

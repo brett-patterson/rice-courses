@@ -39,7 +39,7 @@ $toggle-btn-hide-color: #ffb029;
     }
 }
 
-.scheduler-tabs {
+.schedule-tabs {
     border-bottom: none;
     margin-bottom: 1px;
 
@@ -48,14 +48,14 @@ $toggle-btn-hide-color: #ffb029;
     }
 }
 
-$scheduler-close-color: #bc2328;
-.scheduler-close {
-    color: $scheduler-close-color;
+$schedule-close-color: #bc2328;
+.schedule-close {
+    color: $schedule-close-color;
     cursor: pointer;
     margin: 0 -5px 0 5px;
 
     &:hover {
-      color: darken($scheduler-close-color, 4%);
+      color: darken($schedule-close-color, 4%);
     }
 }
 

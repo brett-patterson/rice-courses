@@ -23,7 +23,7 @@ export default class Schedule {
     }
 
     /**
-     * Get all schedulers for the user.
+     * Get all schedules for the user.
      */
     static fetchAll() {
         return ajax({
@@ -33,8 +33,8 @@ export default class Schedule {
     }
 
     /**
-     * Add a new scheduler.
-     * @param {string} name - The name for the new scheduler.
+     * Add a new schedule.
+     * @param {string} name - The name for the new schedule.
      */
     static add(name) {
         return ajax({
