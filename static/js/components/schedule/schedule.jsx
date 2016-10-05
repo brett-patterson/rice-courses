@@ -1,13 +1,15 @@
 import 'schedule.scss';
 
 import React, {PropTypes} from 'react';
-import {Button} from 'react-bootstrap';
+import {Button, Glyphicon} from 'react-bootstrap';
 import reactMixin from 'react-mixin';
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import {connect} from 'react-redux';
 
-import {removeSchedule, setCourseShown,removeCourse} from 'actions/schedules';
+import {
+    renameSchedule, removeSchedule, setCourseShown, removeCourse
+} from 'actions/schedules';
 import Schedule from 'models/schedule';
 import CourseList from './courseList';
 import CalendarView from './calendarView';
@@ -20,8 +22,27 @@ class ScheduleView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            exported: null
+            exported: null,
+            editingName: false,
+            editedName: ''
         };
+    }
+
+    startEditingName() {
+        this.setState({
+            editingName: true,
+            editedName: this.props.schedule.name
+        });
+    }
+
+    stopEditingName() {
+        this.setState({
+            editingName: false
+        }, () => {
+            this.props.dispatch(
+                renameSchedule(this.props.schedule, this.state.editedName)
+            );
+        });
     }
 
     removeCourse(schedule, course) {
@@ -56,9 +77,26 @@ class ScheduleView extends React.Component {
 
     render() {
         const {schedule, canDelete, children} = this.props;
-        const {exported} = this.state;
+        const {exported, editingName, editedName} = this.state;
 
-        if (schedule === undefined) return <div></div>;
+        if (schedule === undefined) return <div />;
+
+        let nameWidget;
+        if (editingName) {
+            nameWidget = <input type='text' value={editedName} onChange={e => {
+                this.setState({
+                    editedName: e.target.value
+                });
+            }} onBlur={this.stopEditingName} ref={el => {
+                if (el !== null) {
+                    el.focus();
+                }
+            }} />;
+        } else {
+            nameWidget = <span>{schedule.name} <small><a href='#' onClick={this.startEditingName}>
+                <Glyphicon glyph='pencil' />
+            </a></small></span>;
+        }
 
         let exportDialog;
         if (exported !== null) {
@@ -80,7 +118,7 @@ class ScheduleView extends React.Component {
             {this.renderAlerts()}
             {deleteButton}
 
-            <h1>{schedule.name}</h1>
+            <h1>{nameWidget}</h1>
 
             <Button bsStyle='info' onClick={this.showExportDialog}>
                 Export Current CRNs
