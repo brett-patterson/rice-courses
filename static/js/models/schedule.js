@@ -92,7 +92,7 @@ export default class Schedule {
         this.map = this.map.set(course.getCRN(), true);
 
         return ajax({
-            url: `/api/me/schedules/${this.id}/course`,
+            url: `/api/me/schedules/${this.id}/course/`,
             method: 'POST',
             data: {
                 crn: course.getCRN()

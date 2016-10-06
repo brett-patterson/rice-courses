@@ -50,6 +50,17 @@ export function renameSchedule(schedule, name) {
     };
 }
 
+export function addCourse(schedule, course) {
+    return dispatch => {
+        schedule.addCourse(course).then(schedule => {
+            dispatch({
+                type: UPDATE_SCHEDULE,
+                schedule
+            });
+        });
+    };
+}
+
 export function setCourseShown(schedule, course, shown) {
     return dispatch => {
         schedule.setCourseShown(course, shown).then(schedule => {

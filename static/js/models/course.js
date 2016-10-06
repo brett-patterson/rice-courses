@@ -123,6 +123,11 @@ export default class Course {
         return dates;
     }
 
+    equals(other) {
+        if (!(other instanceof Course)) return false;
+        return this.getCRN() === other.getCRN();
+    }
+
     getCRN() {
         return this.crn;
     }

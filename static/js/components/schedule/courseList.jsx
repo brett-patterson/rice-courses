@@ -20,7 +20,7 @@ class CourseList extends React.Component {
     removeCourseFactory(course) {
         return event => {
             event.stopPropagation();
-            this.props.removeUserCourse(course);
+            this.props.removeCourse(this.props.schedule, course);
         };
     }
 
@@ -237,12 +237,12 @@ class CourseList extends React.Component {
 CourseList.propTypes = {
     schedule: PropTypes.instanceOf(Schedule).isRequired,
     setCourseShown: PropTypes.func,
-    removeUserCourse: PropTypes.func
+    removeCourse: PropTypes.func
 };
 
 CourseList.defaultProps = {
     setCourseShown: () => {},
-    removeUserCourse: () => {}
+    removeCourse: () => {}
 };
 
 CourseList.contextTypes = {

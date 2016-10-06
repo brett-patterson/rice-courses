@@ -38,11 +38,9 @@
         padding-bottom: 5px;
     }
 
-    .not-user-course {
-        color: #000;
-    }
-
-    .user-course, .not-user-course:hover {
-        color: #f00;
+    .schedule-band {
+        width: 3px;
+        height: 100%;
+        display: inline-block;
     }
 }

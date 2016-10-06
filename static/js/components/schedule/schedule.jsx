@@ -3,8 +3,6 @@ import 'schedule.scss';
 import React, {PropTypes} from 'react';
 import {Button, Glyphicon} from 'react-bootstrap';
 import reactMixin from 'react-mixin';
-import {DragDropContext} from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
 import {connect} from 'react-redux';
 
 import {
@@ -160,6 +158,4 @@ function mapStateToProps(state, ownProps) {
     };
 }
 
-export default connect(mapStateToProps)(
-    DragDropContext(HTML5Backend)(wrapComponentClass(ScheduleView))
-);
+export default connect(mapStateToProps)(wrapComponentClass(ScheduleView));

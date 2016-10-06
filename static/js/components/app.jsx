@@ -2,16 +2,61 @@ import React, {PropTypes} from 'react';
 import {Grid, Row, Nav, Navbar} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import {List} from 'immutable';
+import {DragDropContext, DropTarget} from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 
-import {addSchedule} from 'actions/schedules';
+import {addSchedule, addCourse} from 'actions/schedules';
+import Schedule from 'models/schedule';
 import NavLink from './navLink';
 import {wrapComponentClass, propTypePredicate} from 'util';
 
+const scheduleTarget = {
+    drop(props, monitor) {
+        const {schedule, addCourse} = props;
+        const course = monitor.getItem().course;
+        addCourse(schedule, course);
+    }
+};
+
+function scheduleDropCollect(connect, monitor) {
+    return {
+        connectDropTarget: connect.dropTarget(),
+        isOver: monitor.isOver()
+    };
+}
+
+let ScheduleLink = class ScheduleLink extends React.Component {
+    render() {
+        const {schedule, connectDropTarget} = this.props;
+
+        const style = {
+            color: schedule.getColor()
+        };
+
+        return connectDropTarget(<NavLink key={`schedule-${schedule.id}`}
+                        to={`/schedule/${schedule.id}`}>
+            <span className='glyphicon glyphicon-stop' style={style} />
+            {schedule.name}
+        </NavLink>);
+    }
+};
+
+ScheduleLink.propTypes = {
+    schedule: PropTypes.instanceOf(Schedule),
+    connectDropTarget: PropTypes.func
+};
+
+ScheduleLink = DropTarget('COURSE', scheduleTarget, scheduleDropCollect)(
+    wrapComponentClass(ScheduleLink)
+);
 
 class App extends React.Component {
     addSchedule() {
-        const {dispatch} = this.props;
-        dispatch(addSchedule('New schedule'));
+        this.props.dispatch(addSchedule('New schedule'));
+    }
+
+    addCourse(schedule, course) {
+        this.props.dispatch(addCourse(schedule, course));
     }
 
     renderLoginInfo() {
@@ -28,15 +73,7 @@ class App extends React.Component {
     }
 
     renderScheduleLink(schedule) {
-        const style = {
-            color: schedule.getColor()
-        };
-
-        return <NavLink key={`schedule-${schedule.id}`}
-                        to={`/schedule/${schedule.id}`}>
-            <span className='glyphicon glyphicon-stop' style={style}></span>
-            {schedule.name}
-        </NavLink>;
+        return <ScheduleLink key={`schedule-${schedule.id}`} schedule={schedule} />;
     }
 
     renderNav() {
@@ -107,4 +144,6 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps)(wrapComponentClass(App));
+export default connect(mapStateToProps)(
+    DragDropContext(HTML5Backend)(wrapComponentClass(App))
+);

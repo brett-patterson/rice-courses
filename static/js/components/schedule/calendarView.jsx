@@ -104,7 +104,8 @@ class CalendarView extends React.Component {
     }
 
     eventClick(event) {
-        let location = `/me/${event.course.getCRN()}/`;
+        const schedule = this.props.schedule;
+        let location = `/schedule/${schedule.getID()}/${event.course.getCRN()}/`;
         this.context.history.push(location);
     }
 
