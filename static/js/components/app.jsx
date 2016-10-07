@@ -18,36 +18,36 @@ const scheduleTarget = {
     }
 };
 
-function scheduleDropCollect(connect, monitor) {
+function scheduleDropCollect(connect) {
     return {
-        connectDropTarget: connect.dropTarget(),
-        isOver: monitor.isOver()
+        connectDropTarget: connect.dropTarget()
     };
 }
 
-let ScheduleLink = class ScheduleLink extends React.Component {
-    render() {
-        const {schedule, connectDropTarget} = this.props;
+let ScheduleLink = ({schedule, connectDropTarget}) => {
+    const style = {
+        color: schedule.getColor()
+    };
 
-        const style = {
-            color: schedule.getColor()
-        };
+    let inner = connectDropTarget(<span>
+        <span className='glyphicon glyphicon-stop' style={style} />
+        {schedule.name}
+    </span>);
 
-        return connectDropTarget(<NavLink key={`schedule-${schedule.id}`}
-                        to={`/schedule/${schedule.id}`}>
-            <span className='glyphicon glyphicon-stop' style={style} />
-            {schedule.name}
-        </NavLink>);
-    }
+    return <NavLink key={`schedule-${schedule.id}`}
+                    to={`/schedule/${schedule.id}`}>
+        {inner}
+    </NavLink>;
 };
 
 ScheduleLink.propTypes = {
-    schedule: PropTypes.instanceOf(Schedule),
-    connectDropTarget: PropTypes.func
+    schedule: PropTypes.instanceOf(Schedule).isRequired,
+    connectDropTarget: PropTypes.func.isRequired,
+    addCourse: PropTypes.func.isRequired
 };
 
 ScheduleLink = DropTarget('COURSE', scheduleTarget, scheduleDropCollect)(
-    wrapComponentClass(ScheduleLink)
+    ScheduleLink
 );
 
 class App extends React.Component {
@@ -73,7 +73,8 @@ class App extends React.Component {
     }
 
     renderScheduleLink(schedule) {
-        return <ScheduleLink key={`schedule-${schedule.id}`} schedule={schedule} />;
+        return <ScheduleLink key={`schedule-${schedule.id}`} schedule={schedule}
+                             addCourse={this.addCourse} />;
     }
 
     renderNav() {
