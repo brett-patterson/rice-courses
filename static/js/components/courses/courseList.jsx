@@ -1,105 +1,133 @@
 import React, {PropTypes} from 'react';
-import reactMixin from 'react-mixin';
-import update from 'react-addons-update';
-import {Pagination} from 'react-bootstrap';
+import {Pagination, OverlayTrigger, Tooltip} from 'react-bootstrap';
+import {DragSource} from 'react-dnd';
 import classNames from 'classnames';
+import {List, OrderedMap} from 'immutable';
 
-import Course from './course';
-import CourseDetailMixin from './detail/courseDetail';
-import UserCourses from './userCourses';
-import FilterManager from './filter/filterManager';
-import {wrapComponentClass} from 'util';
+import Course from 'models/course';
+import {wrapComponentClass, propTypePredicate} from 'util';
+
+const courseSource = {
+    beginDrag(props) {
+        const {course} = props;
+        return { course };
+    }
+};
+
+function courseDragCollect(connect) {
+    return {
+        connectDragSource: connect.dragSource()
+    };
+}
+
+let CourseRow = class CourseRow extends React.Component {
+    renderScheduleBand(schedule) {
+        const style = { backgroundColor: schedule.getColor() };
+        const tooltip = <Tooltip id={`tooltip-${schedule.getID()}`}>
+            {schedule.getName()}
+        </Tooltip>;
+        return <OverlayTrigger key={schedule.getID()} placement='top'
+                               overlay={tooltip}>
+            <span className='schedule-band' style={style}>&nbsp;</span>
+        </OverlayTrigger>;
+    }
+
+    render() {
+        const {
+            course, schedules, connectDragSource, showCourseDetailFactory
+        } = this.props;
+
+        const onSchedules = schedules.filter(s => {
+            return s.getCourses().find(c => c.equals(course));
+        });
+
+        const percent = course.getEnrollmentPercentage();
+        const enrollClasses = classNames('text-center', {
+            'enroll-warning': percent >= 75 && percent < 100,
+            'enroll-full': percent === 100
+        });
+
+        return connectDragSource(
+            <tr>
+                <td>
+                    {onSchedules.map(this.renderScheduleBand)}
+                </td>
+                <td onClick={showCourseDetailFactory(course)}>
+                    {course.getCRN()}
+                </td>
+                <td onClick={showCourseDetailFactory(course)}>
+                    {course.getCourseID()}
+                </td>
+                <td onClick={showCourseDetailFactory(course)}>
+                    {course.getTitle()}
+                </td>
+                <td onClick={showCourseDetailFactory(course)}>
+                    {course.getInstructor()}
+                </td>
+                <td onClick={showCourseDetailFactory(course)}>
+                    {course.getMeetingsString()}
+                </td>
+                <td className='text-center'
+                    onClick={showCourseDetailFactory(course)}>
+                    {course.getDistributionString()}
+                </td>
+                <td className={enrollClasses}
+                    onClick={showCourseDetailFactory(course)}>
+                    {course.getEnrollmentString()}
+                </td>
+                <td className='text-center'
+                    onClick={showCourseDetailFactory(course)}>
+                    {course.getCredits()}
+                </td>
+            </tr>
+        );
+    }
+};
+
+CourseRow.propTypes = {
+    course: PropTypes.instanceOf(Course).isRequired,
+    schedules: propTypePredicate(List.isList),
+    showCourseDetailFactory: PropTypes.func,
+    connectDragSource: PropTypes.func
+};
+
+CourseRow = DragSource('COURSE', courseSource, courseDragCollect)(
+    wrapComponentClass(CourseRow)
+);
+
 
 class CourseList extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
-            courses: undefined,
-            courseShown: null,
-            userCourses: [],
-            page: 0,
-            totalPages: 0,
-            order: 'courseID'
-        };
-    }
-
-    componentWillMount() {
-        this.fetchCourses();
-        this.fetchUserCourses();
-    }
-
-    fetchCourses() {
-        Course.get(
-            this.props.filterManager.getFiltersForServer(), this.state.page,
-            this.state.order
-        ).then(data => {
-            this.setState({
-                courses: data.courses,
-                totalPages: data.pages
-            });
-        });
-    }
-
-    fetchUserCourses(callback) {
-        UserCourses.get().then(courses => {
-            this.setState({
-                userCourses: courses.map(c => c.getCRN())
-            }, callback);
-        });
-    }
-
-    isUserCourse(course) {
-        return this.state.userCourses.indexOf(course.getCRN()) > -1;
-    }
-
-    toggleUserCourseFactory(course) {
-        return () => {
-            const crn = course.getCRN();
-            const index = this.state.userCourses.indexOf(crn);
-
-            if (index > -1) {
-                this.setState(update(this.state, {
-                    userCourses: {
-                        $splice: [[index, 1]]
-                    }
-                }));
-
-                UserCourses.remove(course);
-            } else {
-                this.setState(update(this.state, {
-                    userCourses: {
-                        $push: [crn]
-                    }
-                }));
-
-                UserCourses.add(course);
-            }
+            courseShown: null
         };
     }
 
     showCourseDetailFactory(course) {
         return () => {
-            this.showCourseDetail(course);
+            let location = `/courses/${course.getCRN()}/`;
+            this.context.history.push(location);
         };
     }
 
     onPageClick(event, selectedEvent) {
-        this.setState({
-            page: selectedEvent.eventKey - 1
-        }, this.fetchCourses);
+        this.props.pageChanged(selectedEvent.eventKey - 1);
     }
 
     onHeaderClickHandler(order) {
         return () => {
-            if (this.state.order == order && order.startsWith('-')) {
-                order = order.substring(1);
-            } else if (this.state.order == order) {
-                order = `-${order}`;
+            let next;
+
+            if (this.props.order == order && order.startsWith('-')) {
+                next = order.substring(1);
+            } else if (this.props.order == order) {
+                next = `-${order}`;
+            } else {
+                next = order;
             }
 
-            this.setState({
-                order
-            }, this.fetchCourses);
+            this.props.orderChanged(next);
         };
     }
 
@@ -118,8 +146,8 @@ class CourseList extends React.Component {
         const headers = columns.map(column => {
             const [key, name, center] = column;
             const classes = classNames({
-                'sort-asc': this.state.order.substring(1) === key,
-                'sort-desc': this.state.order === key,
+                'sort-asc': this.props.order.substring(1) === key,
+                'sort-desc': this.props.order === key,
                 'text-center': center
             });
 
@@ -133,74 +161,25 @@ class CourseList extends React.Component {
 
         return (
             <tr>
-                <th></th>
+                <th />
                 {headers}
             </tr>
         );
     }
 
     renderCourseRows() {
-        if (this.state.courses === undefined)
+        const {courses, schedules} = this.props;
+
+        if (courses === undefined)
             return <tr><td>Loading courses...</td></tr>;
-        else if (this.state.courses.length === 0)
+        else if (courses.count() === 0)
             return <tr><td>No courses found</td></tr>;
 
-        return this.state.courses.map(course => {
-            const isUserCourse = this.isUserCourse(course);
-
-            const userClasses = classNames({
-                'user-course': isUserCourse,
-                'not-user-course': !isUserCourse
-            });
-
-            const heartClasses = classNames('glyphicon', {
-                'glyphicon-heart': isUserCourse,
-                'glyphicon-heart-empty': !isUserCourse
-            });
-
-            const percent = course.getEnrollmentPercentage();
-            const enrollClasses = classNames('text-center', {
-                'enroll-warning': percent >= 75 && percent < 100,
-                'enroll-full': percent === 100
-            });
-
-            return (
-                <tr key={course.getCRN()}>
-                    <td onClick={this.toggleUserCourseFactory(course)}>
-                        <a className={userClasses}>
-                            <span className={heartClasses} />
-                        </a>
-                    </td>
-                    <td onClick={this.showCourseDetailFactory(course)}>
-                        {course.getCRN()}
-                    </td>
-                    <td onClick={this.showCourseDetailFactory(course)}>
-                        {course.getCourseID()}
-                    </td>
-                    <td onClick={this.showCourseDetailFactory(course)}>
-                        {course.getTitle()}
-                    </td>
-                    <td onClick={this.showCourseDetailFactory(course)}>
-                        {course.getInstructor()}
-                    </td>
-                    <td onClick={this.showCourseDetailFactory(course)}>
-                        {course.getMeetingsString()}
-                    </td>
-                    <td className='text-center'
-                        onClick={this.showCourseDetailFactory(course)}>
-                        {course.getDistributionString()}
-                    </td>
-                    <td className={enrollClasses}
-                        onClick={this.showCourseDetailFactory(course)}>
-                        {course.getEnrollmentString()}
-                    </td>
-                    <td className='text-center'
-                        onClick={this.showCourseDetailFactory(course)}>
-                        {course.getCredits()}
-                    </td>
-                </tr>
-            );
-        });
+        return courses.map(course => (
+            <CourseRow key={course.getCRN()} course={course}
+                       schedules={schedules}
+                       showCourseDetailFactory={this.showCourseDetailFactory}/>
+        )).toArray();
     }
 
     render() {
@@ -216,23 +195,29 @@ class CourseList extends React.Component {
                 </table>
 
                 <div className='text-center'>
-                    <Pagination items={this.state.totalPages}
-                                activePage={this.state.page + 1}
+                    <Pagination items={this.props.totalPages}
+                                activePage={this.props.page + 1}
                                 onSelect={this.onPageClick}
                                 maxButtons={30} first={true} last={true}
                                 next={true} prev={true} />
                 </div>
-
-                {this.renderCourseDetails(this.state.courses)}
             </div>
         );
     }
 }
 
 CourseList.propTypes = {
-    filterManager: PropTypes.instanceOf(FilterManager).isRequired
+    courses: propTypePredicate(OrderedMap.isOrderedMap, false),
+    schedules: propTypePredicate(List.isList),
+    page: PropTypes.number,
+    totalPages: PropTypes.number,
+    order: PropTypes.string,
+    pageChanged: PropTypes.func,
+    orderChanged: PropTypes.func
 };
 
-reactMixin.onClass(CourseList, CourseDetailMixin);
+CourseList.contextTypes = {
+    history: PropTypes.object.isRequired
+};
 
 export default wrapComponentClass(CourseList);

@@ -39,7 +39,7 @@ class APIView(View):
     def json_response(self, payload, status, **kwargs):
         return JsonResponse(payload, status=status, **kwargs)
 
-    def success(self, payload, **kwargs):
+    def success(self, payload={}, **kwargs):
         return self.json_response(payload, 200, **kwargs)
 
     def failure(self, error):

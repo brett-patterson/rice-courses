@@ -13,7 +13,7 @@ COURSE_ORDER = {
 }
 
 
-class CoursesView(APIView):
+class CourseCollectionView(APIView):
     def get(self, request):
         """ Returns a list of all courses as JSON objects.
         """
@@ -52,6 +52,18 @@ class CoursesView(APIView):
             'courses': [c.json() for c in filtered_courses],
             'pages': pages
         }, safe=False)
+
+
+class CourseView(APIView):
+    def get(self, request, crn):
+        """ Get a course by CRN.
+        """
+        try:
+            course = Course.objects.get(crn=crn)
+        except Course.DoesNotExist:
+            return self.failure('Course does not exist')
+
+        return self.success(course.json())
 
 
 class SectionsView(APIView):

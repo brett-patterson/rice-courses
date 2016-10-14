@@ -1,48 +1,37 @@
 import React, {PropTypes} from 'react';
-import reactMixin from 'react-mixin';
-import {Badge} from 'react-bootstrap';
+import {Badge, Glyphicon} from 'react-bootstrap';
 import classNames from 'classnames';
+import {List, Map} from 'immutable';
 
-import Scheduler from './scheduler';
-import Course from 'components/courses/course';
-import CourseDetailMixin from 'components/courses/detail/courseDetail';
+import Schedule from 'models/schedule';
 import ClipboardTrigger from 'components/clipboardTrigger';
-import {propTypeHas, wrapComponentClass} from 'util';
+import {wrapComponentClass} from 'util';
 
 
-class UserCourseList extends React.Component {
+class CourseList extends React.Component {
     toggleCourseShownFactory(course) {
         return () => {
-            const scheduler = this.props.scheduler;
-            if (scheduler) {
-                const shown = scheduler.getMap()[course.getCRN()];
-                scheduler.setCourseShown(course, !shown).then(() => {
-                    this.forceUpdate();
-                    this.props.delegate.forceUpdate();
-                });
-            }
+            const {schedule, setCourseShown} = this.props;
+            const shown = schedule.getMap().get(course.getCRN());
+            setCourseShown(schedule, course, !shown);
         };
     }
 
     removeCourseFactory(course) {
         return event => {
             event.stopPropagation();
-            this.props.delegate.removeUserCourse(course);
+            this.props.removeCourse(this.props.schedule, course);
         };
     }
 
     sumCredits(courses) {
-        let vary = false;
-        let total = 0;
-
-        for (let i = 0; i < courses.length; i++) {
-            const credits = courses[i].getCredits();
-
-            if (credits.indexOf('to') > -1)
-                vary = true;
-
-            total += parseFloat(credits);
-        }
+        let [total, vary] = courses.reduce((current, course) => {
+            const credits = course.getCredits();
+            return [
+                current[0] + parseFloat(credits),
+                current[1] || (credits.indexOf('to') > -1)
+            ];
+        }, [0, false]);
 
         return [total.toFixed(1), vary];
     }
@@ -51,7 +40,7 @@ class UserCourseList extends React.Component {
         let result = '';
 
         for (let i = 1; i <= 3; i++) {
-            const [credits, vary] = distributionMap[i];
+            const [credits, vary] = distributionMap.get(i);
             if (credits > 0) {
                 const label = this.buildCreditsLabel(`D${i}`, vary);
                 result += `${label} ${credits}, `;
@@ -66,26 +55,25 @@ class UserCourseList extends React.Component {
     }
 
     getDistributionMap(courses) {
-        let courseMap = {
-            1: [],
-            2: [],
-            3: []
-        };
+        let courseMap = new Map([
+            [1, new List()],
+            [2, new List()],
+            [3, new List()]
+        ]);
 
-        for (let i = 0; i < courses.length; i++) {
-            const course = courses[i];
+        courseMap = courses.reduce((current, course) => {
             const distribution = course.getDistribution();
-
             if (distribution > 0) {
-                courseMap[distribution].push(course);
+                return current.set(
+                    distribution,
+                    courseMap.get(distribution).push(course)
+                );
             }
-        }
+            return current;
 
-        return {
-            1: this.sumCredits(courseMap[1]),
-            2: this.sumCredits(courseMap[2]),
-            3: this.sumCredits(courseMap[3])
-        };
+        }, courseMap);
+
+        return courseMap.map(this.sumCredits);
     }
 
     buildCreditsLabel(name, vary) {
@@ -96,22 +84,24 @@ class UserCourseList extends React.Component {
     }
 
     getTotalCredits() {
-        const distMap = this.getDistributionMap(this.props.courses);
+        const {schedule} = this.props;
+        const courses = schedule.getCourses();
+
+        const distMap = this.getDistributionMap(courses);
         const distCredits = this.getDistributionCreditsString(distMap);
-        const [creditsSum, vary] = this.sumCredits(this.props.courses);
+        const [creditsSum, vary] = this.sumCredits(courses);
         const label = this.buildCreditsLabel('Total Credits', vary);
+
         return [creditsSum, label, distCredits];
     }
 
     getCreditsShown() {
-        let courses = [];
+        const {schedule} = this.props;
 
-        if (this.props.scheduler !== undefined) {
-            const map = this.props.scheduler.getMap();
-            courses = this.props.courses.filter(course => {
-                return map[course.getCRN()];
-            });
-        }
+        const map = schedule.getMap();
+        const courses = schedule.getCourses().filter(course => {
+            return map[course.getCRN()];
+        });
 
         const distMap = this.getDistributionMap(courses);
         const distCredits = this.getDistributionCreditsString(distMap);
@@ -123,17 +113,17 @@ class UserCourseList extends React.Component {
 
     showCourseFactory(course) {
         return () => {
-            this.showCourseDetail(course);
+            const {schedule} = this.props;
+            let location = `/schedule/${schedule.getID()}/${course.getCRN()}/`;
+            this.context.history.push(location);
         };
     }
 
     renderCourseRows() {
-        return this.props.courses.map(course => {
-            let courseShown;
-            if (this.props.scheduler === undefined)
-                courseShown = true;
-            else
-                courseShown = this.props.scheduler.getMap()[course.getCRN()];
+        const {schedule} = this.props;
+
+        return schedule.getCourses().map(course => {
+            const courseShown = schedule.getMap().get(course.getCRN());
 
             const buttonClass = courseShown ? 'toggle-btn-show' : 'toggle-btn-hide';
             const eyeClasses = classNames('glyphicon', {
@@ -158,7 +148,7 @@ class UserCourseList extends React.Component {
                         <span>
                             {course.getCRN() + ' '}
                             <ClipboardTrigger text={course.getCRN()} onClick={e => e.stopPropagation()}>
-                               <span className='glyphicon glyphicon-paperclip' />
+                               <Glyphicon glyph='copy' />
                             </ClipboardTrigger>
                         </span>
                     </td>
@@ -192,7 +182,7 @@ class UserCourseList extends React.Component {
                     </td>
                 </tr>
             );
-        });
+        }).toArray();
     }
 
     renderCourseHeaders() {
@@ -208,21 +198,6 @@ class UserCourseList extends React.Component {
                 <th className='text-center'>Enrollment</th>
                 <th className='text-center'>Credits</th>
             </tr>
-        );
-    }
-
-    renderCourseTable() {
-        return (
-            <div className='table-responsive'>
-                <table className='table table-hover course-table'>
-                    <thead>
-                        {this.renderCourseHeaders()}
-                    </thead>
-                    <tbody>
-                        {this.renderCourseRows()}
-                    </tbody>
-                </table>
-            </div>
         );
     }
 
@@ -243,24 +218,36 @@ class UserCourseList extends React.Component {
     render() {
         return (
             <div>
-                {this.renderCourseTable()}
+                <div className='table-responsive'>
+                    <table className='table table-hover course-table'>
+                        <thead>
+                            {this.renderCourseHeaders()}
+                        </thead>
+                        <tbody>
+                            {this.renderCourseRows()}
+                        </tbody>
+                    </table>
+                </div>
+
                 {this.renderCourseCredits()}
-                {this.renderCourseDetails(this.props.courses)}
             </div>
         );
     }
 }
 
-UserCourseList.propTypes = {
-    scheduler: PropTypes.instanceOf(Scheduler),
-    delegate: propTypeHas(['forceUpdate', 'removeUserCourse', 'addAlert']),
-    courses: PropTypes.arrayOf(PropTypes.instanceOf(Course))
+CourseList.propTypes = {
+    schedule: PropTypes.instanceOf(Schedule).isRequired,
+    setCourseShown: PropTypes.func,
+    removeCourse: PropTypes.func
 };
 
-UserCourseList.defaultProps = {
-    courses: []
+CourseList.defaultProps = {
+    setCourseShown: () => {},
+    removeCourse: () => {}
 };
 
-reactMixin.onClass(UserCourseList, CourseDetailMixin);
+CourseList.contextTypes = {
+    history: PropTypes.object.isRequired
+};
 
-export default wrapComponentClass(UserCourseList);
+export default wrapComponentClass(CourseList);

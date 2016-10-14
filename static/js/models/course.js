@@ -1,6 +1,6 @@
 import Moment from 'moment';
+import {OrderedMap} from 'immutable';
 
-import {eventOverlap} from 'components/me/planner/event';
 import {ajax} from 'util';
 
 
@@ -14,30 +14,6 @@ const DAY_ABBR_MAP = {
     'Sunday': 'U'
 };
 
-/**
- * Check if two courses overlap in time.
- * @param {Course} courseOne
- * @param {Course} courseTwo
- * @param {boolean} Whether or not the two courses' times overlap
- */
-export function courseOverlap(courseOne, courseTwo) {
-    const oneMeetings = courseOne.getMeetings();
-    const twoMeetings = courseTwo.getMeetings();
-
-    for (let i = 0; i < oneMeetings.length; i++) {
-        let one = oneMeetings[i];
-
-        for (let j = 0; j < twoMeetings.length; j++) {
-            let two = twoMeetings[j];
-
-            if (eventOverlap(one, two)) {
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
 
 export default class Course {
     constructor(crn, subject, number, section, title, instructor, description,
@@ -63,12 +39,6 @@ export default class Course {
         this.corequisites = corequisites;
         this.restrictions = restrictions;
         this.crossListed = crossListed;
-
-        this.filterMapping = {
-            distribution: `${this.getDistributionString()} ${this.distribution}`,
-            courseID: this.getCourseID(),
-            meetings: this.getMeetingsString()
-        };
     }
 
     static fromJSON(j) {
@@ -81,13 +51,13 @@ export default class Course {
 
         return new Course(j.crn, j.subject, j.course_number, j.section,
                           j.title, j.instructor, j.description, j.meetings,
-                          j.location, j.credits, j.distribution,
-                          j.enrollment, j.max_enrollment, j.waitlist,
-                          j.max_waitlist, j.prerequisites, j.corequisites,
-                          j.restrictions, crossListed);
+                          j.location, j.credits, j.distribution, j.enrollment,
+                          j.max_enrollment, j.waitlist, j.max_waitlist,
+                          j.prerequisites, j.corequisites, j.restrictions,
+                          crossListed);
     }
 
-    static get(filters=[], page=-1, order=null) {
+    static list(filters=[], page=-1, order=null) {
         let data = {
             filters: JSON.stringify(filters)
         };
@@ -105,8 +75,22 @@ export default class Course {
             method: 'GET',
             data
         }).then(result => {
-            result.courses = result.courses.map(Course.fromJSON);
+            result.courses = new OrderedMap(
+                result.courses
+                    .map(Course.fromJSON)
+                    .map(c => [c.getCRN(), c])
+            );
+
             return result;
+        });
+    }
+
+    static get(crn) {
+        return ajax({
+            url: `/api/courses/${crn}/`,
+            method: 'GET'
+        }).then(result => {
+            return Course.fromJSON(result);
         });
     }
 
@@ -118,10 +102,10 @@ export default class Course {
                 subject: this.subject,
                 number: this.number
             }
-        }).then(result => {
-            return result.filter(data => data.section !== this.section)
-                .map(Course.fromJSON);
-        });
+        }).then(result => result
+            .map(Course.fromJSON)
+            .filter(c => c.getSection() !== this.section)
+        );
     }
 
     _convertMeetingsToDates(meetings) {
@@ -139,11 +123,9 @@ export default class Course {
         return dates;
     }
 
-    filterValue(key) {
-        let value = this.filterMapping[key];
-        if (value === undefined)
-            value = this[key];
-        return value;
+    equals(other) {
+        if (!(other instanceof Course)) return false;
+        return this.getCRN() === other.getCRN();
     }
 
     getCRN() {

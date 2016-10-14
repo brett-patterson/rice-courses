@@ -2,37 +2,30 @@ import 'filterWidget.scss';
 
 import React, {PropTypes} from 'react';
 import ReactDOM from 'react-dom';
+import update from 'react-addons-update';
 
 import FilterButton from './filterButton';
 import FilterInput from './filterInput';
-import FilterManager from './filterManager';
 import {getHueByIndex, wrapComponentClass} from 'util';
+
+let timerId = null;
 
 class FilterWidget extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            outline: 'none',
-            placeholder: 'Add Filters...',
-            keywords: {},
-            text: '',
-            currentFilters: props.manager.getFilters()
-        };
-    }
-
-    componentWillMount() {
         let keywords = {};
-        for (let i = 0; i < this.props.filters.length; i++) {
-            const filter = this.props.filters[i];
-            const filterKeywords = filter.getKeywords();
-
-            for (let j = 0; j < filterKeywords.length; j++)
-                keywords[filterKeywords[j].toLowerCase()] = filter;
+        for (let filter of props.allFilters) {
+            for (let kw of filter.getKeywords())
+                keywords[kw.toLowerCase()] = filter;
         }
 
-        this.setState({
-            keywords
-        });
+        this.state = {
+            filters: props.filters,
+            outline: 'none',
+            placeholder: 'Add Filters...',
+            keywords,
+            text: ''
+        };
     }
 
     onFocus() {
@@ -55,13 +48,14 @@ class FilterWidget extends React.Component {
 
             if (index > -1) {
                 const field = text.substring(0, index).toLowerCase();
-                const filter = this.state.keywords[field];
+                const filter = this.state.keywords[field].copy();
 
                 if (field.length > 0 && filter !== undefined) {
                     this.setState({
                         text: ''
                     }, () => {
-                        this.addFilter(filter, '');
+                        filter.setValue('');
+                        this.addFilter(filter);
                     });
                 }
             }
@@ -69,11 +63,11 @@ class FilterWidget extends React.Component {
     }
 
     onKeyDown(event) {
-        const filters = this.props.manager.getFilters();
+        const filters = this.props.filters;
 
         if (event.keyCode === 8 && filters.length > 0 &&
             this.state.text.length === 0) {
-            this.removeFilter(this.state.currentFilters[filters.length - 1]);
+            this.removeFilter(filters[filters.length - 1]);
         }
     }
 
@@ -81,44 +75,59 @@ class FilterWidget extends React.Component {
         ReactDOM.findDOMNode(this.refs.input).focus();
     }
 
-    addFilter(filter, value) {
-        filter.setValue(value);
-        this.props.manager.addFilter(filter);
+    filtersChanged(delay=0) {
+        if (delay > 0) {
+            if (timerId !== null) {
+                clearTimeout(timerId);
+            }
 
-        this.setState({
-            currentFilters: this.props.manager.getFilters()
-        }, () => {
-            const index = this.props.manager.getFilters().length - 1;
-            const id = `filter-${index+1}-${index}`;
-            ReactDOM.findDOMNode(this.refs[id].refs.input).focus();
-        });
+            timerId = setTimeout(() => {
+                this.props.filtersChanged(this.state.filters);
+            }, delay);
+        } else {
+            this.props.filtersChanged(this.state.filters);
+        }
+    }
+
+    addFilter(filter) {
+        this.setState(update(this.state, {
+            filters: {
+                $push: [filter]
+            }
+        }));
     }
 
     removeFilter(filter) {
-        this.props.manager.removeFilter(filter);
+        const index = this.state.filters.indexOf(filter);
 
-        this.setState({
-            currentFilters: this.props.manager.getFilters()
-        });
+        if (index > -1) {
+            this.setState(update(this.state, {
+                filters: {
+                    $splice: [[index, 1]]
+                }
+            }), this.filtersChanged);
+        }
     }
 
     updateFilter(filter, value) {
-        this.props.manager.updateFilter(filter, value);
+        filter.setValue(value);
+        this.filtersChanged(500);
     }
 
     renderFilterButtons() {
-        return this.props.filters.map((filter, index) => {
+        return this.props.allFilters.map((filter, index) => {
             return <FilterButton filter={filter}
-                         hue={getHueByIndex(index, this.props.filters.length)}
+                         hue={getHueByIndex(index, this.props.allFilters.length)}
                          key={`filterBtn${index}`}
                          delegate={this} />;
         });
     }
 
     renderFilterInputs() {
-        return this.state.currentFilters.map((filter, index) => {
-            const id = `filter-${this.state.currentFilters.length}-${index}`;
-            return <FilterInput filter={filter} key={id} ref={id}
+        return this.state.filters.map((filter, index) => {
+            const id = `filter-${this.props.filters.length}-${index}`;
+            const active = index === this.state.filters.length - 1;
+            return <FilterInput active={active} filter={filter} key={id}
                                 delegate={this} />;
         });
     }
@@ -149,8 +158,9 @@ class FilterWidget extends React.Component {
 
 FilterWidget.propTypes = {
     key: PropTypes.string,
+    allFilters: PropTypes.array,
     filters: PropTypes.array,
-    manager: PropTypes.instanceOf(FilterManager).isRequired
+    filtersChanged: PropTypes.func
 };
 
 FilterWidget.defaultProps = {

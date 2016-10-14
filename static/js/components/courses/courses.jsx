@@ -1,12 +1,14 @@
 import 'courses.scss';
 
-import React from 'react';
+import React, {PropTypes} from 'react';
+import {connect} from 'react-redux';
+import {OrderedMap, List} from 'immutable';
 
-import FilterManager from './filter/filterManager';
+import {fetchCourses} from 'actions/courses';
 import FilterWidget from './filter/filterWidget';
 import CourseFilter from './filter/courseFilter';
 import CourseList from './courseList';
-import {ajax, wrapComponentClass} from 'util';
+import {ajax, wrapComponentClass, propTypePredicate} from 'util';
 
 
 const FILTERS = [
@@ -25,27 +27,57 @@ const FILTERS = [
 ];
 
 class Courses extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            manager: new FilterManager(() => this.onFiltersChanged())
-        };
+    fetchCoursesByPage(page) {
+        let {filters, order, dispatch} = this.props;
+        dispatch(fetchCourses(page, filters, order));
     }
 
-    onFiltersChanged() {
-        if (this.refs && this.refs.courseList) {
-            this.refs.courseList.fetchCourses();
-        }
+    fetchCoursesByOrder(order) {
+        let {page, filters, dispatch} = this.props;
+        dispatch(fetchCourses(page, filters, order));
+    }
+
+    fetchCoursesByFilters(filters) {
+        let {page, order, dispatch} = this.props;
+        dispatch(fetchCourses(page, filters, order));
     }
 
     render() {
         return (
             <div>
-                <FilterWidget manager={this.state.manager} filters={FILTERS} />
-                <CourseList ref='courseList' filterManager={this.state.manager} />
+                <FilterWidget allFilters={FILTERS} filters={this.props.filters}
+                              filtersChanged={this.fetchCoursesByFilters} />
+                <CourseList courses={this.props.courses}
+                            schedules={this.props.schedules}
+                            page={this.props.page} order={this.props.order}
+                            totalPages={this.props.totalPages}
+                            pageChanged={this.fetchCoursesByPage}
+                            orderChanged={this.fetchCoursesByOrder} />
+                {this.props.children}
             </div>
         );
     }
 }
 
-export default wrapComponentClass(Courses);
+Courses.propTypes = {
+    courses: propTypePredicate(OrderedMap.isOrderedMap, false),
+    schedules: propTypePredicate(List.isList),
+    totalPages: PropTypes.number,
+    page: PropTypes.number,
+    filters: PropTypes.array,
+    order: PropTypes.string,
+    dispatch: PropTypes.func
+};
+
+function mapStateToProps(state) {
+    return {
+        courses: state.courses.filtered,
+        schedules: state.schedules.all,
+        totalPages: state.courses.pages,
+        page: state.courses.page,
+        order: state.courses.order,
+        filters: state.courses.filters
+    };
+}
+
+export default connect(mapStateToProps)(wrapComponentClass(Courses));

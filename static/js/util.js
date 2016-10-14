@@ -177,6 +177,21 @@ export function propTypeHas(propertyNames, required=true) {
 }
 
 /**
+ * A React PropTypes validator that checks that the prop value passes a given
+ * predicate function.
+ */
+export function propTypePredicate(predicate, required=true, errorMsg='must pass predicate.') {
+    return (props, propName) => {
+        const prop = props[propName];
+        if ((prop === undefined && required) ||
+            (prop !== undefined && !predicate(prop))) {
+            console.log(predicate, prop);
+            throw new Error(`${propName} ${errorMsg}`);
+        }
+    };
+}
+
+/**
  * Wrap an ES6 React Component class to autobind methods like React.createClass
  * does.
  * @param {klass} class - The class to wrap
@@ -208,6 +223,7 @@ export function wrapComponentClass(klass) {
     Constructor.propTypes = klass.propTypes;
     Constructor.defaultProps = klass.defaultProps;
     Constructor.contextTypes = klass.contextTypes;
+    Constructor.displayName = klass.displayName || klass.name;
 
     return Constructor;
 }

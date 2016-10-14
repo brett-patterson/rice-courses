@@ -30,6 +30,17 @@ export default class CourseFilter {
     }
 
     /**
+     * Create a copy of the filter.
+     * @return {CourseFilter} A new CourseFilter object.
+     */
+    copy() {
+        let keywords = this.keywords.slice(0, this.keywords.length - 2);
+        return new CourseFilter(
+            this.key, this.name, keywords, this.value, this.suggestions.slice()
+        );
+    }
+
+    /**
      * Get the filter key.
      * @return {string} The filter's key
      */

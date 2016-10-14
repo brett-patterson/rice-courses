@@ -39,11 +39,7 @@ $toggle-btn-hide-color: #ffb029;
     }
 }
 
-.fix-schedule-btn {
-    margin-bottom: 10px;
-}
-
-.scheduler-tabs {
+.schedule-tabs {
     border-bottom: none;
     margin-bottom: 1px;
 
@@ -52,14 +48,14 @@ $toggle-btn-hide-color: #ffb029;
     }
 }
 
-$scheduler-close-color: #bc2328;
-.scheduler-close {
-    color: $scheduler-close-color;
+$schedule-close-color: #bc2328;
+.schedule-close {
+    color: $schedule-close-color;
     cursor: pointer;
     margin: 0 -5px 0 5px;
 
     &:hover {
-      color: darken($scheduler-close-color, 4%);
+      color: darken($schedule-close-color, 4%);
     }
 }
 
@@ -88,4 +84,8 @@ $clear-btn-color: #cd2329;
 
 .course-event-alternate {
     background-color: rgba(19, 100, 0, 0.7);
+}
+
+.crn-copy {
+    cursor: pointer;
 }

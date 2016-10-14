@@ -25,9 +25,7 @@ class ClipboardTrigger extends React.Component {
             options.text = () => this.props.text;
         }
 
-        var trigger = ReactDOM.findDOMNode(this.refs.trigger);
-
-        this.clipboard = new Clipboard(trigger, options);
+        this.clipboard = new Clipboard(this._trigger, options);
         this.clipboard.on('success', () => this.flashTooltip('Copied!'));
         this.clipboard.on('error', () => {
             this.flashTooltip('Press Ctrl + C to copy');
@@ -52,13 +50,12 @@ class ClipboardTrigger extends React.Component {
 
     render() {
         let showTooltip = this.state.tooltip !== null;
-        let tooltipTarget = () => ReactDOM.findDOMNode(this.refs.trigger);
 
         return <span>
-            <a ref='trigger' {...this.props}>
+            <a ref={el => this._trigger = el} {...this.props}>
                 {this.props.children}
             </a>
-            <Overlay show={showTooltip} placement='top' target={tooltipTarget}>
+            <Overlay show={showTooltip} placement='top' target={this._trigger}>
                 <Tooltip id='tooltip'>
                     {this.state.tooltip}
                 </Tooltip>

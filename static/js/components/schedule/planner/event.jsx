@@ -21,25 +21,21 @@ export function eventOverlap(eventOne, eventTwo) {
 
 class Event extends React.Component {
     render() {
-        const event = this.props.event;
-        const eventStart = event.start.format(this.props.timeDisplayFormat);
-        const eventEnd = event.end.format(this.props.timeDisplayFormat);
+        const {
+            event, timeDisplayFormat, connectDragSource,
+            connectDropTarget, isOver
+        } = this.props;
 
-        const {connectDragSource, connectDropTarget, isOver} = this.props;
+        const eventStart = event.start.format(timeDisplayFormat);
+        const eventEnd = event.end.format(timeDisplayFormat);
 
         const classes = {
             'planner-event': true,
             'planner-event-drop-hover': isOver
         };
 
-        if (event.classes !== undefined) {
-            for (let i = 0; i < event.classes.length; i++) {
-                classes[event.classes[i]] = true;
-            }
-        }
-
         return connectDropTarget(connectDragSource(
-            <div {...this.props} className={classNames(classes)}>
+            <div {...this.props} className={classNames(classes, ...event.classes)}>
                 <small className='planner-note'>{event.note}</small>
                 {event.title}<br/>
                 <small>{`${eventStart} - ${eventEnd}`}</small>
@@ -52,7 +48,9 @@ Event.propTypes = {
     event: PropTypes.object.isRequired,
     planner: PropTypes.object.isRequired,
     timeDisplayFormat: PropTypes.string,
-    connectDragSource: PropTypes.func
+    connectDragSource: PropTypes.func,
+    connectDropTarget: PropTypes.func,
+    isOver: PropTypes.bool
 };
 
 Event.defaultProps = {
@@ -65,8 +63,8 @@ const EventTypes = {
 
 const eventSource = {
     beginDrag(props) {
-        const event = props.event;
-        props.planner.onEventDragStart(event);
+        const {event, planner} = props;
+        planner.onEventDragStart(event);
 
         return {
             event: event
@@ -74,8 +72,9 @@ const eventSource = {
     },
 
     endDrag(props, monitor) {
+        const {event, planner} = props;
         if (!monitor.didDrop()) {
-            props.planner.onEventDragCancel(props.event);
+            planner.onEventDragCancel(event);
         }
     }
 };
@@ -88,12 +87,14 @@ function eventDragCollect(connect) {
 
 const eventTarget = {
     drop(props, monitor) {
-        const event = monitor.getItem().event;
-        props.planner.onEventDrop(event, props.event);
+        const {event, planner} = props;
+        const oldEvent = monitor.getItem().event;
+        planner.onEventDrop(oldEvent, event);
     },
 
     canDrop(props, monitor) {
-        const one = props.event.course;
+        const {event} = props;
+        const one = event.course;
         const two = monitor.getItem().event.course;
 
         return (one.getSubject() === two.getSubject() &&

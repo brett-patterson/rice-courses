@@ -18,5 +18,5 @@ urlpatterns = [
     url(r'^nested_admin/', include('nested_admin.urls')),
     url(r'^admin/', include(admin.site.urls)),
 
-    url(r'^.*$', home),
+    url(r'^(?:(?!api).)*$', home),
 ]
