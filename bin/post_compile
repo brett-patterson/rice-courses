@@ -4,5 +4,4 @@ npm install
 make
 cd rice_course_manager/
 ./manage.py collectstatic --noinput
-./manage.py makemigrations --noinput
 ./manage.py migrate --noinput
