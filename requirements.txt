@@ -1,4 +1,4 @@
-django>=1.9,<1.10
+django==1.9.1
 dj-database-url==0.3.0
 dj-static==0.0.6
 django-toolbelt==0.0.1
@@ -6,13 +6,13 @@ gunicorn==19.0.0
 static3==0.5.1
 wsgiref==0.1.2
 
-python-dateutil
-requests
-markdown
-django-cas-client
-django-admin-sortable>2.0
-django-nested-admin
-mechanize
-beautifulsoup4
-django-webpack-loader
+python-dateutil==2.4.2
+requests==2.9.1
+Markdown==2.6.5
+django-cas-client==1.2.0
+django-admin-sortable==2.0.9
+django-nested-admin==2.1.8
+mechanize==0.2.5
+beautifulsoup4==4.4.1
+django-webpack-loader==0.2.4
 django-colorful==1.2
