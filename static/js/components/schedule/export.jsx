@@ -1,7 +1,10 @@
 import React, {PropTypes} from 'react';
-import {Modal, Button} from 'react-bootstrap';
+import {
+    Modal, Button, FormGroup, InputGroup, FormControl, Glyphicon
+} from 'react-bootstrap';
 
 import Schedule from 'models/schedule';
+import ClipboardTrigger from '../clipboardTrigger';
 import {wrapComponentClass} from 'util';
 
 
@@ -12,21 +15,31 @@ class ExportDialog extends React.Component {
 
     renderCourse(course) {
         const crn = course.getCRN();
-        const crnInput = <input type='text' className='text-center'
-                                value={crn} readOnly onClick={this.selectCRN} />;
-        return <p key={crn}>
+        const crnInput = <FormGroup>
+            <InputGroup>
+                <FormControl type='text' className='text-center'
+                             value={crn} readOnly onClick={this.selectCRN} />
+                <InputGroup.Addon>
+                    <ClipboardTrigger text={crn} className='crn-copy'>
+                        <Glyphicon glyph='copy' />
+                    </ClipboardTrigger>
+                </InputGroup.Addon>
+            </InputGroup>
+        </FormGroup>;
+
+        return <div key={crn}>
             <strong>{course.getCourseID()}</strong> {crnInput}
-        </p>;
+        </div>;
     }
 
     render() {
         const {schedule, onClose} = this.props;
         const courses = schedule.getCourses().filter(c =>
-            schedule.get(c.getCRN())
+            schedule.getMap().get(c.getCRN())
         );
 
         return <Modal show={true} onHide={onClose}>
-            <Modal.Body>{courses.map(this.renderCourse)}</Modal.Body>
+            <Modal.Body><form>{courses.map(this.renderCourse)}</form></Modal.Body>
             <Modal.Footer>
                 <Button onClick={onClose}>Close</Button>
             </Modal.Footer>

@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react';
-import {Badge} from 'react-bootstrap';
+import {Badge, Glyphicon} from 'react-bootstrap';
 import classNames from 'classnames';
 import {List, Map} from 'immutable';
 
@@ -148,7 +148,7 @@ class CourseList extends React.Component {
                         <span>
                             {course.getCRN() + ' '}
                             <ClipboardTrigger text={course.getCRN()} onClick={e => e.stopPropagation()}>
-                               <span className='glyphicon glyphicon-paperclip' />
+                               <Glyphicon glyph='copy' />
                             </ClipboardTrigger>
                         </span>
                     </td>
