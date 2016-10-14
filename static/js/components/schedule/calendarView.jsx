@@ -1,13 +1,16 @@
 import React, {PropTypes} from 'react';
+import {Set} from 'immutable';
 
 import Planner from './planner/planner';
 import Schedule from 'models/schedule';
 import {getHueByIndex, hsvToRgb, wrapComponentClass} from 'util';
 
-
 const DAY_ORDER = [
     'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
 ];
+
+const DEFAULT_DAYS = DAY_ORDER.slice(1, 6);
+
 
 class CalendarView extends React.Component {
     constructor(props) {
@@ -79,7 +82,7 @@ class CalendarView extends React.Component {
 
     getDays() {
         const {schedule} = this.props;
-        let days = [];
+        let days = Set(DEFAULT_DAYS);
 
         if (schedule === undefined)
             return days;
@@ -91,13 +94,12 @@ class CalendarView extends React.Component {
             if (map.get(course.getCRN())) {
                 for (let j = 0; j < course.meetings.length; j++) {
                     const day = course.meetings[j].start.format('dddd');
-                    if (days.indexOf(day) < 0) {
-                        days.push(day);
-                    }
+                    days.add(day);
                 }
             }
         }
 
+        days = days.toArray();
         days.sort((a, b) => DAY_ORDER.indexOf(a) - DAY_ORDER.indexOf(b));
 
         return days;
