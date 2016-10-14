@@ -7,6 +7,10 @@
     "url": "git+https://bitbucket.org/brett-patterson/rice-courses.git"
   },
   "author": "Brett Patterson",
+  "scripts": {
+    "build": "NODE_ENV=production node_modules/.bin/webpack --progress --profile --colors",
+    "start": "ASSETS_PUBLIC_URL=http://localhost:2992/ node_modules/.bin/webpack-dev-server --progress --colors --port 2992 --content-base www"
+  },
   "dependencies": {
     "bootstrap-sass": "^3.3.6",
     "classnames": "^2.2.3",
@@ -49,6 +53,7 @@
     "style-loader": "^0.13.0",
     "url-loader": "^0.5.7",
     "webpack": "^1.12.11",
-    "webpack-bundle-tracker": "0.0.9"
+    "webpack-bundle-tracker": "0.0.9",
+    "webpack-dev-server": "^1.16.2"
   }
 }

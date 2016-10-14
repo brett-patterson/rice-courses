@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 npm install
-make
+npm run build
 cd rice_course_manager/
 ./manage.py collectstatic --noinput
 ./manage.py migrate --noinput
