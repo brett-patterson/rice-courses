@@ -113,7 +113,8 @@ class CourseList extends React.Component {
 
     showCourseFactory(course) {
         return () => {
-            let location = `/me/${course.getCRN()}/`;
+            const {schedule} = this.props;
+            let location = `/schedule/${schedule.getID()}/${course.getCRN()}/`;
             this.context.history.push(location);
         };
     }
