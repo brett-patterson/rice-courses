@@ -49,7 +49,8 @@ INSTALLED_APPS = (
     'courses',
     'evaluation',
     'help',
-    'me'
+    'me',
+    'terms',
 )
 
 TEMPLATES = [{

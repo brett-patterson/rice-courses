@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 from fields import DateTimeInterval, DateTimeListField, FloatRangeField
+from terms.models import Term
 
 
 def try_set(dictionary, key, target, coerce_func=lambda x: x):
@@ -115,8 +116,16 @@ DAY_NUMBER_MAP = {
 
 class Course(models.Model):
     """ A model to represent a course.
-
     """
+    class Meta:
+        unique_together = (('term', 'crn'),)
+
+    # The term for this course
+    term = models.ForeignKey(Term)
+
+    # The unique 5-digit number for this course, represented as a string.
+    crn = models.CharField(max_length=5)
+
     # The 4-letter subject code for the course.
     subject = models.CharField(max_length=4, default='')
 
@@ -182,9 +191,6 @@ class Course(models.Model):
     # The name of the instructor for this course.
     instructor = models.CharField(max_length=200, default='')
 
-    # The unique 5-digit number for this course, represented as a string.
-    crn = models.CharField(max_length=5, primary_key=True)
-
     def __repr__(self):
         return self.course_id()
 
@@ -227,11 +233,10 @@ class Course(models.Model):
         return result
 
     @classmethod
-    def from_json(cls, json_obj):
+    def from_json(cls, json_obj, term):
         """ Construct a course from a JSON-serializable dictionary.
-
         """
-        self = cls()
+        self = cls(term=term)
 
         try_set(json_obj, 'subject', self)
         try_set(json_obj, 'course_number', self)

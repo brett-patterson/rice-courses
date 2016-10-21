@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^api/courses/', include('courses.urls')),
     url(r'^api/evaluation/', include('evaluation.urls')),
     url(r'^api/me/', include('me.urls')),
+    url(r'^api/terms/', include('terms.urls')),
     url(r'^api/help/', include('help.urls')),
 
     url(r'^nested_admin/', include('nested_admin.urls')),

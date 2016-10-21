@@ -6,6 +6,7 @@ from django.conf import settings
 from rice_courses.views import APIView
 from .filters import filter_courses
 from .models import Course
+from terms.models import Term
 
 
 COURSE_ORDER = {
@@ -20,6 +21,7 @@ class CourseCollectionView(APIView):
         filtersJson = request.GET.get('filters')
         page = request.GET.get('page')
         order = request.GET.get('order')
+        term = request.GET.get('term')
 
         if filtersJson is None:
             filters = []
@@ -32,12 +34,14 @@ class CourseCollectionView(APIView):
         if order is None:
             order = 'courseID'
 
+        courses = Course.objects.filter(term=term or Term.current_term())
+
         if order.startswith('-'):
             order_params = COURSE_ORDER.get(order[1:], (order[1:],))
-            all_courses = Course.objects.order_by(*order_params).reverse()
+            all_courses = courses.order_by(*order_params).reverse()
         else:
             order_params = COURSE_ORDER.get(order, (order,))
-            all_courses = Course.objects.order_by(*order_params)
+            all_courses = courses.order_by(*order_params)
 
         filtered_courses = filter_courses(all_courses, filters)
 

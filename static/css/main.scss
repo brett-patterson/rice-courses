@@ -41,3 +41,8 @@
     width: 100%;
     z-index: 100;
 }
+
+.term-dropdown .dropdown-menu {
+    max-height: 400px;
+    overflow: scroll;
+}

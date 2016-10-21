@@ -2,13 +2,14 @@ import Course from 'models/course';
 
 
 export const FETCH_COURSES = 'FETCH_COURSES';
-export function fetchCourses(page, filters, order) {
+export function fetchCourses(page, filters, order, term) {
     return dispatch => {
         let serverFilters = filters.map(filter => {
             return [filter.getKey(), filter.getValue()];
         });
 
-        Course.list(serverFilters, page, order).then(result => {
+        const termId = term ? term.getID() : null;
+        Course.list(serverFilters, page, order, termId).then(result => {
             let {courses, pages} = result;
             dispatch({
                 type: FETCH_COURSES,
@@ -16,7 +17,8 @@ export function fetchCourses(page, filters, order) {
                 pages,
                 page,
                 filters,
-                order
+                order,
+                term: termId
             });
         });
     };

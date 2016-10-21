@@ -5,6 +5,7 @@ import {connect} from 'react-redux';
 import {OrderedMap, List} from 'immutable';
 
 import {fetchCourses} from 'actions/courses';
+import Term from 'models/term';
 import FilterWidget from './filter/filterWidget';
 import CourseFilter from './filter/courseFilter';
 import CourseList from './courseList';
@@ -28,18 +29,18 @@ const FILTERS = [
 
 class Courses extends React.Component {
     fetchCoursesByPage(page) {
-        let {filters, order, dispatch} = this.props;
-        dispatch(fetchCourses(page, filters, order));
+        let {filters, order, term, dispatch} = this.props;
+        dispatch(fetchCourses(page, filters, order, term));
     }
 
     fetchCoursesByOrder(order) {
-        let {page, filters, dispatch} = this.props;
-        dispatch(fetchCourses(page, filters, order));
+        let {page, filters, term, dispatch} = this.props;
+        dispatch(fetchCourses(page, filters, order, term));
     }
 
     fetchCoursesByFilters(filters) {
-        let {page, order, dispatch} = this.props;
-        dispatch(fetchCourses(page, filters, order));
+        let {page, order, term, dispatch} = this.props;
+        dispatch(fetchCourses(page, filters, order, term));
     }
 
     render() {
@@ -66,6 +67,7 @@ Courses.propTypes = {
     page: PropTypes.number,
     filters: PropTypes.array,
     order: PropTypes.string,
+    term: PropTypes.instanceOf(Term),
     dispatch: PropTypes.func
 };
 
@@ -76,7 +78,8 @@ function mapStateToProps(state) {
         totalPages: state.courses.pages,
         page: state.courses.page,
         order: state.courses.order,
-        filters: state.courses.filters
+        filters: state.courses.filters,
+        term: state.terms.current
     };
 }
 

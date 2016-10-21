@@ -2,7 +2,7 @@ from django.http import QueryDict
 
 from courses.models import Course
 from rice_courses.views import APIView
-from .models import Schedule
+from .models import Schedule, Term
 
 
 class AlternateCourseView(APIView):
@@ -50,7 +50,8 @@ class ScheduleCollectionView(APIView):
         """ Get all the schedules for the user.
         """
         user = request.user
-        schedules = Schedule.objects.filter(user=user)
+        schedules = Schedule.objects.filter(user=user,
+                                            term=Term.current_term())
 
         return self.success([s.json() for s in schedules], safe=False)
 

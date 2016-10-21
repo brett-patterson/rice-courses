@@ -57,7 +57,7 @@ export default class Course {
                           crossListed);
     }
 
-    static list(filters=[], page=-1, order=null) {
+    static list(filters=[], page=-1, order=null, termId=null) {
         let data = {
             filters: JSON.stringify(filters)
         };
@@ -68,6 +68,10 @@ export default class Course {
 
         if (order !== null) {
             data.order = order;
+        }
+
+        if (termId !== null) {
+            data.term = termId;
         }
 
         return ajax({

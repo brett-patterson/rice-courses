@@ -1,12 +1,14 @@
 import React, {PropTypes} from 'react';
-import {Grid, Row, Nav, Navbar} from 'react-bootstrap';
+import {Grid, Row, Nav, Navbar, NavDropdown, MenuItem} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import {List} from 'immutable';
 import {DragDropContext, DropTarget} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
 import {addSchedule, addCourse} from 'actions/schedules';
+import {switchTerm} from 'actions/terms';
 import Schedule from 'models/schedule';
+import Term from 'models/term';
 import NavLink from './navLink';
 import {wrapComponentClass, propTypePredicate} from 'util';
 
@@ -77,6 +79,22 @@ class App extends React.Component {
                              addCourse={this.addCourse} />;
     }
 
+    renderTerms() {
+        const {terms, currentTerm} = this.props;
+        const items = terms.map(term =>
+            <MenuItem key={term.getID()} onClick={() => {
+                this.props.dispatch(switchTerm(term));
+            }}>
+                {term.getName()}
+            </MenuItem>
+        );
+
+        return <NavDropdown className='term-dropdown' id='termDropdown'
+                            title={currentTerm ? currentTerm.getName() : ''}>
+            {items}
+        </NavDropdown>;
+    }
+
     renderNav() {
         const scheduleLinks = this.props.schedules
             .map(this.renderScheduleLink)
@@ -102,6 +120,7 @@ class App extends React.Component {
                     </a></li>
                 </Nav>
                 <Nav pullRight>
+                    {this.renderTerms()}
                     <li>
                         <span className='navbar-text'>
                             {this.renderLoginInfo()}
@@ -136,12 +155,16 @@ class App extends React.Component {
 
 App.propTypes = {
     schedules: propTypePredicate(List.isList),
+    terms: propTypePredicate(List.isList),
+    currentTerm: PropTypes.instanceOf(Term),
     dispatch: PropTypes.func
 };
 
 function mapStateToProps(state) {
     return {
-        schedules: state.schedules.all
+        schedules: state.schedules.all,
+        terms: state.terms.all,
+        currentTerm: state.terms.current
     };
 }
 

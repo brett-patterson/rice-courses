@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from colorful.fields import RGBColorField
 
-from courses.models import Course
+from courses.models import Course, Term
 from .util import random_hex_color
 
 
@@ -18,6 +18,9 @@ class Schedule(models.Model):
 
     # The color for this schedule.
     color = RGBColorField(default=random_hex_color)
+
+    # The term for this schedule
+    term = models.ForeignKey(Term)
 
     class Meta:
         ordering = ['id']
@@ -88,7 +91,8 @@ def create_initial_schedule(sender, instance, created, **kwargs):
     an initial schedule on their account.
     """
     if created:
-        Schedule.objects.create(user=instance, name='Schedule 1')
+        Schedule.objects.create(user=instance, name='Schedule 1',
+                                term=Term.current_term())
 
 
 models.signals.post_save.connect(create_initial_schedule, sender=User)

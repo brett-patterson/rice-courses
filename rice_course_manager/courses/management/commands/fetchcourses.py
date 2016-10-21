@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand
 from requests import Session
 
 from courses.models import Course
+from terms.models import Term
 
 COURSE_URL = 'https://courses.rice.edu/admweb/!SWKSECX.main'
 
@@ -31,14 +32,8 @@ def fetch_courses(term, verbose=False):
 
     Parameters:
     -----------
-    term : str
-        The term to fetch courses from. Should be in the form of 'yyyySS',
-        where 'yyyy' is the 4-digit year and 'SS' is the 2-digit semester code.
-        The semester codes are the following:
-            10 - Fall
-            20 - Spring
-            30 - Summer
-        For example, the Spring semester of 2015 is represented as '201520'.
+    term : Term
+        The term to fetch courses for.
 
     verbose : bool [default False]
         Whether or not to show messages throughout the process of fetching
@@ -52,7 +47,7 @@ def fetch_courses(term, verbose=False):
     response = session.post(
         url=COURSE_URL,
         data={
-            'term': term,
+            'term': term.to_code(),
         }
     )
 
@@ -77,12 +72,13 @@ def fetch_courses(term, verbose=False):
             course_json[name] = attr.text
 
         try:
-            course = Course.from_json(course_json)
+            course = Course.from_json(course_json, term)
             crns.add(course.crn)
             course.save()
-        except:
+        except Exception as e:
             print 'Error parsing course:'
             print course_json
+            print e
             print
 
     # Remove stale courses
@@ -98,8 +94,14 @@ class Command(BaseCommand):
     help = 'Update courses in the database'
 
     def add_arguments(self, parser):
-        parser.add_argument('term', type=str)
+        parser.add_argument('--year', dest='year', type=int)
+        parser.add_argument('--semester', dest='semester', type=int)
 
     def handle(self, *args, **options):
         verbose = int(options['verbosity']) > 1
-        fetch_courses(options['term'], verbose=verbose)
+        term = Term.current_term()
+        if options['year'] is not None and options['semester'] is not None:
+            term = Term.objects.get(year=options['year'],
+                                    semester=options['semester'])
+
+        fetch_courses(term, verbose=verbose)
