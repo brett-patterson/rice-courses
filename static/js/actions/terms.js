@@ -1,5 +1,6 @@
 import Term from 'models/term';
 import {fetchCourses} from './courses';
+import {fetchSchedules} from './schedules';
 
 export const FETCH_TERMS = 'FETCH_TERMS';
 export function fetchTerms() {
@@ -27,5 +28,6 @@ export function switchTerm(term) {
             state.courses.page, state.courses.filters, state.courses.order,
             term
         ));
+        dispatch(fetchSchedules(term));
     };
 }

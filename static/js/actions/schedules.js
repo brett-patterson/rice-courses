@@ -2,9 +2,9 @@ import Schedule from 'models/schedule';
 
 
 export const FETCH_SCHEDULES = 'FETCH_SCHEDULES';
-export function fetchSchedules() {
+export function fetchSchedules(term) {
     return dispatch => {
-        Schedule.fetchAll().then(schedules => {
+        Schedule.fetchAll(term).then(schedules => {
             dispatch({
                 type: FETCH_SCHEDULES,
                 schedules
@@ -15,8 +15,9 @@ export function fetchSchedules() {
 
 export const ADD_SCHEDULE = 'ADD_SCHEDULE';
 export function addSchedule(name) {
-    return dispatch => {
-        Schedule.add(name).then(schedule => {
+    return (dispatch, getState) => {
+        const state = getState();
+        Schedule.add(name, state.terms.current).then(schedule => {
             dispatch({
                 type: ADD_SCHEDULE,
                 schedule

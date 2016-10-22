@@ -50,8 +50,8 @@ class ScheduleCollectionView(APIView):
         """ Get all the schedules for the user.
         """
         user = request.user
-        schedules = Schedule.objects.filter(user=user,
-                                            term=Term.current_term())
+        term = request.GET.get('term') or Term.current_term()
+        schedules = Schedule.objects.filter(user=user, term=term)
 
         return self.success([s.json() for s in schedules], safe=False)
 
@@ -59,9 +59,16 @@ class ScheduleCollectionView(APIView):
         """ Add a schedule for the user.
         """
         name = request.POST.get('name')
+        term = request.POST.get('term')
+
+        try:
+            term = Term.objects.get(id=term)
+        except Term.DoesNotExist:
+            return self.failure('Invalid term ID')
 
         if name is not None:
-            s = Schedule.objects.create(name=name, user=request.user)
+            s = Schedule.objects.create(name=name, term=term,
+                                        user=request.user)
             return self.success(s.json())
 
         return self.failure('No name specified')
@@ -100,7 +107,9 @@ class ScheduleCourseView(APIView):
             return self.failure('No CRN specified')
 
         schedule = Schedule.objects.get(id=schedule_id, user=request.user)
-        schedule.set_shown(Course.objects.get(crn=crn), True)
+        schedule.set_shown(
+            Course.objects.get(crn=crn, term=schedule.term), True
+        )
         return self.success(schedule.json())
 
     def put(self, request, schedule_id):
@@ -117,7 +126,10 @@ class ScheduleCourseView(APIView):
             return self.failure('No shown flag specified')
 
         schedule = Schedule.objects.get(id=schedule_id, user=request.user)
-        schedule.set_shown(Course.objects.get(crn=crn), shown == 'true')
+        schedule.set_shown(
+            Course.objects.get(crn=crn, term=schedule.term),
+            shown == 'true'
+        )
 
         return self.success(schedule.json())
 
@@ -130,5 +142,5 @@ class ScheduleCourseView(APIView):
             return self.failure('No CRN specified')
 
         schedule = Schedule.objects.get(id=schedule_id, user=request.user)
-        schedule.remove_course(Course.objects.get(crn=crn))
+        schedule.remove_course(Course.objects.get(crn=crn, term=schedule.term))
         return self.success(schedule.json())

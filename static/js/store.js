@@ -18,7 +18,7 @@ export default function configureStore() {
     store.dispatch(
         fetchCourses(0, state.courses.filters, state.courses.order, state.terms.current)
     );
-    store.dispatch(fetchSchedules());
+    store.dispatch(fetchSchedules(state.terms.current));
 
     return store;
 }

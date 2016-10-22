@@ -26,10 +26,11 @@ export default class Schedule {
     /**
      * Get all schedules for the user.
      */
-    static fetchAll() {
+    static fetchAll(term) {
         return ajax({
             url: '/api/me/schedules/',
-            method: 'GET'
+            method: 'GET',
+            data: { term: term ? term.getID() : undefined }
         }).then(schedules => new List(schedules.map(Schedule.fromJSON)));
     }
 
@@ -37,11 +38,11 @@ export default class Schedule {
      * Add a new schedule.
      * @param {string} name - The name for the new schedule.
      */
-    static add(name) {
+    static add(name, term) {
         return ajax({
             url: '/api/me/schedules/',
             method: 'POST',
-            data: { name }
+            data: { name, term: term.getID() }
         }).then(Schedule.fromJSON);
     }
 
