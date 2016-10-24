@@ -11,6 +11,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('me', '0014_auto_20161021_1914'),
         ('courses', '0019_auto_20161021_1730'),
+        ('terms', '0001_initial'),
     ]
 
     operations = [

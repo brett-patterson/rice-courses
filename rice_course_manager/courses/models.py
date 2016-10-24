@@ -72,21 +72,16 @@ def display_credits(credits_range):
         return '%s - %s' % (lower, upper)
 
 
-def parse_meetings(meetings_string):
+def parse_meetings(days, start_times, end_times):
     """ Parse a meetings string in the format 'days start_times-end_times'
     into DateTimeInterval objects.
 
     """
     meetings = []
 
-    pattern = r'([A-Z,\s]+)([0-9,\s]+)-([0-9,\s]+)'
-    match = re.search(pattern, meetings_string)
-
-    if not match:
-        return meetings
-
-    days, starts, ends = [group.strip().split(', ')
-                          for group in match.groups()]
+    days = days.strip().split(', ')
+    starts = start_times.strip().split(', ')
+    ends = end_times.strip().split(', ')
 
     for i, day_string in enumerate(days):
         start_string = starts[i]
@@ -139,7 +134,7 @@ class Course(models.Model):
     section = models.CharField(max_length=3, default='')
 
     # The physical location of the course on campus.
-    location = models.CharField(max_length=30, default='')
+    location = models.CharField(max_length=50, default='')
 
     # The distribution of the course, represented as a single integer.
     distribution = models.PositiveIntegerField(default=0)
@@ -149,15 +144,6 @@ class Course(models.Model):
 
     # The converted meeting dates and times for the course
     meetings = DateTimeListField(default=[])
-
-    # The raw meeting days for the course
-    meeting_days = models.CharField(max_length=7, default='')
-
-    # The raw start times for the course
-    start_time = models.CharField(max_length=30, default='')
-
-    # The raw end times for the course
-    end_time = models.CharField(max_length=30, default='')
 
     # A full description of the content of the course.
     description = models.TextField(default='')
@@ -188,8 +174,8 @@ class Course(models.Model):
     # together
     cross_list_group = models.CharField(default='', max_length=2)
 
-    # The name of the instructor for this course.
-    instructor = models.CharField(max_length=200, default='')
+    # The name of the instructor(s) for this course.
+    instructor = models.TextField(default='')
 
     def __repr__(self):
         return self.course_id()
@@ -256,17 +242,12 @@ class Course(models.Model):
         try_set(json_obj, 'instructor', self)
         try_set(json_obj, 'crn', self)
         try_set(json_obj, 'cross_list_group', self)
-        try_set(json_obj, 'meeting_days', self)
-        try_set(json_obj, 'start_time', self)
-        try_set(json_obj, 'end_time', self)
 
         if ('meeting_days' in json_obj and 'start_time' in json_obj and
                 'end_time' in json_obj):
-            meetings = '%s %s-%s' % (json_obj['meeting_days'],
-                                     json_obj['start_time'],
-                                     json_obj['end_time'])
-
-            self.meetings = parse_meetings(meetings)
+            self.meetings = parse_meetings(json_obj['meeting_days'],
+                                           json_obj['start_time'],
+                                           json_obj['end_time'])
 
         return self
 

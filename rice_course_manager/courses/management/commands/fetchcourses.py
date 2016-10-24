@@ -56,7 +56,7 @@ def fetch_courses(term, verbose=False):
 
     bar_count = 40
 
-    old_crns = set([c.crn for c in Course.objects.all()])
+    old_crns = set([c.crn for c in Course.objects.filter(term=term)])
     crns = set()
 
     for i, course in enumerate(root):
@@ -74,6 +74,13 @@ def fetch_courses(term, verbose=False):
         try:
             course = Course.from_json(course_json, term)
             crns.add(course.crn)
+
+            try:
+                old_course = Course.objects.get(crn=course.crn, term=term)
+                old_course.delete()
+            except Course.DoesNotExist:
+                pass
+
             course.save()
         except Exception as e:
             print 'Error parsing course:'
@@ -83,7 +90,7 @@ def fetch_courses(term, verbose=False):
 
     # Remove stale courses
     for crn in old_crns - crns:
-        Course.objects.get(crn=crn).delete()
+        Course.objects.get(crn=crn, term=term).delete()
 
 
 class Command(BaseCommand):
@@ -94,11 +101,18 @@ class Command(BaseCommand):
     help = 'Update courses in the database'
 
     def add_arguments(self, parser):
+        parser.add_argument('--all', dest='all', action='store_true',
+                            default=False)
         parser.add_argument('--year', dest='year', type=int)
         parser.add_argument('--semester', dest='semester', type=int)
 
     def handle(self, *args, **options):
         verbose = int(options['verbosity']) > 1
+        if options['all']:
+            for term in Term.objects.all():
+                fetch_courses(term, verbose=verbose)
+            return
+
         term = Term.current_term()
         if options['year'] is not None and options['semester'] is not None:
             term = Term.objects.get(year=options['year'],

@@ -125,13 +125,12 @@ class DateTimeInterval(object):
         return cls(*[parse(date_str) for date_str in value.split(',')])
 
 
-class DateTimeListField(models.CharField):
+class DateTimeListField(models.TextField):
     """ Implements a Django field used to store a list of datetime objects.
 
     """
     def __init__(self, objects=[], *args, **kwargs):
         self.objects = objects
-        kwargs['max_length'] = 300
         super(DateTimeListField, self).__init__(*args, **kwargs)
 
     def deconstruct(self):
@@ -139,7 +138,6 @@ class DateTimeListField(models.CharField):
 
         """
         name, path, args, kwargs = super(DateTimeListField, self).deconstruct()
-        del kwargs['max_length']
         kwargs['objects'] = self.objects
         return name, path, args, kwargs
 
