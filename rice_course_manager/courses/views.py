@@ -21,7 +21,7 @@ class CourseCollectionView(APIView):
         filtersJson = request.GET.get('filters')
         page = request.GET.get('page')
         order = request.GET.get('order')
-        term = request.GET.get('term')
+        term_id = request.GET.get('term')
 
         if filtersJson is None:
             filters = []
@@ -34,7 +34,11 @@ class CourseCollectionView(APIView):
         if order is None:
             order = 'courseID'
 
-        courses = Course.objects.filter(term=term or Term.current_term())
+        term = Term.current_term()
+        if term_id is not None:
+            term = Term.objects.get(id=term_id)
+
+        courses = Course.objects.filter(term=term)
 
         if order.startswith('-'):
             order_params = COURSE_ORDER.get(order[1:], (order[1:],))

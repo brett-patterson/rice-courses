@@ -111,8 +111,8 @@ class CourseList extends React.Component {
         };
     }
 
-    onPageClick(event, selectedEvent) {
-        this.props.pageChanged(selectedEvent.eventKey - 1);
+    onPageClick(key) {
+        this.props.pageChanged(key - 1);
     }
 
     onHeaderClickHandler(order) {
