@@ -1,7 +1,7 @@
 from xml.etree import ElementTree
 
+import requests
 from django.core.management.base import BaseCommand
-from requests import Session
 
 from courses.models import Course
 from terms.models import Term
@@ -27,72 +27,6 @@ ATTRIBUTE_MAP = {
 }
 
 
-def fetch_courses(term, verbose=False):
-    """ Get all courses for the given term.
-
-    Parameters:
-    -----------
-    term : Term
-        The term to fetch courses for.
-
-    verbose : bool [default False]
-        Whether or not to show messages throughout the process of fetching
-        courses.
-
-    """
-    if verbose:
-        print('Fetching data...')
-
-    session = Session()
-    response = session.post(
-        url=COURSE_URL,
-        data={
-            'term': term.to_code(),
-        }
-    )
-
-    root = ElementTree.fromstring(response.text.encode('utf-8'))
-    course_count = len(root)
-
-    bar_count = 40
-
-    old_crns = set([c.crn for c in Course.objects.filter(term=term)])
-    crns = set()
-
-    for i, course in enumerate(root):
-        if verbose:
-            count = int(float(i + 1) / course_count * bar_count)
-            log = '\r[' + '=' * count + ' ' * (bar_count - count) + ']'
-            print log,
-
-        course_json = {}
-
-        for attr in course:
-            name = ATTRIBUTE_MAP.get(attr.tag, attr.tag)
-            course_json[name] = attr.text
-
-        try:
-            course = Course.from_json(course_json, term)
-            crns.add(course.crn)
-
-            try:
-                old_course = Course.objects.get(crn=course.crn, term=term)
-                old_course.delete()
-            except Course.DoesNotExist:
-                pass
-
-            course.save()
-        except Exception as e:
-            print 'Error parsing course:'
-            print course_json
-            print e
-            print
-
-    # Remove stale courses
-    for crn in old_crns - crns:
-        Course.objects.get(crn=crn, term=term).delete()
-
-
 class Command(BaseCommand):
     """ A command to fetch courses for a given term and import them into
     the database.
@@ -110,7 +44,7 @@ class Command(BaseCommand):
         verbose = int(options['verbosity']) > 1
         if options['all']:
             for term in Term.objects.all():
-                fetch_courses(term, verbose=verbose)
+                self.fetch_courses(term, verbose=verbose)
             return
 
         term = Term.current_term()
@@ -118,4 +52,75 @@ class Command(BaseCommand):
             term = Term.objects.get(year=options['year'],
                                     semester=options['semester'])
 
-        fetch_courses(term, verbose=verbose)
+        self.fetch_courses(term, verbose=verbose)
+
+    def fetch_courses(self, term, verbose=False):
+        """ Get all courses for the given term.
+
+        Parameters:
+        -----------
+        term : Term
+            The term to fetch courses for.
+
+        verbose : bool [default False]
+            Whether or not to show messages throughout the process of fetching
+            courses.
+
+        """
+        if verbose:
+            self.stdout.write('Fetching data...')
+
+        response = requests.post(
+            url=COURSE_URL,
+            data={
+                'term': term.to_code(),
+            }
+        )
+
+        if verbose:
+            self.stdout.write('Parsing data...')
+
+        root = ElementTree.fromstring(response.text.encode('utf-8'))
+        course_count = len(root)
+
+        bar_count = 40
+
+        old_crns = set([c.crn for c in Course.objects.filter(term=term)])
+        crns = set()
+
+        if verbose:
+            self.stdout.write('Building courses...')
+
+        for i, course in enumerate(root):
+            if verbose:
+                count = int(float(i + 1) / course_count * bar_count)
+                log = '[' + '=' * count + ' ' * (bar_count - count) + ']'
+                self.stdout.write(log, ending='\r')
+                self.stdout.flush()
+
+            course_json = {}
+
+            for attr in course:
+                name = ATTRIBUTE_MAP.get(attr.tag, attr.tag)
+                course_json[name] = attr.text
+
+            try:
+                course = Course.from_json(course_json, term)
+                crns.add(course.crn)
+
+                try:
+                    old_course = Course.objects.get(crn=course.crn, term=term)
+                    old_course.delete()
+                except Course.DoesNotExist:
+                    pass
+
+                course.save()
+            except Exception as e:
+                self.stdout.write('Error parsing course:')
+                self.stdout.write(course_json)
+                self.stdout.write(e)
+                self.stdout.write()
+
+        # Remove stale courses
+        for crn in old_crns - crns:
+            Course.objects.get(crn=crn, term=term).delete()
