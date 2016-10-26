@@ -89,9 +89,9 @@ export default class Course {
         });
     }
 
-    static get(crn) {
+    static get(crn, term) {
         return ajax({
-            url: `/api/courses/${crn}/`,
+            url: `/api/courses/${term.getID()}/${crn}/`,
             method: 'GET'
         }).then(result => {
             return Course.fromJSON(result);

@@ -17,7 +17,7 @@ export default function(state=initialState, action) {
 
     switch (action.type) {
     case FETCH_COURSES:
-        if (state.all === undefined) {
+        if (state.all === undefined || action.clearAll) {
             all = action.courses;
         } else {
             all = state.all.merge(action.courses);

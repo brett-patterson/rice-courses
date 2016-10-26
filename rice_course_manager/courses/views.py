@@ -63,11 +63,16 @@ class CourseCollectionView(APIView):
 
 
 class CourseView(APIView):
-    def get(self, request, crn):
+    def get(self, request, term_id, crn):
         """ Get a course by CRN.
         """
         try:
-            course = Course.objects.get(crn=crn)
+            term = Term.objects.get(id=int(term_id))
+        except Term.DoesNotExist:
+            return self.failure('Term does not exist')
+
+        try:
+            course = Course.objects.get(crn=crn, term=term)
         except Course.DoesNotExist:
             return self.failure('Course does not exist')
 
