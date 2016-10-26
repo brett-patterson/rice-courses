@@ -1,5 +1,7 @@
 import React, {PropTypes} from 'react';
-import {Grid, Row, Nav, Navbar, NavDropdown, MenuItem} from 'react-bootstrap';
+import {
+    Grid, Row, Nav, Navbar, NavDropdown, MenuItem, Glyphicon
+} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import {List} from 'immutable';
 import {DragDropContext, DropTarget} from 'react-dnd';
@@ -20,32 +22,31 @@ const scheduleTarget = {
     }
 };
 
-function scheduleDropCollect(connect) {
+function scheduleDropCollect(connect, monitor) {
     return {
-        connectDropTarget: connect.dropTarget()
+        connectDropTarget: connect.dropTarget(),
+        isOver: monitor.isOver()
     };
 }
 
-let ScheduleLink = ({schedule, connectDropTarget}) => {
+let ScheduleLink = ({schedule, connectDropTarget, isOver}) => {
     const style = {
         color: schedule.getColor()
     };
 
-    let inner = connectDropTarget(<span>
-        <span className='glyphicon glyphicon-stop' style={style} />
-        {schedule.name}
-    </span>);
-
     return <NavLink key={`schedule-${schedule.id}`}
-                    to={`/schedule/${schedule.id}`}>
-        {inner}
+                    to={`/schedule/${schedule.id}`}
+                    wrapper={connectDropTarget}>
+        <Glyphicon glyph={isOver ? 'ok' : 'stop'} style={style} />
+        {schedule.name}
     </NavLink>;
 };
 
 ScheduleLink.propTypes = {
     schedule: PropTypes.instanceOf(Schedule).isRequired,
     connectDropTarget: PropTypes.func.isRequired,
-    addCourse: PropTypes.func.isRequired
+    addCourse: PropTypes.func.isRequired,
+    isOver: PropTypes.bool.isRequired
 };
 
 ScheduleLink = DropTarget('COURSE', scheduleTarget, scheduleDropCollect)(
