@@ -9,7 +9,6 @@
 
         <link rel="icon" href="{% static 'img/icon.png' %}" type="image/png">
         <script type="text/javascript">
-        window.HELP_ARTICLES = {{ help_articles | safe }};
         window.USERNAME = "{{ request.user }}" || null;
         </script>
     </head>

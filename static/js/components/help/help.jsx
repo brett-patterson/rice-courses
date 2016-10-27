@@ -1,6 +1,8 @@
 import React, {PropTypes} from 'react';
+import {connect} from 'react-redux';
 
 import {wrapComponentClass} from 'util';
+
 
 class Help extends React.Component {
     renderArticles() {
@@ -27,8 +29,10 @@ Help.propTypes = {
     }))
 };
 
-Help.defaultProps = {
-    articles: window.HELP_ARTICLES || []
-};
+function mapStateToProps(state) {
+    return {
+        articles: state.help.articles
+    };
+}
 
-export default wrapComponentClass(Help);
+export default connect(mapStateToProps)(wrapComponentClass(Help));

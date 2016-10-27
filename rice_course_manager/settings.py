@@ -42,8 +42,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'cas',
-    'adminsortable',
-    'nested_admin',
     'webpack_loader',
 
     'courses',

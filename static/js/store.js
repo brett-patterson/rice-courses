@@ -4,6 +4,7 @@ import thunkMiddleware from 'redux-thunk';
 import {fetchTerms} from 'actions/terms';
 import {fetchCourses} from 'actions/courses';
 import {fetchSchedules} from 'actions/schedules';
+import {fetchArticles} from 'actions/help';
 import reducers from 'reducers/reducers';
 
 
@@ -19,6 +20,7 @@ export default function configureStore() {
         fetchCourses(0, state.courses.filters, state.courses.order, state.terms.current)
     );
     store.dispatch(fetchSchedules(state.terms.current));
+    store.dispatch(fetchArticles());
 
     return store;
 }

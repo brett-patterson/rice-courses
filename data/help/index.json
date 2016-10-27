@@ -1,0 +1,20 @@
+{
+    "articles": [
+        {
+            "title": "Overview",
+            "filename": "Overview.md"
+        },
+        {
+            "title": "Courses",
+            "filename": "Courses.md"
+        },
+        {
+            "title": "Me",
+            "filename": "Me.md"
+        },
+        {
+            "title": "Contact",
+            "filename": "Contact.md"
+        }
+    ]
+}
