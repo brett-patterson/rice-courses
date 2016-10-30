@@ -100,7 +100,7 @@ class CourseList extends React.Component {
 
         const map = schedule.getMap();
         const courses = schedule.getCourses().filter(course => {
-            return map[course.getCRN()];
+            return map.get(course.getCRN());
         });
 
         const distMap = this.getDistributionMap(courses);
