@@ -101,7 +101,7 @@ class App extends React.Component {
             .map(this.renderScheduleLink)
             .toArray();
 
-        return <Navbar>
+        return <Navbar fixedTop>
             <Navbar.Header>
                 <Navbar.Brand>
                     <img className='logo' src='/static/img/logo.png' />
