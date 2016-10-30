@@ -107,19 +107,28 @@ class Command(BaseCommand):
             try:
                 course = Course.from_json(course_json, term)
                 crns.add(course.crn)
+                schedules = []
 
                 try:
                     old_course = Course.objects.get(crn=course.crn, term=term)
+                    schedules = map(
+                        lambda x: (x.schedule, x.shown),
+                        old_course.courseshown_set.all()
+                    )
                     old_course.delete()
+
                 except Course.DoesNotExist:
                     pass
 
                 course.save()
+                for schedule, shown in schedules:
+                    schedule.set_shown(course, shown)
+
             except Exception as e:
                 self.stdout.write('Error parsing course:')
-                self.stdout.write(course_json)
-                self.stdout.write(e)
-                self.stdout.write()
+                self.stdout.write(str(course_json))
+                self.stdout.write(str(e))
+                self.stdout.write('\n')
 
         # Remove stale courses
         for crn in old_crns - crns:
