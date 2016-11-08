@@ -85,6 +85,7 @@ class SectionsView(APIView):
         """
         subj = request.GET.get('subject')
         num = request.GET.get('number')
+        term_id = request.GET.get('term')
 
         if subj is None:
             return self.failure('No subject specified')
@@ -92,7 +93,17 @@ class SectionsView(APIView):
         if num is None:
             return self.failure('No course number specified')
 
-        filtered = Course.objects.filter(subject=subj, course_number=num)
+        if term_id is None:
+            return self.failure('No term specified')
+
+        try:
+            term = Term.objects.get(id=term_id)
+        except Term.DoesNotExist:
+            return self.failure('Invalid term')
+
+        filtered = Course.objects.filter(
+            subject=subj, course_number=num, term=term
+        )
         return self.success([c.json() for c in filtered], safe=False)
 
 

@@ -1,6 +1,7 @@
 import Moment from 'moment';
 import {OrderedMap} from 'immutable';
 
+import Term from './term';
 import {ajax} from 'util';
 
 
@@ -16,10 +17,11 @@ const DAY_ABBR_MAP = {
 
 
 export default class Course {
-    constructor(crn, subject, number, section, title, instructor, description,
+    constructor(term, crn, subject, number, section, title, instructor, description,
                 meetings, location, credits, distribution, enrollment,
                 maxEnrollment, waitlist, maxWaitlist, prerequisites,
                 corequisites, restrictions, crossListed) {
+        this.term = term;
         this.crn = crn;
         this.subject = subject;
         this.number = number;
@@ -49,7 +51,8 @@ export default class Course {
                 return Course.fromJSON(courseJSON);
             });
 
-        return new Course(j.crn, j.subject, j.course_number, j.section,
+        const term = Term.fromJSON(j.term);
+        return new Course(term, j.crn, j.subject, j.course_number, j.section,
                           j.title, j.instructor, j.description, j.meetings,
                           j.location, j.credits, j.distribution, j.enrollment,
                           j.max_enrollment, j.waitlist, j.max_waitlist,
@@ -104,7 +107,8 @@ export default class Course {
             method: 'GET',
             data: {
                 subject: this.subject,
-                number: this.number
+                number: this.number,
+                term: this.term.id
             }
         }).then(result => result
             .map(Course.fromJSON)
@@ -130,6 +134,10 @@ export default class Course {
     equals(other) {
         if (!(other instanceof Course)) return false;
         return this.getCRN() === other.getCRN();
+    }
+
+    getTerm() {
+        return this.term;
     }
 
     getCRN() {

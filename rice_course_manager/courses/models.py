@@ -209,7 +209,8 @@ class Course(models.Model):
             'prerequisites': self.prerequisites,
             'corequisites': self.corequisites,
             'instructor': self.instructor,
-            'crn': self.crn
+            'crn': self.crn,
+            'term': self.term.json()
         }
 
         if cross_list:
