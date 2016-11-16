@@ -165,20 +165,20 @@ def parse_evaluation(text, course, evaluation_type):
 
 
 # Fetch and cache a list of term codes.
-terms_response = session.post(
-    url=DATA_URL,
-    data={
-        'p_data': 'TERMS'
-    }
-)
-
-term_root = ElementTree.fromstring(terms_response.text.encode('utf-8'))
-
-term_codes = []
-for term_element in term_root.findall('TERM'):
-    code = term_element.get('CODE')
-    if not code.endswith('30'):
-        term_codes.insert(0, code)
+# terms_response = session.post(
+#     url=DATA_URL,
+#     data={
+#         'p_data': 'TERMS'
+#     }
+# )
+#
+# term_root = ElementTree.fromstring(terms_response.text.encode('utf-8'))
+#
+# term_codes = []
+# for term_element in term_root.findall('TERM'):
+#     code = term_element.get('CODE')
+#     if not code.endswith('30'):
+#         term_codes.insert(0, code)
 
 
 def child_element_text(elem, child_elem_name, default=''):
