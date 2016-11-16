@@ -164,8 +164,9 @@ class CourseList extends React.Component {
     }
 
     render() {
+        const classes = classNames('table-responsive', this.props.className);
         return (
-            <div className='table-responsive'>
+            <div className={classes}>
                 <table className='table table-hover course-table'>
                     <thead>
                         {this.renderCourseHeaders()}
@@ -193,7 +194,8 @@ CourseList.propTypes = {
     page: PropTypes.number,
     totalPages: PropTypes.number,
     pageChanged: PropTypes.func,
-    orderChanged: PropTypes.func
+    orderChanged: PropTypes.func,
+    className: PropTypes.string
 };
 
 CourseList.contextTypes = {

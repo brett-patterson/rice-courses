@@ -3,6 +3,7 @@ import 'courses.scss';
 import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {OrderedMap, List} from 'immutable';
+import classNames from 'classnames';
 
 import {fetchCourses} from 'actions/courses';
 import Term from 'models/term';
@@ -12,22 +13,42 @@ import {wrapComponentClass, propTypePredicate} from 'util';
 
 
 class Courses extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            loading: false
+        };
+    }
+
+    componentWillReceiveProps() {
+        this.setState({
+            loading: false
+        });
+    }
+
     fetchCoursesByPage(page) {
         let {query, term, dispatch} = this.props;
+        this.setState({ loading: true });
         dispatch(fetchCourses(page, query, term));
     }
 
     fetchCoursesByQuery(query) {
         let {page, term, dispatch} = this.props;
+        this.setState({ loading: true });
         dispatch(fetchCourses(page, query, term));
     }
 
     render() {
+        const courseListClasses = classNames({
+            faded: this.state.loading
+        });
+
         return (
             <div>
                 <SearchBar query={this.props.query}
                            onChange={this.fetchCoursesByQuery} />
-                <CourseList courses={this.props.courses}
+                <CourseList className={courseListClasses}
+                            courses={this.props.courses}
                             schedules={this.props.schedules}
                             page={this.props.page}
                             totalPages={this.props.totalPages}
