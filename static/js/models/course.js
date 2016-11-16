@@ -99,6 +99,16 @@ export default class Course {
         });
     }
 
+    static getSubjects(term=null) {
+        return ajax({
+            url: '/api/courses/subjects/',
+            method: 'GET',
+            data: {
+                term: term ? term.id : undefined
+            }
+        });
+    }
+
     getOtherSections() {
         return ajax({
             url: '/api/courses/sections/',

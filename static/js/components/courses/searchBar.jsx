@@ -1,6 +1,7 @@
 import 'searchBar.scss';
 
 import React, {PropTypes} from 'react';
+import Autosuggest from 'react-autosuggest';
 
 import {wrapComponentClass} from 'util';
 
@@ -8,14 +9,28 @@ class SearchBar extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            text: props.query
+            text: props.query,
+            suggestions: []
         };
 
         this._timer = null;
     }
 
-    onChange(e) {
-        const text = e.target.value;
+    onSuggestionsFetchRequested({ value }) {
+        this.setState({
+            suggestions: this.props.suggestions.filter(suggestion => {
+                return suggestion.toLowerCase().indexOf(value.toLowerCase()) === 0;
+            })
+        });
+    }
+
+    onSuggestionsClearRequested() {
+        this.setState({
+            suggestions: []
+        });
+    }
+
+    onChange(e, { newValue: text }) {
         this.setState({ text });
 
         if (this._timer !== null) {
@@ -27,20 +42,37 @@ class SearchBar extends React.Component {
         }, this.props.updateDelay);
     }
 
+    renderSuggestion(suggestion) {
+        return <div>{suggestion}</div>;
+    }
+
     render() {
-        return <input type='text' className='search-bar'
-                      placeholder='Search for courses...'
-                      value={this.state.text} onChange={this.onChange} />;
+        const inputProps = {
+            className: 'search-bar',
+            placeholder: 'Search for courses...',
+            value: this.state.text,
+            onChange: this.onChange
+        };
+
+        return <Autosuggest
+            suggestions={this.state.suggestions}
+            onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+            onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+            getSuggestionValue={s => s}
+            renderSuggestion={this.renderSuggestion}
+            inputProps={inputProps} />;
     }
 }
 
 SearchBar.propTypes = {
+    suggestions: PropTypes.array,
     query: PropTypes.string,
     onChange: PropTypes.func,
     updateDelay: PropTypes.number
 };
 
 SearchBar.defaultProps = {
+    suggestions: [],
     query: '',
     onChange: () => {},
     updateDelay: 200

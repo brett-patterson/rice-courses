@@ -46,7 +46,8 @@ class Courses extends React.Component {
         return (
             <div>
                 <SearchBar query={this.props.query}
-                           onChange={this.fetchCoursesByQuery} />
+                           onChange={this.fetchCoursesByQuery}
+                           suggestions={this.props.subjects} />
                 <CourseList className={courseListClasses}
                             courses={this.props.courses}
                             schedules={this.props.schedules}
@@ -66,6 +67,7 @@ Courses.propTypes = {
     page: PropTypes.number,
     query: PropTypes.string,
     term: PropTypes.instanceOf(Term),
+    subjects: PropTypes.arrayOf(PropTypes.string),
     dispatch: PropTypes.func
 };
 
@@ -76,7 +78,8 @@ function mapStateToProps(state) {
         totalPages: state.courses.pages,
         page: state.courses.page,
         query: state.courses.query,
-        term: state.terms.current
+        term: state.terms.current,
+        subjects: state.courses.subjects
     };
 }
 

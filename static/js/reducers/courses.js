@@ -1,4 +1,4 @@
-import {FETCH_COURSES, FETCH_COURSE} from 'actions/courses';
+import {FETCH_COURSES, FETCH_COURSE, FETCH_SUBJECTS} from 'actions/courses';
 import {OrderedMap} from 'immutable';
 
 
@@ -7,7 +7,8 @@ const initialState = {
     filtered: undefined,
     pages: 0,
     page: -1,
-    query: ''
+    query: '',
+    subjects: []
 };
 
 
@@ -40,6 +41,11 @@ export default function(state=initialState, action) {
 
         return Object.assign({}, state, {
             all
+        });
+
+    case FETCH_SUBJECTS:
+        return Object.assign({}, state, {
+            subjects: action.subjects
         });
 
     default:

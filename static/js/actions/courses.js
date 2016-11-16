@@ -34,3 +34,16 @@ export function fetchCourse(crn, term=null) {
         });
     };
 }
+
+export const FETCH_SUBJECTS = 'FETCH_SUBJECTS';
+export function fetchSubjects(term=null) {
+    return (dispatch, getState) => {
+        const state = getState();
+        Course.getSubjects(term || state.terms.current).then(subjects => {
+            dispatch({
+                type: FETCH_SUBJECTS,
+                subjects
+            });
+        });
+    };
+}

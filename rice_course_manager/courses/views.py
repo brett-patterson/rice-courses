@@ -114,6 +114,17 @@ class SubjectsView(APIView):
     def get(self, request):
         """ Get all unique course subjects.
         """
-        subjects = sorted(map(lambda x: x['subject'],
-                              Course.objects.values('subject').distinct()))
+        term_id = request.GET.get('term')
+
+        try:
+            term = Term.objects.get(id=term_id)
+        except Term.DoesNotExist:
+            term = Term.current_term()
+
+        distinct = Course.objects \
+            .filter(term=term) \
+            .values('subject') \
+            .distinct()
+
+        subjects = sorted(map(lambda x: x['subject'], distinct))
         return self.success(subjects, safe=False)
