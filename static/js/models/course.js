@@ -60,17 +60,15 @@ export default class Course {
                           crossListed);
     }
 
-    static list(filters=[], page=-1, order=null, termId=null) {
-        let data = {
-            filters: JSON.stringify(filters)
-        };
+    static list(query=undefined, page=-1, termId=null) {
+        let data = {};
+
+        if (query) {
+            data.q = query;
+        }
 
         if (page >= 0) {
             data.page = page;
-        }
-
-        if (order !== null) {
-            data.order = order;
         }
 
         if (termId !== null) {

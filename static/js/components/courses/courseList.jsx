@@ -115,22 +115,6 @@ class CourseList extends React.Component {
         this.props.pageChanged(key - 1);
     }
 
-    onHeaderClickHandler(order) {
-        return () => {
-            let next;
-
-            if (this.props.order == order && order.startsWith('-')) {
-                next = order.substring(1);
-            } else if (this.props.order == order) {
-                next = `-${order}`;
-            } else {
-                next = order;
-            }
-
-            this.props.orderChanged(next);
-        };
-    }
-
     renderCourseHeaders() {
         const columns = [
             ['crn', 'CRN'],
@@ -146,14 +130,11 @@ class CourseList extends React.Component {
         const headers = columns.map(column => {
             const [key, name, center] = column;
             const classes = classNames({
-                'sort-asc': this.props.order.substring(1) === key,
-                'sort-desc': this.props.order === key,
                 'text-center': center
             });
 
             return (
-                <th onClick={this.onHeaderClickHandler(key)}
-                    className={classes} key={key}>
+                <th className={classes} key={key}>
                     {name}
                 </th>
             );
@@ -211,7 +192,6 @@ CourseList.propTypes = {
     schedules: propTypePredicate(List.isList),
     page: PropTypes.number,
     totalPages: PropTypes.number,
-    order: PropTypes.string,
     pageChanged: PropTypes.func,
     orderChanged: PropTypes.func
 };

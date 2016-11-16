@@ -1,4 +1,4 @@
-django==1.9.1
+django==1.10.3
 dj-database-url==0.3.0
 dj-static==0.0.6
 django-toolbelt==0.0.1

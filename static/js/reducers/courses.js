@@ -7,8 +7,7 @@ const initialState = {
     filtered: undefined,
     pages: 0,
     page: -1,
-    order: 'courseID',
-    filters: []
+    query: ''
 };
 
 
@@ -28,8 +27,7 @@ export default function(state=initialState, action) {
             filtered: action.courses,
             pages: action.pages,
             page: action.page,
-            order: action.order,
-            filters: action.filters
+            query: action.query
         });
 
     case FETCH_COURSE:

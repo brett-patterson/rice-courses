@@ -1,63 +1,66 @@
-import json
 import math
 
 from django.conf import settings
+from django.db.models import CharField, IntegerField, Value as V, Case, When
+from django.db.models.functions import Concat
 
 from rice_courses.views import APIView
-from .filters import filter_courses
 from .models import Course
 from terms.models import Term
-
-
-COURSE_ORDER = {
-    'courseID': ('subject', 'course_number', 'section'),
-}
 
 
 class CourseCollectionView(APIView):
     def get(self, request):
         """ Returns a list of all courses as JSON objects.
         """
-        filtersJson = request.GET.get('filters')
+        query = request.GET.get('q')
         page = request.GET.get('page')
-        order = request.GET.get('order')
         term_id = request.GET.get('term')
-
-        if filtersJson is None:
-            filters = []
-        else:
-            try:
-                filters = json.loads(filtersJson)
-            except ValueError:
-                return self.failure('Improperly formatted filters')
-
-        if order is None:
-            order = 'courseID'
 
         term = Term.current_term()
         if term_id is not None:
             term = Term.objects.get(id=term_id)
 
-        courses = Course.objects.filter(term=term)
+        courses = Course.objects.filter(term=term) \
+            .annotate(rank=V(0, output_field=IntegerField()))
 
-        if order.startswith('-'):
-            order_params = COURSE_ORDER.get(order[1:], (order[1:],))
-            all_courses = courses.order_by(*order_params).reverse()
-        else:
-            order_params = COURSE_ORDER.get(order, (order,))
-            all_courses = courses.order_by(*order_params)
+        if query is not None:
+            courses = courses.annotate(
+                course_id=Concat('subject', V(' '), 'course_number', V(' '),
+                                 'section', output_field=CharField()),
+                rank=Case(
+                    When(
+                        course_id__istartswith=query,
+                        then=1
+                    ),
+                    When(
+                        title__icontains=query,
+                        then=2
+                    ),
+                    When(
+                        instructor__icontains=query,
+                        then=3
+                    ),
+                    default=0,
+                    output_field=IntegerField()
+                )
+            )
 
-        filtered_courses = filter_courses(all_courses, filters)
+            courses = courses.filter(rank__gt=0)
+
+        courses = courses.order_by(
+            'rank', 'subject', 'course_number', 'section'
+        )
 
         l = settings.COURSE_PAGE_LENGTH
-        pages = int(math.ceil(filtered_courses.count() / float(l)))
+        pages = int(math.ceil(courses.count() / float(l)))
 
         if page is not None:
             page = int(page)
-            filtered_courses = filtered_courses[l * page:l * (page + 1)]
+            courses = courses[l * page:l * (page + 1)]
 
         return self.success({
-            'courses': [c.json() for c in filtered_courses],
+            'courses': [c.json() for c in courses],
             'pages': pages
         }, safe=False)
 

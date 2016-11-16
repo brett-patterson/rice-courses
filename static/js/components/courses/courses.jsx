@@ -6,54 +6,32 @@ import {OrderedMap, List} from 'immutable';
 
 import {fetchCourses} from 'actions/courses';
 import Term from 'models/term';
-import FilterWidget from './filter/filterWidget';
-import CourseFilter from './filter/courseFilter';
+import SearchBar from './searchBar';
 import CourseList from './courseList';
-import {ajax, wrapComponentClass, propTypePredicate} from 'util';
+import {wrapComponentClass, propTypePredicate} from 'util';
 
-
-const FILTERS = [
-    new CourseFilter('crn', 'CRN'),
-    new CourseFilter('courseID', 'Course', ['course'], '', callback => {
-        ajax({
-            url: '/api/courses/subjects/',
-            method: 'GET'
-        }).then(callback);
-    }),
-    new CourseFilter('title', 'Title'),
-    new CourseFilter('instructor', 'Instructor'),
-    new CourseFilter('meetings', 'Meetings', ['meeting']),
-    new CourseFilter('credits', 'Credits'),
-    new CourseFilter('distribution', 'Distribution', ['dist'], '')
-];
 
 class Courses extends React.Component {
     fetchCoursesByPage(page) {
-        let {filters, order, term, dispatch} = this.props;
-        dispatch(fetchCourses(page, filters, order, term));
+        let {query, term, dispatch} = this.props;
+        dispatch(fetchCourses(page, query, term));
     }
 
-    fetchCoursesByOrder(order) {
-        let {page, filters, term, dispatch} = this.props;
-        dispatch(fetchCourses(page, filters, order, term));
-    }
-
-    fetchCoursesByFilters(filters) {
-        let {page, order, term, dispatch} = this.props;
-        dispatch(fetchCourses(page, filters, order, term));
+    fetchCoursesByQuery(query) {
+        let {page, term, dispatch} = this.props;
+        dispatch(fetchCourses(page, query, term));
     }
 
     render() {
         return (
             <div>
-                <FilterWidget allFilters={FILTERS} filters={this.props.filters}
-                              filtersChanged={this.fetchCoursesByFilters} />
+                <SearchBar query={this.props.query}
+                           onChange={this.fetchCoursesByQuery} />
                 <CourseList courses={this.props.courses}
                             schedules={this.props.schedules}
-                            page={this.props.page} order={this.props.order}
+                            page={this.props.page}
                             totalPages={this.props.totalPages}
-                            pageChanged={this.fetchCoursesByPage}
-                            orderChanged={this.fetchCoursesByOrder} />
+                            pageChanged={this.fetchCoursesByPage} />
                 {this.props.children}
             </div>
         );
@@ -65,8 +43,7 @@ Courses.propTypes = {
     schedules: propTypePredicate(List.isList),
     totalPages: PropTypes.number,
     page: PropTypes.number,
-    filters: PropTypes.array,
-    order: PropTypes.string,
+    query: PropTypes.string,
     term: PropTypes.instanceOf(Term),
     dispatch: PropTypes.func
 };
@@ -77,8 +54,7 @@ function mapStateToProps(state) {
         schedules: state.schedules.all,
         totalPages: state.courses.pages,
         page: state.courses.page,
-        order: state.courses.order,
-        filters: state.courses.filters,
+        query: state.courses.query,
         term: state.terms.current
     };
 }

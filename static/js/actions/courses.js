@@ -2,14 +2,10 @@ import Course from 'models/course';
 
 
 export const FETCH_COURSES = 'FETCH_COURSES';
-export function fetchCourses(page, filters, order, term) {
+export function fetchCourses(page, query, term) {
     return (dispatch, getState) => {
-        let serverFilters = filters.map(filter => {
-            return [filter.getKey(), filter.getValue()];
-        });
-
         const termId = term ? term.getID() : null;
-        Course.list(serverFilters, page, order, termId).then(result => {
+        Course.list(query, page, termId).then(result => {
             let {courses, pages} = result;
 
             const state = getState();
@@ -18,8 +14,7 @@ export function fetchCourses(page, filters, order, term) {
                 courses,
                 pages,
                 page,
-                filters,
-                order,
+                query,
                 term: termId,
                 clearAll: term !== state.terms.current
             });
