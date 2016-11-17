@@ -2,13 +2,14 @@ import 'courses.scss';
 
 import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {OrderedMap, List} from 'immutable';
+import {OrderedMap, List, Map} from 'immutable';
 import classNames from 'classnames';
 
 import {fetchCourses} from 'actions/courses';
 import Term from 'models/term';
 import SearchBar from './searchBar';
 import CourseList from './courseList';
+import Filters from './filters';
 import {wrapComponentClass, propTypePredicate} from 'util';
 
 
@@ -16,7 +17,8 @@ class Courses extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            loading: false
+            loading: false,
+            filtersOpen: false
         };
     }
 
@@ -27,34 +29,71 @@ class Courses extends React.Component {
     }
 
     fetchCoursesByPage(page) {
-        let {query, term, dispatch} = this.props;
+        let {query, filters, term, dispatch} = this.props;
         this.setState({ loading: true });
-        dispatch(fetchCourses(page, query, term));
+        dispatch(fetchCourses(page, query, filters, term));
     }
 
     fetchCoursesByQuery(query) {
-        let {page, term, dispatch} = this.props;
+        let {page, filters, term, dispatch} = this.props;
         this.setState({ loading: true });
-        dispatch(fetchCourses(page, query, term));
+        dispatch(fetchCourses(page, query, filters, term));
+    }
+
+    toggleFilters() {
+        this.setState({
+            filtersOpen: !this.state.filtersOpen
+        });
+    }
+
+    fetchCoursesByFilter(filter, value) {
+        const {filters, page, query, term, dispatch} = this.props;
+        this.setState({ loading: true });
+
+        let nextFilters;
+        if (value !== null) {
+            nextFilters = filters.set(filter, value);
+        } else {
+            nextFilters = filters.delete(filter);
+        }
+
+        dispatch(fetchCourses(page, query, nextFilters, term));
     }
 
     render() {
+        const {
+            query, subjects, courses, schedules, page, totalPages, filters,
+            children
+        } = this.props;
+        const {loading, filtersOpen} = this.state;
+
+        const containerClasses = classNames('courses-container', {
+            'filters-open': filtersOpen
+        });
+
         const courseListClasses = classNames({
-            faded: this.state.loading
+            faded: loading
+        });
+
+        const filtersClasses = classNames('filters-wrapper', {
+            open: filtersOpen
         });
 
         return (
-            <div>
-                <SearchBar query={this.props.query}
+            <div className={containerClasses}>
+                <SearchBar query={query} suggestions={subjects}
                            onChange={this.fetchCoursesByQuery}
-                           suggestions={this.props.subjects} />
+                           filtersOpen={filtersOpen}
+                           toggleFilters={this.toggleFilters} />
                 <CourseList className={courseListClasses}
-                            courses={this.props.courses}
-                            schedules={this.props.schedules}
-                            page={this.props.page}
-                            totalPages={this.props.totalPages}
+                            courses={courses} schedules={schedules}
+                            page={page} totalPages={totalPages}
                             pageChanged={this.fetchCoursesByPage} />
-                {this.props.children}
+                <div className={filtersClasses}>
+                    <Filters {...filters.toObject()}
+                             onFilterChanged={this.fetchCoursesByFilter} />
+                </div>
+                {children}
             </div>
         );
     }
@@ -68,7 +107,9 @@ Courses.propTypes = {
     query: PropTypes.string,
     term: PropTypes.instanceOf(Term),
     subjects: PropTypes.arrayOf(PropTypes.string),
-    dispatch: PropTypes.func
+    filters: propTypePredicate(Map.isMap),
+    dispatch: PropTypes.func,
+    children: PropTypes.node
 };
 
 function mapStateToProps(state) {
@@ -79,7 +120,8 @@ function mapStateToProps(state) {
         page: state.courses.page,
         query: state.courses.query,
         term: state.terms.current,
-        subjects: state.courses.subjects
+        subjects: state.courses.subjects,
+        filters: state.courses.filters
     };
 }
 

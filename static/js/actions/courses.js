@@ -2,10 +2,10 @@ import Course from 'models/course';
 
 
 export const FETCH_COURSES = 'FETCH_COURSES';
-export function fetchCourses(page, query, term) {
+export function fetchCourses(page, query, filters, term) {
     return (dispatch, getState) => {
         const termId = term ? term.getID() : null;
-        Course.list(query, page, termId).then(result => {
+        Course.list(query, filters, page, termId).then(result => {
             let {courses, pages} = result;
 
             const state = getState();
@@ -15,6 +15,7 @@ export function fetchCourses(page, query, term) {
                 pages,
                 page,
                 query,
+                filters,
                 term: termId,
                 clearAll: term !== state.terms.current
             });

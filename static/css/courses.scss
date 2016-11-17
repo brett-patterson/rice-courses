@@ -1,3 +1,13 @@
+$filters-width: 200px;
+
+.courses-container {
+    position: relative;
+
+    &.filters-open {
+        padding-right: $filters-width;
+    }
+}
+
 .faded {
     opacity: 0.5;
 }
@@ -33,5 +43,18 @@
         width: 3px;
         height: 100%;
         display: inline-block;
+    }
+}
+
+.filters-wrapper {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: $filters-width;
+    margin-right: -$filters-width - 20px;
+
+    &.open {
+        right: $filters-width;
     }
 }

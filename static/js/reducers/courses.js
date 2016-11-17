@@ -1,5 +1,5 @@
 import {FETCH_COURSES, FETCH_COURSE, FETCH_SUBJECTS} from 'actions/courses';
-import {OrderedMap} from 'immutable';
+import {OrderedMap, Map} from 'immutable';
 
 
 const initialState = {
@@ -8,6 +8,7 @@ const initialState = {
     pages: 0,
     page: -1,
     query: '',
+    filters: new Map(),
     subjects: []
 };
 
@@ -28,7 +29,8 @@ export default function(state=initialState, action) {
             filtered: action.courses,
             pages: action.pages,
             page: action.page,
-            query: action.query
+            query: action.query,
+            filters: action.filters || new Map()
         });
 
     case FETCH_COURSE:

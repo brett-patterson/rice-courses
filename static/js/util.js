@@ -185,7 +185,6 @@ export function propTypePredicate(predicate, required=true, errorMsg='must pass 
         const prop = props[propName];
         if ((prop === undefined && required) ||
             (prop !== undefined && !predicate(prop))) {
-            console.log(predicate, prop);
             throw new Error(`${propName} ${errorMsg}`);
         }
     };

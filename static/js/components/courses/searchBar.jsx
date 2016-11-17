@@ -1,6 +1,7 @@
 import 'searchBar.scss';
 
 import React, {PropTypes} from 'react';
+import {Glyphicon} from 'react-bootstrap';
 import Autosuggest from 'react-autosuggest';
 
 import {wrapComponentClass} from 'util';
@@ -47,20 +48,29 @@ class SearchBar extends React.Component {
     }
 
     render() {
+        const {filtersOpen, toggleFilters} = this.props;
+        const {text, suggestions} = this.state;
+
         const inputProps = {
             className: 'search-bar',
             placeholder: 'Search for courses...',
-            value: this.state.text,
+            value: text,
             onChange: this.onChange
         };
 
-        return <Autosuggest
-            suggestions={this.state.suggestions}
-            onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-            onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-            getSuggestionValue={s => s}
-            renderSuggestion={this.renderSuggestion}
-            inputProps={inputProps} />;
+        const filterGlyph = filtersOpen ? 'triangle-right' : 'menu-hamburger';
+
+        return <div className='search-bar-container'>
+            <Autosuggest suggestions={suggestions}
+                onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+                onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+                getSuggestionValue={s => s}
+                renderSuggestion={this.renderSuggestion}
+                inputProps={inputProps} />
+            <a href='#' className='filter-toggle' onClick={toggleFilters}>
+                <Glyphicon glyph={filterGlyph} /> Filters
+            </a>
+        </div>;
     }
 }
 
@@ -68,14 +78,18 @@ SearchBar.propTypes = {
     suggestions: PropTypes.array,
     query: PropTypes.string,
     onChange: PropTypes.func,
-    updateDelay: PropTypes.number
+    updateDelay: PropTypes.number,
+    toggleFilters: PropTypes.func,
+    filtersOpen: PropTypes.bool
 };
 
 SearchBar.defaultProps = {
     suggestions: [],
     query: '',
     onChange: () => {},
-    updateDelay: 200
+    updateDelay: 200,
+    toggleFilters: () => {},
+    filtersOpen: false
 };
 
 export default wrapComponentClass(SearchBar);

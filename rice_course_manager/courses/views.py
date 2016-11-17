@@ -1,11 +1,11 @@
 import math
 
 from django.conf import settings
-from django.db.models import CharField, IntegerField, Value as V, Case, When
-from django.db.models.functions import Concat
+from django.db.models import Value, IntegerField
 
 from rice_courses.views import APIView
 from .models import Course
+from .search import search_courses, filter_courses
 from terms.models import Term
 
 
@@ -22,31 +22,12 @@ class CourseCollectionView(APIView):
             term = Term.objects.get(id=term_id)
 
         courses = Course.objects.filter(term=term) \
-            .annotate(rank=V(0, output_field=IntegerField()))
+            .annotate(rank=Value(0, output_field=IntegerField()))
 
         if query is not None:
-            courses = courses.annotate(
-                course_id=Concat('subject', V(' '), 'course_number', V(' '),
-                                 'section', output_field=CharField()),
-                rank=Case(
-                    When(
-                        course_id__istartswith=query,
-                        then=1
-                    ),
-                    When(
-                        title__icontains=query,
-                        then=2
-                    ),
-                    When(
-                        instructor__icontains=query,
-                        then=3
-                    ),
-                    default=0,
-                    output_field=IntegerField()
-                )
-            )
+            courses = search_courses(courses, query)
 
-            courses = courses.filter(rank__gt=0)
+        courses = filter_courses(courses, request.GET)
 
         courses = courses.order_by(
             'rank', 'subject', 'course_number', 'section'

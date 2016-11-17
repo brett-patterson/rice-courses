@@ -1,5 +1,5 @@
 import Moment from 'moment';
-import {OrderedMap} from 'immutable';
+import {OrderedMap, Map} from 'immutable';
 
 import Term from './term';
 import {ajax} from 'util';
@@ -60,7 +60,7 @@ export default class Course {
                           crossListed);
     }
 
-    static list(query=undefined, page=-1, termId=null) {
+    static list(query=undefined, filters=new Map(), page=-1, termId=null) {
         let data = {};
 
         if (query) {
@@ -74,6 +74,8 @@ export default class Course {
         if (termId !== null) {
             data.term = termId;
         }
+
+        Object.assign(data, filters.toObject());
 
         return ajax({
             url: '/api/courses/',
