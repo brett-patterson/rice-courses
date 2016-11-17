@@ -18,9 +18,12 @@ class SearchBar extends React.Component {
     }
 
     onSuggestionsFetchRequested({ value }) {
+        value = value.toLowerCase();
+
         this.setState({
             suggestions: this.props.suggestions.filter(suggestion => {
-                return suggestion.toLowerCase().indexOf(value.toLowerCase()) === 0;
+                suggestion = suggestion.toLowerCase();
+                return suggestion.indexOf(value) === 0 && suggestion !== value;
             })
         });
     }
