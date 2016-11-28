@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from colorful.fields import RGBColorField
+from icalendar import Calendar, Event
 
 from courses.models import Course, Term
 from .util import random_hex_color
@@ -70,6 +71,25 @@ class Schedule(models.Model):
             'color': self.color,
             'map': [(c.json(), s) for c, s in self.show_map().items()]
         }
+
+    def ical(self):
+        """ Convert a Schedule object to an ICAL format.
+        """
+        cal = Calendar()
+
+        for course_shown in CourseShown.objects.filter(shown=True):
+            course = course_shown.course
+
+            for meeting in course.meetings:
+                e = Event()
+                e.add('summary', course.course_id())
+                e.add('location', course.location)
+                e.add('dtstart', meeting.start)
+                e.add('dtend', meeting.end)
+                e.add('rrule', {'freq': 'weekly'})
+                cal.add_component(e)
+
+        return cal.to_ical()
 
 
 class CourseShown(models.Model):

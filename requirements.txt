@@ -14,3 +14,4 @@ mechanize==0.2.5
 beautifulsoup4==4.4.1
 django-webpack-loader==0.2.4
 django-colorful==1.2
+icalendar==3.11

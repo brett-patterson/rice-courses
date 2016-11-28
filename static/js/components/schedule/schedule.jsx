@@ -73,6 +73,11 @@ class ScheduleView extends React.Component {
         });
     }
 
+    generateICal() {
+        const id = this.props.schedule.id;
+        window.open(`/api/me/schedules/${id}/ical/`);
+    }
+
     render() {
         const {schedule, canDelete, children} = this.props;
         const {exported, editingName, editedName} = this.state;
@@ -120,6 +125,10 @@ class ScheduleView extends React.Component {
 
             <Button bsStyle='info' onClick={this.showExportDialog}>
                 Export Current CRNs
+            </Button>
+            &nbsp;
+            <Button bsStyle='info' onClick={this.generateICal}>
+                Generate ICal file
             </Button>
             {exportDialog}
 

@@ -7,4 +7,4 @@ Dragging a course allows you to view other sections of that same course. Droppin
 
 __CRNs__
 
-The table at the top of the page provides easy ways to copy CRNs for use in Esther and other tools. Individual CRNs can be copied to the clipboard using the <span class='glyphicon glyphicon-paperclip'></span> to right of each CRN. Click the `Export Current CRNs` button to bring up a list of the CRNs for all courses that are shown in the schedule.
+The table at the top of the page provides easy ways to copy CRNs for use in Esther and other tools. Individual CRNs can be copied to the clipboard using the <span class='glyphicon glyphicon-paperclip'></span> to right of each CRN. Click the `Export Current CRNs` button to bring up a list of the CRNs for all courses that are shown in the schedule. Click 'Generate ICal file' to generate an ICS file that is compatible with most calendar programs.

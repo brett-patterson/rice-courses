@@ -1,4 +1,5 @@
-from django.http import QueryDict
+from django.http import QueryDict, HttpResponse
+from StringIO import StringIO
 
 from courses.models import Course
 from rice_courses.views import APIView
@@ -104,3 +105,20 @@ class ScheduleCourseView(APIView):
         schedule = Schedule.objects.get(id=schedule_id, user=request.user)
         schedule.remove_course(Course.objects.get(crn=crn, term=schedule.term))
         return self.success(schedule.json())
+
+
+class ScheduleICalView(APIView):
+    def get(self, request, schedule_id):
+        """ Generate the ICAL representation of a schedule.
+        """
+        try:
+            schedule = Schedule.objects.get(id=schedule_id, user=request.user)
+        except Schedule.DoesNotExist:
+            return self.failure('Invalid schedule ID')
+
+        response = HttpResponse(StringIO(schedule.ical()),
+                                content_type='text/calendar')
+        response['Content-Disposition'] = 'attachment; filename=%s.ics' % (
+            schedule.name,
+        )
+        return response
