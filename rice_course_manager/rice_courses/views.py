@@ -37,12 +37,13 @@ class APIView(View):
     authenticated.
     """
     def json_response(self, payload, status, **kwargs):
-        return JsonResponse(payload, status=status, **kwargs)
+        return JsonResponse({
+            'payload': payload,
+            'error': status >= 400
+        }, status=status, **kwargs)
 
-    def success(self, payload={}, **kwargs):
+    def success(self, payload=None, **kwargs):
         return self.json_response(payload, 200, **kwargs)
 
-    def failure(self, error):
-        return self.json_response({
-            'error': error
-        }, 400)
+    def failure(self, error, **kwargs):
+        return self.json_response(error, 400, **kwargs)

@@ -8,4 +8,4 @@ class ArticlesView(APIView):
         """
         articles = HelpArticle.objects.order_by('index')
 
-        return self.success([a.json() for a in articles], safe=False)
+        return self.success([a.json() for a in articles])

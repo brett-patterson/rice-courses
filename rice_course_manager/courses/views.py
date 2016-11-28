@@ -43,7 +43,7 @@ class CourseCollectionView(APIView):
         return self.success({
             'courses': [c.json() for c in courses],
             'pages': pages
-        }, safe=False)
+        })
 
 
 class CourseView(APIView):
@@ -88,7 +88,7 @@ class SectionsView(APIView):
         filtered = Course.objects.filter(
             subject=subj, course_number=num, term=term
         )
-        return self.success([c.json() for c in filtered], safe=False)
+        return self.success([c.json() for c in filtered])
 
 
 class SubjectsView(APIView):
@@ -108,4 +108,4 @@ class SubjectsView(APIView):
             .distinct()
 
         subjects = sorted(map(lambda x: x['subject'], distinct))
-        return self.success(subjects, safe=False)
+        return self.success(subjects)

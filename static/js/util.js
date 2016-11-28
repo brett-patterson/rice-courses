@@ -143,7 +143,7 @@ export function ajax(config) {
     });
 
     return new Promise((resolve, reject) => {
-        jQuery.ajax(requestConfig).then(resolve, reject);
+        jQuery.ajax(requestConfig).then(result => resolve(result.payload), reject);
     });
 }
 

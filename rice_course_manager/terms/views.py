@@ -21,6 +21,4 @@ class TermsView(APIView):
             key=lambda t: (-t.year, SEMESTER_ORDER[t.semester])
         )
 
-        return self.success(
-            [t.json() for t in terms], safe=False
-        )
+        return self.success([t.json() for t in terms])
