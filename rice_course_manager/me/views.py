@@ -5,46 +5,6 @@ from rice_courses.views import APIView
 from .models import Schedule, Term
 
 
-class AlternateCourseView(APIView):
-    def get(self, request):
-        """ Suggest alternate sections for a given course.
-        """
-        # crn = request.GET.get('crn')
-        #
-        # if crn is not None:
-        #     course = Course.objects.get(crn=crn)
-        #
-        #     alternates = Course.objects.filter(
-        #         subject=course.subject, course_number=course.course_number
-        #     )
-        #     alternates = alternates.exclude(section=course.section)
-        #
-        #     user = request.user
-        #     schedule = (Schedule.objects.filter(user=user).get(shown=True))
-        #
-        #     user_courses = [c for c in request.user.userprofile.courses.all()
-        #                     if c.crn != crn and scheduler.show_map()[c.crn]]
-        #
-        #     result = []
-        #     for alternate in alternates:
-        #         ok = True
-        #
-        #         for user_course in user_courses:
-        #             if overlap(alternate, user_course):
-        #                 ok = False
-        #                 break
-        #
-        #         if ok:
-        #             result.append(alternate.json())
-        #
-        #     return self.success({
-        #         'course': course.json(),
-        #         'alternates': result
-        #     })
-        return self.failure('Not implemented')
-        # return self.failure('No CRN specified')
-
-
 class ScheduleCollectionView(APIView):
     def get(self, request):
         """ Get all the schedules for the user.
@@ -53,7 +13,7 @@ class ScheduleCollectionView(APIView):
         term = request.GET.get('term') or Term.current_term()
         schedules = Schedule.objects.filter(user=user, term=term)
 
-        return self.success([s.json() for s in schedules], safe=False)
+        return self.success([s.json() for s in schedules])
 
     def post(self, request):
         """ Add a schedule for the user.
