@@ -1,4 +1,10 @@
-Rice Course Manager is a tool designed to help streamline the process of finding, selecting, and scheduling courses at Rice. If you see a <span class='glyphicon glyphicon-question-sign'></span> in the top-right corner of any page, you can click it to have the key elements of the page explained step-by-step. Detailed instructions for each page are also provided below. Course data is updated from Rice's servers on a daily basis. During peak times such as registration, course data will be updated much more frequently.
+Rice Course Manager is a tool designed to help streamline the process of finding, selecting, and scheduling courses at Rice. Detailed instructions on how to use this tool are below.
+Course data is updated from Rice's servers on a daily basis. During peak times such as registration, course data will be updated much more frequently.
+
+__Key features__
+
+Rice Course Manager is based on the concept of having multiple, independent schedules for each term. Courses are found in the Search tab and added to the schedules shown
+in the top navigation bar.
 
 __Signing In__
 
