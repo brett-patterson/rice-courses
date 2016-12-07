@@ -8,23 +8,22 @@ def search_courses(courses, query):
     return courses.annotate(
         course_id=Concat('subject', Value(' '), 'course_number', Value(' '),
                          'section', output_field=CharField()),
-        rank=Case(
-            When(
-                course_id__istartswith=query,
-                then=1
-            ),
-            When(
-                title__icontains=query,
-                then=2
-            ),
-            When(
-                instructor__icontains=query,
-                then=3
-            ),
-            default=0,
-            output_field=IntegerField()
-        )
-    ).filter(rank__gt=0)
+    ).annotate(rank=Case(
+        When(
+            course_id__istartswith=query,
+            then=1
+        ),
+        When(
+            title__icontains=query,
+            then=2
+        ),
+        When(
+            instructor__icontains=query,
+            then=3
+        ),
+        default=0,
+        output_field=IntegerField()
+    )).filter(rank__gt=0)
 
 
 def filter_courses(courses, params):
