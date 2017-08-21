@@ -77,7 +77,7 @@ class Schedule(models.Model):
         """
         cal = Calendar()
 
-        for course_shown in CourseShown.objects.filter(shown=True):
+        for course_shown in self.courseshown_set.filter(shown=True):
             course = course_shown.course
 
             for meeting in course.meetings:
