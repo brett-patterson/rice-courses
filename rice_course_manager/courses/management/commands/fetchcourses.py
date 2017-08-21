@@ -1,3 +1,4 @@
+import traceback
 from xml.etree import ElementTree
 
 import requests
@@ -105,29 +106,26 @@ class Command(BaseCommand):
                 course_json[name] = attr.text
 
             try:
-                course = Course.from_json(course_json, term)
-                crns.add(course.crn)
                 schedules = []
 
                 try:
-                    old_course = Course.objects.get(crn=course.crn, term=term)
-                    schedules = map(
-                        lambda x: (x.schedule, x.shown),
-                        old_course.courseshown_set.all()
-                    )
+                    old_course = Course.objects.get(crn=course_json['crn'], term=term)
+                    schedules = [(s.schedule, s.shown) for s in old_course.courseshown_set.all()]
                     old_course.delete()
 
                 except Course.DoesNotExist:
                     pass
 
-                course.save()
+                course = Course.from_json(course_json, term)
+                crns.add(course.crn)
+
                 for schedule, shown in schedules:
                     schedule.set_shown(course, shown)
 
-            except Exception as e:
+            except Exception:
                 self.stdout.write('Error parsing course:')
                 self.stdout.write(str(course_json))
-                self.stdout.write(str(e))
+                traceback.print_exc(file=self.stdout)
                 self.stdout.write('\n')
 
         # Remove stale courses

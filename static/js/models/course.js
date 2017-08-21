@@ -6,13 +6,13 @@ import {ajax} from 'util';
 
 
 const DAY_ABBR_MAP = {
-    'Monday': 'M',
-    'Tuesday': 'T',
-    'Wednesday': 'W',
-    'Thursday': 'R',
-    'Friday': 'F',
-    'Saturday': 'S',
-    'Sunday': 'U'
+    'M': 'Monday',
+    'T': 'Tuesday',
+    'W': 'Wednesday',
+    'R': 'Thursday',
+    'F': 'Friday',
+    'S': 'Saturday',
+    'U': 'Sunday'
 };
 
 
@@ -130,11 +130,12 @@ export default class Course {
         let dates = [];
 
         for (let i = 0; i < meetings.length; i++) {
-            const [start_string, end_string] = meetings[i].split(',');
+            const {day, start, end} = meetings[i];
 
             dates.push({
-                start: Moment.utc(start_string),
-                end: Moment.utc(end_string)
+                day,
+                start: Moment(DAY_ABBR_MAP[day] + ' ' + start, 'dddd HH:mm:ss'),
+                end: Moment(DAY_ABBR_MAP[day] + ' ' + end, 'dddd HH:mm:ss')
             });
         }
 
@@ -194,12 +195,11 @@ export default class Course {
             let startTime = meeting.start.format('HH:mm');
             let endTime = meeting.end.format('HH:mm');
             let time = `${startTime} - ${endTime}`;
-            let day = DAY_ABBR_MAP[meeting.start.format('dddd')];
 
             if (timesToDays[time] === undefined) {
-                timesToDays[time] = day;
+                timesToDays[time] = meeting.day;
             } else {
-                timesToDays[time] += day;
+                timesToDays[time] += meeting.day;
             }
         }
 

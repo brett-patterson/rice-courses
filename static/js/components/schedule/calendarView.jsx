@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
 import {Set} from 'immutable';
+import Moment from 'moment';
 
 import Planner from './planner/planner';
 import Schedule from 'models/schedule';
