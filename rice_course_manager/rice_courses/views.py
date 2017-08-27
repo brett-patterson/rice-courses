@@ -1,18 +1,55 @@
 import json
 
-from django.contrib.auth import login, authenticate
+from django.conf import settings
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
+from cas.views import login as cas_login, logout as cas_logout
 
 from help.models import HelpArticle
 
 
+def login_dummy_user(request, name):
+    """ Create, if necessary, and login a dummy user.
+    """
+    username = password = name
+
+    user, created = User.objects.get_or_create(username=username)
+    if created:
+        user.set_password(user)
+        user.save()
+
+    login(request, authenticate(username=username, password=password))
+
+
+def login_view(request):
+    """ A view to login a user.
+    """
+    if settings.DEBUG:
+        login_dummy_user(request, 'dev')
+        return HttpResponseRedirect(request.GET.get('next', '/'))
+
+    return cas_login(request)
+
+
+def logout_view(request):
+    """ A view to logout a user.
+    """
+    if settings.DEBUG:
+        logout(request)
+        return HttpResponseRedirect(request.GET.get('next', '/'))
+
+    return cas_logout(request)
+
+
 @login_required
 def home(request):
+    """ The main application view.
+    """
     return render(request, 'index.html', {
         'help_articles': json.dumps(
             [a.json() for a in HelpArticle.objects.all()]
@@ -21,13 +58,9 @@ def home(request):
 
 
 def demo(request):
-    username = password = 'demo'
-    demo_user, created = User.objects.get_or_create(username=username)
-    if created:
-        demo_user.set_password(password)
-        demo_user.save()
-
-    login(request, authenticate(username=username, password=password))
+    """ A view that logs the user in as a demo user.
+    """
+    login_dummy_user(request, 'demo')
     return HttpResponseRedirect('/')
 
 

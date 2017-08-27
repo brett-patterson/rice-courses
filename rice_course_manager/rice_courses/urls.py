@@ -1,14 +1,13 @@
 from django.conf.urls import include, url
 from django.contrib import admin
-from cas.views import login, logout
 
-from .views import home, demo
+from .views import home, demo, login_view, logout_view
 
 
 urlpatterns = [
     url(r'^demo/?$', demo),
-    url(r'^login/?$', login),
-    url(r'^logout/?$', logout),
+    url(r'^login/?$', login_view),
+    url(r'^logout/?$', logout_view),
 
     url(r'^api/courses/', include('courses.urls')),
     url(r'^api/evaluation/', include('evaluation.urls')),
