@@ -53,8 +53,10 @@ $filters-width: 200px;
     bottom: 0;
     width: $filters-width;
     margin-right: -$filters-width - 20px;
+    display: none;
 
     &.open {
         right: $filters-width;
+        display: block;
     }
 }
