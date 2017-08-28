@@ -13,7 +13,7 @@ from cas.views import login as cas_login, logout as cas_logout
 from help.models import HelpArticle
 
 
-def login_dummy_user(request, name):
+def login_dummy_user(request, name, admin=False):
     """ Create, if necessary, and login a dummy user.
     """
     username = password = name
@@ -21,16 +21,21 @@ def login_dummy_user(request, name):
     user, created = User.objects.get_or_create(username=username)
     if created:
         user.set_password(user)
+        if admin:
+            user.is_staff = True
+            user.is_superuser = True
         user.save()
 
-    login(request, authenticate(username=username, password=password))
+    user = authenticate(username=username, password=password)
+    login(request, user)
+    return user
 
 
 def login_view(request):
     """ A view to login a user.
     """
     if settings.DEBUG:
-        login_dummy_user(request, 'dev')
+        login_dummy_user(request, 'dev', admin=True)
         return HttpResponseRedirect(request.GET.get('next', '/'))
 
     return cas_login(request)

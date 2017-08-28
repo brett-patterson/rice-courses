@@ -22,6 +22,12 @@ class Term(models.Model):
     # Whether this is the current term
     current = models.BooleanField(default=False)
 
+    # The starting date of the semester
+    start_date = models.DateField(null=True)
+
+    # The ending date of the semester
+    end_date = models.DateField(null=True)
+
     @classmethod
     def current_term(cls):
         """ Get the current term.

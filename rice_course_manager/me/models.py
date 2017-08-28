@@ -1,10 +1,17 @@
+from datetime import datetime, timedelta
+
 from django.contrib.auth.models import User
 from django.db import models
 from colorful.fields import RGBColorField
 from icalendar import Calendar, Event
 
-from courses.models import Course, Term
+from courses.models import Course, Term, DAY_ORDER
 from .util import random_hex_color
+
+
+ICAL_WEEKDAY_MAP = {
+    'M': 'MO', 'T': 'TU', 'W': 'WE', 'R': 'TH', 'F': 'FR', 'S': 'SA', 'U': 'SU'
+}
 
 
 class Schedule(models.Model):
@@ -80,13 +87,26 @@ class Schedule(models.Model):
         for course_shown in self.courseshown_set.filter(shown=True):
             course = course_shown.course
 
-            for meeting in course.meetings:
+            for meeting in course.coursemeeting_set.all():
                 e = Event()
                 e.add('summary', course.course_id())
                 e.add('location', course.location)
-                e.add('dtstart', meeting.start)
-                e.add('dtend', meeting.end)
-                e.add('rrule', {'freq': 'weekly'})
+
+                date = self.term.start_date
+                date += timedelta(days=DAY_ORDER.index(meeting.day))
+                e.add('dtstart', datetime(
+                    date.year, date.month, date.day, meeting.start.hour, meeting.start.minute
+                ))
+                e.add('dtend', datetime(
+                    date.year, date.month, date.day, meeting.end.hour, meeting.end.minute
+                ))
+
+                e.add('rrule', {
+                    'freq': 'weekly',
+                    'byday': ICAL_WEEKDAY_MAP[meeting.day],
+                    'until': self.term.end_date + timedelta(days=1)
+                })
+
                 cal.add_component(e)
 
         return cal.to_ical()

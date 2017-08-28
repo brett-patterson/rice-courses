@@ -116,6 +116,10 @@ class ScheduleICalView(APIView):
         except Schedule.DoesNotExist:
             return self.failure('Invalid schedule ID')
 
+        term = schedule.term
+        if term.start_date is None or term.end_date is None:
+            return self.failure('No start and end dates for term')
+
         response = HttpResponse(StringIO(schedule.ical()),
                                 content_type='text/calendar')
         response['Content-Disposition'] = 'attachment; filename=%s.ics' % (
